@@ -1,0 +1,21 @@
+env: local
+
+exploit_runner:
+  team_ips:
+    - 10.10.1.2
+    - 10.10.2.2
+    - 10.10.3.2
+  flag_format: '[A-Z0-9]{31}='
+  run_duration: 10s
+  exploit_directory: ./exploits
+  max_concurrent_exploits: 50
+  exploit_max_working_time: 5s
+
+db:
+  migrations_path: ./migrations
+
+rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  username: rmuser
+  password: rmpassword
