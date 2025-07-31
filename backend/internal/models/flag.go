@@ -3,10 +3,10 @@ package models
 type FlagStatus string
 
 const (
-	FlagStatusPending    FlagStatus = "pending"
-	FlagStatusInProgress FlagStatus = "in_progress"
-	FlagStatusCompleted  FlagStatus = "completed"
-	FlagStatusFailed     FlagStatus = "failed"
+	FlagStatusPending FlagStatus = "PENDING"
+	FlagStatusOld     FlagStatus = "OLD"
+	FlagStatusSuccess FlagStatus = "SUCCESS"
+	FlagStatusReject  FlagStatus = "REJECT"
 )
 
 type Flag struct {
