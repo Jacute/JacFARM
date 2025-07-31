@@ -1,13 +1,11 @@
 package rabbitmq
 
 import (
-	"JacFARM/internal/models"
-
 	"github.com/bytedance/sonic"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func (r *Rabbit) PublishFlag(flag *models.Flag) error {
+func (r *Rabbit) PublishFlag(flag *Flag) error {
 	output, err := sonic.Marshal(flag)
 	if err != nil {
 		return err

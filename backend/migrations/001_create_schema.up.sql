@@ -13,8 +13,12 @@ CREATE TABLE IF NOT EXISTS teams (
 );
 
 CREATE TABLE IF NOT EXISTS exploits (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(256) UNIQUE NOT NULL
+    id VARCHAR(36) PRIMARY KEY, -- uuid
+    name VARCHAR(256) NOT NULL,
+    type VARCHAR(32),
+    is_local BOOLEAN NOT NULL,
+    executable_path VARCHAR(256),
+    requirements_path VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS flags (
