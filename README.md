@@ -4,10 +4,9 @@ Exploit farm for attack-defense CTF competition
 
 ## Components
 
-<center>
-    <h3>Arch Diagram</h3>
-    <img src="docs/diagram.png">
-</center>
+### Arch Diagram
+
+![](./docs/diagram.png)
 
 ### Server
 
