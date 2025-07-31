@@ -5,7 +5,7 @@ import (
 	"JacFARM/internal/rabbitmq"
 	jacfarm "JacFARM/internal/service/JacFARM"
 	"JacFARM/internal/service/exploit_runner"
-	"JacFARM/internal/service/flag_sender"
+	"JacFARM/internal/service/flag_saver"
 	"JacFARM/internal/storage/sqlite"
 	"context"
 	"log/slog"
@@ -42,7 +42,7 @@ func main() {
 	farm.LoadConfigIntoDB(appCtx, cfg)
 
 	exploitRunner := exploit_runner.New(log, db, rabbitmq, cfg.ExploitRunner.ExploitDirectory)
-	flagSender := flag_sender.New(log, rabbitmq, db)
+	flagSender := flag_saver.New(log, rabbitmq, db)
 	go exploitRunner.Start(appCtx)
 	go flagSender.Start()
 

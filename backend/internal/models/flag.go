@@ -10,7 +10,7 @@ const (
 )
 
 type Flag struct {
-	ID                string     `json:"id"`
+	ID                int64      `json:"id"`
 	Value             string     `json:"value"`
 	Status            FlagStatus `json:"status"`
 	Exploit           *Exploit   `json:"exploit"`
