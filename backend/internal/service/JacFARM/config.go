@@ -19,8 +19,7 @@ const (
 	ConfigMaxConcurrentExploits  = "EXPLOIT_RUNNER_MAX_CONCURRENT_EXPLOITS"
 	ConfigFlagSenderPlugin       = "FLAG_SENDER_PLUGIN"
 	ConfigFlagSenderSubmitPeriod = "FLAG_SENDER_SUBMIT_PERIOD"
-	ConfigFlagSenderJuryFlagURL  = "FLAG_SENDER_JURY_FLAG_URL"
-	ConfigFlagSenderJuryFlagHost = "FLAG_SENDER_JURY_FLAG_HOST"
+	ConfigFlagSenderJuryFlagURL  = "FLAG_SENDER_JURY_FLAG_URL_OR_HOST"
 	ConfigFlagSenderToken        = "FLAG_SENDER_TOKEN"
 	ConfigFlagSenderSubmitLimit  = "FLAG_SENDER_SUBMIT_LIMIT"
 	ConfigFlagSenderFlagTTL      = "FLAG_SENDER_FLAG_TTL"
@@ -55,7 +54,6 @@ func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) {
 		ConfigMaxConcurrentExploits: strconv.Itoa(cfg.ExploitRunner.MaxConcurrentExploits),
 
 		ConfigFlagSenderFlagTTL:      cfg.FlagSender.FlagTTL.String(),
-		ConfigFlagSenderJuryFlagHost: cfg.FlagSender.JuryFlagHost,
 		ConfigFlagSenderJuryFlagURL:  cfg.FlagSender.JuryFlagURL,
 		ConfigFlagSenderPlugin:       cfg.FlagSender.Plugin,
 		ConfigFlagSenderSubmitLimit:  strconv.Itoa(cfg.FlagSender.SubmitLimit),

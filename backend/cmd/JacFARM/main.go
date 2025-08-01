@@ -6,6 +6,7 @@ import (
 	jacfarm "JacFARM/internal/service/JacFARM"
 	"JacFARM/internal/service/exploit_runner"
 	"JacFARM/internal/service/flag_saver"
+	"JacFARM/internal/service/flag_sender"
 	"JacFARM/internal/storage/sqlite"
 	"context"
 	"log/slog"
@@ -42,8 +43,10 @@ func main() {
 	farm.LoadConfigIntoDB(appCtx, cfg)
 
 	exploitRunner := exploit_runner.New(log, db, rabbitmq, cfg.ExploitRunner.ExploitDirectory)
-	flagSender := flag_saver.New(log, rabbitmq, db)
+	flagSaver := flag_saver.New(log, rabbitmq, db)
+	flagSender := flag_sender.New(log, db)
 	go exploitRunner.Start(appCtx)
+	go flagSaver.Start()
 	go flagSender.Start()
 
 	log.Info("JacFARM service started", slog.String("env", cfg.Env))
@@ -53,6 +56,8 @@ func main() {
 	<-sgn
 	log.Info("shutting down JacFARM service")
 	exploitRunner.Stop()
+	flagSaver.Stop()
+	flagSender.Stop()
 	if err := db.Close(); err != nil {
 		log.Error("error closing database connection", prettylogger.Err(err))
 	}

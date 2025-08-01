@@ -13,8 +13,7 @@ exploit_runner:
 
 flag_sender:
   plugin: forcad_http
-  jury_flag_url: http://10.10.10.10/flags
-  jury_flag_host: 10.10.10.10 # need for tcp plugins
+  jury_flag_url_or_host: http://10.10.10.10/flags # url for http, host for tcp
   token: asd123
   flag_ttl: 5m
   submit_period: 5s

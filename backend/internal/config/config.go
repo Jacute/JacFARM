@@ -26,8 +26,7 @@ type ExploitRunnerConfig struct {
 
 type FlagSenderConfig struct {
 	Plugin       string        `yaml:"plugin"`
-	JuryFlagURL  string        `yaml:"jury_flag_url"`
-	JuryFlagHost string        `yaml:"jury_flag_host"`
+	JuryFlagURL  string        `yaml:"jury_flag_url_or_host"`
 	Token        string        `yaml:"token"`
 	FlagTTL      time.Duration `yaml:"flag_ttl"`
 	SubmitPeriod time.Duration `yaml:"submit_period"`

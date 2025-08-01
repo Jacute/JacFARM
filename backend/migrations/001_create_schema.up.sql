@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS flags (
     exploit_id INTEGER,
     get_from INTEGER,
     message_from_server TEXT,
+    created_at DATETIME DEFAULT datetime('now', 'utc'),
 
     FOREIGN KEY(get_from) REFERENCES teams(id),
     FOREIGN KEY(status_id) REFERENCES statuses(id),
