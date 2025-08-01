@@ -11,6 +11,16 @@ exploit_runner:
   max_concurrent_exploits: 50
   exploit_max_working_time: 5s
 
+flag_sender:
+  plugin: forcad_http
+  jury_flag_url: http://10.10.10.10/flags
+  jury_flag_host: 10.10.10.10 # need for tcp plugins
+  token: asd123
+  flag_ttl: 5m
+  submit_period: 5s
+  submit_limit: 50
+  plugin_directory: ./plugins
+
 db:
   migrations_path: ./migrations
 

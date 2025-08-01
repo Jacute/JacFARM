@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Env           string               `yaml:"env"`
 	ExploitRunner *ExploitRunnerConfig `yaml:"exploit_runner"`
+	FlagSender    *FlagSenderConfig    `yaml:"flag_sender"`
 	DB            *DBConfig            `yaml:"db"`
 	Rabbit        *RabbitMQConfig      `yaml:"rabbitmq"`
 }
@@ -21,6 +22,16 @@ type ExploitRunnerConfig struct {
 	MaxConcurrentExploits int           `yaml:"max_concurrent_exploits"`
 	ExploitDirectory      string        `yaml:"exploit_directory"`
 	ExploitMaxWorkingTime time.Duration `yaml:"exploit_max_working_time"`
+}
+
+type FlagSenderConfig struct {
+	Plugin       string        `yaml:"plugin"`
+	JuryFlagURL  string        `yaml:"jury_flag_url"`
+	JuryFlagHost string        `yaml:"jury_flag_host"`
+	Token        string        `yaml:"token"`
+	FlagTTL      time.Duration `yaml:"flag_ttl"`
+	SubmitPeriod time.Duration `yaml:"submit_period"`
+	SubmitLimit  int           `yaml:"submit_limit"`
 }
 
 type DBConfig struct {
