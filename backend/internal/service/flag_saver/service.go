@@ -2,15 +2,19 @@ package flag_saver
 
 import (
 	"JacFARM/internal/models"
+	"context"
+	"errors"
 	"log/slog"
 	"sync"
+
+	storage_errors "JacFARM/internal/storage"
 
 	"github.com/jacute/prettylogger"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type storage interface {
-	PutFlag(flag *models.Flag) error
+	PutFlag(ctx context.Context, flag *models.Flag) (int64, error)
 }
 
 type queue interface {
@@ -60,7 +64,12 @@ func (fs *FlagSaver) Start() error {
 			go func() {
 				defer processFlagWg.Done()
 				if err := fs.processFlag(flag.Body); err != nil {
-					log.Error("Failed to process flag", "error", err)
+					if errors.Is(err, storage_errors.ErrFlagAlreadyExists) {
+						log.Warn("Flag already exists, skipping", slog.String("flag", string(flag.Body)))
+						flag.Ack(false) // if flag already exists, send ack
+						return
+					}
+					log.Error("Failed to process flag", prettylogger.Err(err))
 					flag.Nack(false, true) // if error, requeue the message
 					return
 				}
@@ -69,6 +78,7 @@ func (fs *FlagSaver) Start() error {
 			}()
 		case <-fs.stopChan:
 			processFlagWg.Wait()
+			log.Info("flag saver stopped")
 			return nil
 		}
 	}
@@ -78,6 +88,6 @@ func (fs *FlagSaver) Stop() {
 	const op = "service.flag_sender.Stop"
 	log := fs.log.With(slog.String("op", op))
 
-	log.Info("stopping flag saver service")
+	log.Debug("stopping flag saver service")
 	close(fs.stopChan)
 }

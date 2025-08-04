@@ -6,14 +6,12 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const dbFilepath = "./database.db"
-
 type Storage struct {
 	db *sql.DB
 }
 
-func New() (*Storage, error) {
-	db, err := sql.Open("sqlite3", dbFilepath)
+func New(dbPath string) (*Storage, error) {
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return nil, err
 	}

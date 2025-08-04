@@ -13,16 +13,17 @@ import (
 )
 
 const (
-	ConfigFlagFormatKey          = "EXPLOIT_RUNNER_FLAG_FORMAT"
-	ConfigExploitDuration        = "EXPLOIT_RUNNER_DURATION"
-	ConfigExploitMaxWorkingTime  = "EXPLOIT_RUNNER_MAX_WORKING_TIME"
-	ConfigMaxConcurrentExploits  = "EXPLOIT_RUNNER_MAX_CONCURRENT_EXPLOITS"
-	ConfigFlagSenderPlugin       = "FLAG_SENDER_PLUGIN"
-	ConfigFlagSenderSubmitPeriod = "FLAG_SENDER_SUBMIT_PERIOD"
-	ConfigFlagSenderJuryFlagURL  = "FLAG_SENDER_JURY_FLAG_URL_OR_HOST"
-	ConfigFlagSenderToken        = "FLAG_SENDER_TOKEN"
-	ConfigFlagSenderSubmitLimit  = "FLAG_SENDER_SUBMIT_LIMIT"
-	ConfigFlagSenderFlagTTL      = "FLAG_SENDER_FLAG_TTL"
+	ConfigFlagFormatKey           = "EXPLOIT_RUNNER_FLAG_FORMAT"
+	ConfigExploitDuration         = "EXPLOIT_RUNNER_DURATION"
+	ConfigExploitMaxWorkingTime   = "EXPLOIT_RUNNER_MAX_WORKING_TIME"
+	ConfigMaxConcurrentExploits   = "EXPLOIT_RUNNER_MAX_CONCURRENT_EXPLOITS"
+	ConfigFlagSenderPlugin        = "FLAG_SENDER_PLUGIN"
+	ConfigFlagSenderSubmitTimeout = "FLAG_SENDER_SUBMIT_TIMEOUT"
+	ConfigFlagSenderSubmitPeriod  = "FLAG_SENDER_SUBMIT_PERIOD"
+	ConfigFlagSenderJuryFlagURL   = "FLAG_SENDER_JURY_FLAG_URL_OR_HOST"
+	ConfigFlagSenderToken         = "FLAG_SENDER_TOKEN"
+	ConfigFlagSenderSubmitLimit   = "FLAG_SENDER_SUBMIT_LIMIT"
+	ConfigFlagSenderFlagTTL       = "FLAG_SENDER_FLAG_TTL"
 )
 
 func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) {
@@ -31,7 +32,7 @@ func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) {
 
 	var existTeams []string
 	for _, ip := range cfg.ExploitRunner.TeamIPs {
-		err := s.db.AddTeam(&models.Team{
+		_, err := s.db.AddTeam(&models.Team{
 			IP: ip,
 		})
 		if err != nil {
@@ -53,12 +54,13 @@ func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) {
 		ConfigExploitMaxWorkingTime: cfg.ExploitRunner.ExploitMaxWorkingTime.String(),
 		ConfigMaxConcurrentExploits: strconv.Itoa(cfg.ExploitRunner.MaxConcurrentExploits),
 
-		ConfigFlagSenderFlagTTL:      cfg.FlagSender.FlagTTL.String(),
-		ConfigFlagSenderJuryFlagURL:  cfg.FlagSender.JuryFlagURL,
-		ConfigFlagSenderPlugin:       cfg.FlagSender.Plugin,
-		ConfigFlagSenderSubmitLimit:  strconv.Itoa(cfg.FlagSender.SubmitLimit),
-		ConfigFlagSenderSubmitPeriod: cfg.FlagSender.SubmitPeriod.String(),
-		ConfigFlagSenderToken:        cfg.FlagSender.Token,
+		ConfigFlagSenderFlagTTL:       cfg.FlagSender.FlagTTL.String(),
+		ConfigFlagSenderJuryFlagURL:   cfg.FlagSender.JuryFlagURL,
+		ConfigFlagSenderPlugin:        cfg.FlagSender.Plugin,
+		ConfigFlagSenderSubmitTimeout: cfg.FlagSender.SubmitTimeout.String(),
+		ConfigFlagSenderSubmitLimit:   strconv.Itoa(cfg.FlagSender.SubmitLimit),
+		ConfigFlagSenderSubmitPeriod:  cfg.FlagSender.SubmitPeriod.String(),
+		ConfigFlagSenderToken:         cfg.FlagSender.Token,
 	}
 
 	for k, v := range configMap {

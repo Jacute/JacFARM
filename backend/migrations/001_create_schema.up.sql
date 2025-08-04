@@ -16,19 +16,19 @@ CREATE TABLE IF NOT EXISTS exploits (
     id VARCHAR(36) PRIMARY KEY, -- uuid
     name VARCHAR(256) NOT NULL,
     type VARCHAR(32),
-    is_local BOOLEAN NOT NULL,
+    is_local INTEGER NOT NULL,
     executable_path VARCHAR(256),
     requirements_path VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS flags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    value VARCHAR(256) NOT NULL,
+    value VARCHAR(256) NOT NULL UNIQUE,
     status_id INTEGER NOT NULL,
     exploit_id INTEGER,
     get_from INTEGER,
     message_from_server TEXT,
-    created_at DATETIME DEFAULT datetime('now', 'utc'),
+    created_at INTEGER NOT NULL,
 
     FOREIGN KEY(get_from) REFERENCES teams(id),
     FOREIGN KEY(status_id) REFERENCES statuses(id),

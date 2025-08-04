@@ -25,12 +25,14 @@ type ExploitRunnerConfig struct {
 }
 
 type FlagSenderConfig struct {
-	Plugin       string        `yaml:"plugin"`
-	JuryFlagURL  string        `yaml:"jury_flag_url_or_host"`
-	Token        string        `yaml:"token"`
-	FlagTTL      time.Duration `yaml:"flag_ttl"`
-	SubmitPeriod time.Duration `yaml:"submit_period"`
-	SubmitLimit  int           `yaml:"submit_limit"`
+	Plugin        string        `yaml:"plugin"`
+	PluginDir     string        `yaml:"plugin_directory"`
+	JuryFlagURL   string        `yaml:"jury_flag_url_or_host"`
+	Token         string        `yaml:"token"`
+	FlagTTL       time.Duration `yaml:"flag_ttl"`
+	SubmitTimeout time.Duration `yaml:"submit_timeout"`
+	SubmitPeriod  time.Duration `yaml:"submit_period"`
+	SubmitLimit   int           `yaml:"submit_limit"`
 }
 
 type DBConfig struct {

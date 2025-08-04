@@ -17,6 +17,8 @@ import (
 	"github.com/jacute/prettylogger"
 )
 
+const dbPath = "./database.db"
+
 func main() {
 	appCtx := context.Background()
 	cfg := config.MustParseConfig()
@@ -30,11 +32,11 @@ func main() {
 		panic("invalid env parameter. should be prod|local")
 	}
 
-	db, err := sqlite.New()
+	db, err := sqlite.New(dbPath)
 	if err != nil {
 		panic("error connecting to db: " + err.Error())
 	}
-	db.ApplyMigrations(appCtx, cfg.DB.MigrationsPath)
+	db.ApplyMigrations(appCtx, dbPath, cfg.DB.MigrationsPath)
 	log.Info("database connection established")
 
 	rabbitmq := rabbitmq.New(cfg.Rabbit)
@@ -44,10 +46,20 @@ func main() {
 
 	exploitRunner := exploit_runner.New(log, db, rabbitmq, cfg.ExploitRunner.ExploitDirectory)
 	flagSaver := flag_saver.New(log, rabbitmq, db)
-	flagSender := flag_sender.New(log, db)
+	flagSender := flag_sender.New(log, db, cfg.FlagSender.PluginDir)
 	go exploitRunner.Start(appCtx)
-	go flagSaver.Start()
-	go flagSender.Start()
+	go func() {
+		err := flagSaver.Start()
+		if err != nil {
+			panic(err)
+		}
+	}()
+	go func() {
+		err := flagSender.Start()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	log.Info("JacFARM service started", slog.String("env", cfg.Env))
 

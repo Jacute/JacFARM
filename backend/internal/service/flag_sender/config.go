@@ -11,26 +11,31 @@ import (
 )
 
 type config struct {
-	plugin       string
-	juryFlagURL  string
-	token        string
-	flagTTL      time.Duration
-	submitPeriod time.Duration
-	submitLimit  int
+	plugin        string
+	pluginDir     string
+	juryFlagURL   string
+	token         string
+	flagTTL       time.Duration
+	submitTimeout time.Duration
+	submitPeriod  time.Duration
+	submitLimit   int
 }
 
-func (er *FlagSender) loadConfig(ctx context.Context) error {
+func (er *FlagSender) loadConfig(ctx context.Context, updatePlugin bool) error {
 	const op = "service.flag_sender.LoadConfig"
 	log := er.log.With(slog.String("op", op))
 
-	plugin, err := er.db.GetConfigParameter(ctx, jacfarm.ConfigFlagSenderPlugin)
-	if err != nil {
-		log.Error(
-			"error getting flag sender plugin from db config",
-			slog.String("config_key", jacfarm.ConfigFlagSenderPlugin),
-			prettylogger.Err(err),
-		)
-		return err
+	if updatePlugin {
+		plugin, err := er.db.GetConfigParameter(ctx, jacfarm.ConfigFlagSenderPlugin)
+		if err != nil {
+			log.Error(
+				"error getting flag sender plugin from db config",
+				slog.String("config_key", jacfarm.ConfigFlagSenderPlugin),
+				prettylogger.Err(err),
+			)
+			return err
+		}
+		er.cfg.plugin = plugin
 	}
 	juryFlagURL, err := er.db.GetConfigParameter(ctx, jacfarm.ConfigFlagSenderJuryFlagURL)
 	if err != nil {
@@ -90,6 +95,25 @@ func (er *FlagSender) loadConfig(ctx context.Context) error {
 		return err
 	}
 
+	submitTimeoutStr, err := er.db.GetConfigParameter(ctx, jacfarm.ConfigFlagSenderSubmitTimeout)
+	if err != nil {
+		log.Error(
+			"error getting submit timeout from db config",
+			slog.String("config_key", jacfarm.ConfigFlagSenderSubmitTimeout),
+			prettylogger.Err(err),
+		)
+		return err
+	}
+	submitTimeout, err := time.ParseDuration(submitTimeoutStr)
+	if err != nil {
+		log.Error(
+			"error parsing submit timeout from db config",
+			slog.String("config_key", jacfarm.ConfigFlagSenderSubmitTimeout),
+			prettylogger.Err(err),
+		)
+		return err
+	}
+
 	submitLimitStr, err := er.db.GetConfigParameter(ctx, jacfarm.ConfigFlagSenderSubmitLimit)
 	if err != nil {
 		log.Error(
@@ -110,9 +134,9 @@ func (er *FlagSender) loadConfig(ctx context.Context) error {
 	}
 
 	er.cfg.flagTTL = flagTTL
-	er.cfg.plugin = plugin
 	er.cfg.token = token
 	er.cfg.juryFlagURL = juryFlagURL
+	er.cfg.submitTimeout = submitTimeout
 	er.cfg.submitPeriod = submitPeriod
 	er.cfg.submitLimit = submitLimit
 
