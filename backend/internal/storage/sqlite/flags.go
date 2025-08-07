@@ -3,6 +3,7 @@ package sqlite
 import (
 	"JacFARM/internal/models"
 	"JacFARM/internal/storage"
+	"JacFARM/pkg/plugins"
 	"context"
 	"errors"
 	"time"
@@ -114,10 +115,11 @@ func (s *Storage) GetFlagEnrichByValue(ctx context.Context, value string) (*mode
 	return &flag, nil
 }
 
-func (s *Storage) UpdateFlagStatus(ctx context.Context, flag string, status models.FlagStatus) error {
+func (s *Storage) UpdateFlagByResult(ctx context.Context, flag string, result *plugins.FlagResult) error {
 	res, err := s.db.ExecContext(ctx, `UPDATE flags
-	SET status_id = (SELECT id FROM statuses WHERE name = $1)
-	WHERE value = $2`, string(status), flag)
+	SET status_id = (SELECT id FROM statuses WHERE name = $1),
+	message_from_server = $2
+	WHERE value = $3`, string(result.Status), result.Msg, flag)
 	if err != nil {
 		return err
 	}

@@ -2,7 +2,7 @@ package flag_sender
 
 import (
 	"JacFARM/internal/models"
-	"JacFARM/pkg/plugin_interfaces"
+	"JacFARM/pkg/plugins"
 	"context"
 	"fmt"
 	"log/slog"
@@ -17,7 +17,7 @@ type storage interface {
 	GetConfigParameter(ctx context.Context, key string) (string, error)
 	GetFlagValuesByStatus(ctx context.Context, status models.FlagStatus) ([]string, error)
 	UpdateStatusForOldFlags(ctx context.Context, flagTTL time.Duration) (int64, error)
-	UpdateFlagStatus(ctx context.Context, flag string, status models.FlagStatus) error
+	UpdateFlagByResult(ctx context.Context, flag string, result *plugins.FlagResult) error
 }
 
 type FlagSender struct {
@@ -27,8 +27,8 @@ type FlagSender struct {
 	shutdownChan chan struct{}
 }
 
-func New(log *slog.Logger, db storage, pluginDir string) *FlagSender {
-	er := &FlagSender{
+func New(log *slog.Logger, db storage, pluginDir string) (*FlagSender, error) {
+	fs := &FlagSender{
 		log: log,
 		db:  db,
 		cfg: &config{
@@ -36,12 +36,11 @@ func New(log *slog.Logger, db storage, pluginDir string) *FlagSender {
 		},
 		shutdownChan: make(chan struct{}),
 	}
-	err := er.loadConfig(context.Background(), true)
+	err := fs.loadConfig(context.Background(), true)
 	if err != nil {
-		panic("error loading exploit runner config: " + err.Error())
+		return nil, fmt.Errorf("error loading exploit runner config: %s", err.Error())
 	}
-
-	return er
+	return fs, nil
 }
 
 func (fs *FlagSender) Start() error {
@@ -68,7 +67,7 @@ func (fs *FlagSender) Start() error {
 		)
 		return err
 	}
-	clientInit, ok := symbol.(*plugin_interfaces.NewClientFunc)
+	clientInit, ok := symbol.(*plugins.NewClientFunc)
 	if !ok {
 		log.Error("plugin client constructor not func(url, token string) Client")
 		return fmt.Errorf("plugin client constructor not func(url, token string) Client")
@@ -120,8 +119,8 @@ func (fs *FlagSender) Start() error {
 
 			cancel()
 
-			for flag, status := range result {
-				err := fs.db.UpdateFlagStatus(context.Background(), flag, status)
+			for flag, result := range result {
+				err := fs.db.UpdateFlagByResult(context.Background(), flag, result)
 				if err != nil {
 					log.Error("error updating flag status", slog.String("flag", flag), prettylogger.Err(err))
 				}

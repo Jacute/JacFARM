@@ -11,20 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const testDbPath = "./test.db"
-const migrationsPath = "../../../migrations"
-
 func TestUpdateStatusForOldFlags(t *testing.T) {
 	testCtx := context.Background()
 
-	storage, err := New(testDbPath)
-	require.NotNil(t, storage)
-	require.NoError(t, err)
-	storage.ApplyMigrations(testCtx, testDbPath, migrationsPath)
-	t.Cleanup(func() {
-		storage.Close()
-		os.Remove(testDbPath)
-	})
+	storage := PrepareDBToTest(testCtx, t)
 
 	// create team
 	teamID, err := storage.AddTeam(&models.Team{
