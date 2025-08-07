@@ -2,7 +2,7 @@ package main
 
 import (
 	"JacFARM/internal/models"
-	"JacFARM/pkg/plugin_interfaces"
+	"JacFARM/pkg/plugins"
 	"bytes"
 	"fmt"
 	"io"
@@ -22,14 +22,14 @@ type FlagInfo struct {
 	Msg  string `json:"msg"`
 }
 
-var NewClient plugin_interfaces.NewClientFunc = func(url, token string) plugin_interfaces.IClient {
+var NewClient plugins.NewClientFunc = func(url, token string) plugins.IClient {
 	return &Client{
 		url:   url,
 		token: token,
 	}
 }
 
-func (c *Client) SendFlags(flags []string) (map[string]models.FlagStatus, error) {
+func (c *Client) SendFlags(flags []string) (map[string]*plugins.FlagResult, error) {
 	data, err := sonic.Marshal(flags)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (c *Client) SendFlags(flags []string) (map[string]models.FlagStatus, error)
 	if err := sonic.Unmarshal(body, &flagInfos); err != nil {
 		return nil, err
 	}
-	flagMap := make(map[string]models.FlagStatus)
+	flagMap := make(map[string]*plugins.FlagResult)
 	for _, flagInfo := range flagInfos {
 		flagStatus := models.FlagStatusReject
 		if strings.Contains(flagInfo.Msg, "accepted") {
@@ -70,7 +70,10 @@ func (c *Client) SendFlags(flags []string) (map[string]models.FlagStatus, error)
 		if strings.Contains(flagInfo.Msg, "old") {
 			flagStatus = models.FlagStatusOld
 		}
-		flagMap[flagInfo.Flag] = flagStatus
+		flagMap[flagInfo.Flag] = &plugins.FlagResult{
+			Status: flagStatus,
+			Msg:    flagInfo.Msg,
+		}
 	}
 
 	return flagMap, nil
