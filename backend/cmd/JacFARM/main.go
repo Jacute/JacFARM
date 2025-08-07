@@ -5,6 +5,8 @@ import (
 	"JacFARM/internal/rabbitmq"
 	jacfarm "JacFARM/internal/service/JacFARM"
 	"JacFARM/internal/service/exploit_runner"
+	"JacFARM/internal/service/flag_saver"
+	"JacFARM/internal/service/flag_sender"
 	"JacFARM/internal/storage/sqlite"
 	"context"
 	"log/slog"
@@ -14,6 +16,8 @@ import (
 
 	"github.com/jacute/prettylogger"
 )
+
+const dbPath = "./database.db"
 
 func main() {
 	appCtx := context.Background()
@@ -28,11 +32,11 @@ func main() {
 		panic("invalid env parameter. should be prod|local")
 	}
 
-	db, err := sqlite.New()
+	db, err := sqlite.New(dbPath)
 	if err != nil {
 		panic("error connecting to db: " + err.Error())
 	}
-	db.ApplyMigrations(appCtx, cfg.DB.MigrationsPath)
+	db.ApplyMigrations(appCtx, dbPath, cfg.DB.MigrationsPath)
 	log.Info("database connection established")
 
 	rabbitmq := rabbitmq.New(cfg.Rabbit)
@@ -41,7 +45,21 @@ func main() {
 	farm.LoadConfigIntoDB(appCtx, cfg)
 
 	exploitRunner := exploit_runner.New(log, db, rabbitmq, cfg.ExploitRunner.ExploitDirectory)
+	flagSaver := flag_saver.New(log, rabbitmq, db)
+	flagSender := flag_sender.New(log, db, cfg.FlagSender.PluginDir)
 	go exploitRunner.Start(appCtx)
+	go func() {
+		err := flagSaver.Start()
+		if err != nil {
+			panic(err)
+		}
+	}()
+	go func() {
+		err := flagSender.Start()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	log.Info("JacFARM service started", slog.String("env", cfg.Env))
 
@@ -50,6 +68,8 @@ func main() {
 	<-sgn
 	log.Info("shutting down JacFARM service")
 	exploitRunner.Stop()
+	flagSaver.Stop()
+	flagSender.Stop()
 	if err := db.Close(); err != nil {
 		log.Error("error closing database connection", prettylogger.Err(err))
 	}

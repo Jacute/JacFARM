@@ -7,8 +7,8 @@ import (
 )
 
 type storage interface {
-	PutFlag(flag *models.Flag) error
-	AddTeam(team *models.Team) error
+	PutFlag(ctx context.Context, flag *models.Flag) (int64, error)
+	AddTeam(team *models.Team) (int64, error)
 	AddConfigParameter(ctx context.Context, key, value string) error
 }
 

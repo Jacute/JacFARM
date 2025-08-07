@@ -9,10 +9,10 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func (s *Storage) ApplyMigrations(ctx context.Context, migrationsPath string) {
+func (s *Storage) ApplyMigrations(ctx context.Context, dbPath string, migrationsPath string) {
 	m, err := migrate.New(
 		"file://"+migrationsPath,
-		"sqlite3://"+dbFilepath,
+		"sqlite3://"+dbPath,
 	)
 	if err != nil {
 		panic(err)
