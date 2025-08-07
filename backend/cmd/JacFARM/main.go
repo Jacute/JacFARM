@@ -32,21 +32,28 @@ func main() {
 		panic("invalid env parameter. should be prod|local")
 	}
 
+	// init db & rabbitmq
 	db, err := sqlite.New(dbPath)
 	if err != nil {
 		panic("error connecting to db: " + err.Error())
 	}
 	db.ApplyMigrations(appCtx, dbPath, cfg.DB.MigrationsPath)
 	log.Info("database connection established")
-
 	rabbitmq := rabbitmq.New(cfg.Rabbit)
 
+	// init farm main service
 	farm := jacfarm.New(log, db)
 	farm.LoadConfigIntoDB(appCtx, cfg)
 
+	// init all workers
 	exploitRunner := exploit_runner.New(log, db, rabbitmq, cfg.ExploitRunner.ExploitDirectory)
 	flagSaver := flag_saver.New(log, rabbitmq, db)
-	flagSender := flag_sender.New(log, db, cfg.FlagSender.PluginDir)
+	flagSender, err := flag_sender.New(log, db, cfg.FlagSender.PluginDir)
+	if err != nil {
+		panic(err)
+	}
+
+	// run all workers
 	go exploitRunner.Start(appCtx)
 	go func() {
 		err := flagSaver.Start()
