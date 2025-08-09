@@ -11,7 +11,8 @@ const flagsQueueName = "flags"
 
 type Rabbit struct {
 	conn       *amqp.Connection
-	ch         *amqp.Channel
+	writeCh    *amqp.Channel
+	readCh     *amqp.Channel
 	flagsQueue *amqp.Queue
 }
 
@@ -26,11 +27,15 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 	if err != nil {
 		panic("failed to connect to RabbitMQ: " + err.Error())
 	}
-	ch, err := conn.Channel()
+	writeCh, err := conn.Channel()
 	if err != nil {
 		panic("failed to create rabbitmq channel: " + err.Error())
 	}
-	q, err := ch.QueueDeclare(
+	readCh, err := conn.Channel()
+	if err != nil {
+		panic("failed to create rabbitmq channel: " + err.Error())
+	}
+	q, err := writeCh.QueueDeclare(
 		flagsQueueName, // name
 		true,           // durable
 		false,          // delete when unused
@@ -43,13 +48,14 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 	}
 	return &Rabbit{
 		conn:       conn,
-		ch:         ch,
+		writeCh:    writeCh,
+		readCh:     readCh,
 		flagsQueue: &q,
 	}
 }
 
 func (r *Rabbit) Close() error {
-	if err := r.ch.Close(); err != nil {
+	if err := r.writeCh.Close(); err != nil {
 		return fmt.Errorf("error closing channel %v", err)
 	}
 	if err := r.conn.Close(); err != nil {

@@ -1,9 +1,8 @@
 package rabbitmq
 
-import "JacFARM/internal/models"
-
 type Flag struct {
-	Value       string       `json:"value"`
-	ExploitName string       `json:"exploit_name"`
-	GetFrom     *models.Team `json:"victim_team"`
+	Value     string `json:"value"`
+	ExploitID string `json:"exploit"`
+	TeamID    int64  `json:"victim_team"`
+	IsLocal   bool   `json:"is_local"`
 }

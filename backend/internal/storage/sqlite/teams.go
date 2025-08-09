@@ -9,19 +9,23 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
-func (s *Storage) AddTeam(team *models.Team) error {
-	_, err := s.db.Exec(`INSERT INTO teams (name, ip)
+func (s *Storage) AddTeam(team *models.Team) (int64, error) {
+	res, err := s.db.Exec(`INSERT INTO teams (name, ip)
 	VALUES ($1, $2)`, team.Name, team.IP)
 	if err != nil {
 		var sqliteErr sqlite3.Error
 		if errors.As(err, &sqliteErr) {
 			if sqliteErr.Code == sqlite3.ErrConstraint {
-				return storage.ErrTeamAlreadyExists
+				return 0, storage.ErrTeamAlreadyExists
 			}
 		}
-		return err
+		return 0, err
 	}
-	return nil
+	lastInsertedId, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return lastInsertedId, nil
 }
 
 func (s *Storage) GetTeams(ctx context.Context) ([]*models.Team, error) {

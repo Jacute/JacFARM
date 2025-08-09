@@ -13,4 +13,11 @@ VALUES (
     1,
     './exploits/2890535c-f720-4704-aca5-4e96f2a31b1b/exploit2',
     NULL
+), (
+    'cf66fdab-3d46-4b15-9e6b-deb7a18b85c6',
+    'Example Exploit 3',
+    'binary',
+    1,
+    './exploits/cf66fdab-3d46-4b15-9e6b-deb7a18b85c6/main',
+    NULL
 );
