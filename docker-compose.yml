@@ -2,19 +2,26 @@ services:
   db:
     hostname: db
     image: postgres:17.5
-    restart: always
+    restart: on-failure
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=jacfarm
     ports:
       - 127.0.0.1:5432:5432
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
+      - ./migrations/001_create_schema.up.sql:/docker-entrypoint-initdb.d/001_init_tables.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "jacfarm", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
   flag_queue:
     hostname: flag_queue
     image: rabbitmq:4.1.2
-    restart: always
+    restart: on-failure
     environment:
       - RABBITMQ_DEFAULT_USER=rmuser
       - RABBITMQ_DEFAULT_PASS=rmpassword
@@ -23,3 +30,51 @@ services:
       - 5672:5672
     volumes:
       - ./volumes/rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+  config_loader:
+    build:
+      context: ./workers/config_loader
+      dockerfile: ../../docker/Dockerfile.config_loader
+    restart: no
+    environment:
+      - PG_USERNAME=postgres
+      - PG_PASSWORD=postgres
+      - PG_DB_NAME=jacfarm
+      - PG_HOST=db
+      - PG_PORT=5432
+      - CONFIG_PATH=/app/config.yml
+    volumes:
+      - ./config.yml:/app/config.yml
+    depends_on:
+      db:
+        condition: service_healthy
+  exploit_runner:
+    build:
+      context: ./workers/exploit_runner
+      dockerfile: ../../docker/Dockerfile.exploit_runner
+    restart: no
+    environment:
+      - PG_USERNAME=postgres
+      - PG_PASSWORD=postgres
+      - PG_DB_NAME=jacfarm
+      - PG_HOST=db
+      - PG_PORT=5432
+      - RABBITMQ_HOST=flag_queue
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=rmuser
+      - RABBITMQ_PASSWORD=rmpassword
+      - EXPLOIT_DIR=/app/exploits
+    volumes:
+      - ./volumes/exploits:/app/exploits
+    depends_on:
+      db:
+        condition: service_healthy
+      flag_queue:
+        condition: service_healthy
+      config_loader:
+        condition: service_completed_successfully

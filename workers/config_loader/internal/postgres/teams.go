@@ -18,13 +18,11 @@ func (s *Storage) AddTeam(ctx context.Context, team *models.Team) (int64, error)
 		 RETURNING id`,
 		team.Name, team.IP,
 	).Scan(&id)
-	if err != nil {
-		if pgErr, ok := err.(*pgconn.PgError); ok {
-			if pgErr.Code == pgerrcode.UniqueViolation {
-				return 0, ErrTeamAlreadyExists
-			}
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		if pgErr.Code == pgerrcode.UniqueViolation {
+			return 0, ErrTeamAlreadyExists
 		}
-		return 0, err
 	}
 	return id, nil
 }

@@ -3,7 +3,7 @@ package service
 import (
 	"config_loader/internal/config"
 	"config_loader/internal/models"
-	"config_loader/internal/storage/postgres"
+	"config_loader/internal/postgres"
 	"context"
 	"errors"
 	"log/slog"
@@ -26,7 +26,7 @@ const (
 	ConfigFlagSenderFlagTTL       = "FLAG_SENDER_FLAG_TTL"
 )
 
-func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) {
+func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) error {
 	const op = "service.jacfarm.LoadConfigIntoDB"
 	log := s.log.With(slog.String("op", op))
 
@@ -41,6 +41,7 @@ func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) {
 				continue
 			}
 			log.Warn("team cannot be added", prettylogger.Err(err))
+			return err
 		}
 	}
 	if len(existTeams) > 0 {
@@ -71,10 +72,13 @@ func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) {
 				continue
 			}
 			log.Warn("config param cannot be added", slog.String("param", k), prettylogger.Err(err))
+			return err
 		}
 	}
 
 	if len(existParams) > 0 {
 		log.Info("some config params already exist", slog.Any("params", existParams))
 	}
+
+	return nil
 }

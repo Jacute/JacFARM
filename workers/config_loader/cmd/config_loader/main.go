@@ -2,8 +2,8 @@ package main
 
 import (
 	"config_loader/internal/config"
+	"config_loader/internal/postgres"
 	"config_loader/internal/service"
-	"config_loader/internal/storage/postgres"
 	"context"
 	"log/slog"
 	"os"
@@ -20,5 +20,9 @@ func main() {
 	defer db.Stop()
 
 	svc := service.New(log, db)
-	svc.LoadConfigIntoDB(appCtx, cfg)
+	err := svc.LoadConfigIntoDB(appCtx, cfg)
+	if err != nil {
+		panic(err)
+	}
+	log.Info("config loaded into db successfully")
 }

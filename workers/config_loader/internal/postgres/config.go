@@ -14,13 +14,11 @@ func (s *Storage) AddConfigParameter(ctx context.Context, key, value string) (in
 	var id int64
 	err := s.db.QueryRow(ctx, `INSERT INTO config (key, value)
 		VALUES ($1, $2) RETURNING id`, key, value).Scan(&id)
-	if err != nil {
-		if pgErr, ok := err.(*pgconn.PgError); ok {
-			if pgErr.Code == pgerrcode.UniqueViolation {
-				return 0, ErrConfigParamAlreadyExists
-			}
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
+		if pgErr.Code == pgerrcode.UniqueViolation {
+			return 0, ErrTeamAlreadyExists
 		}
-		return 0, err
 	}
 	return id, nil
 }
