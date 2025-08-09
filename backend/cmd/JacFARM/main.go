@@ -46,7 +46,10 @@ func main() {
 	farm.LoadConfigIntoDB(appCtx, cfg)
 
 	// init all workers
-	exploitRunner := exploit_runner.New(log, db, rabbitmq, cfg.ExploitRunner.ExploitDirectory)
+	exploitRunner, err := exploit_runner.New(log, db, rabbitmq, cfg.ExploitRunner.ExploitDirectory)
+	if err != nil {
+		panic(err)
+	}
 	flagSaver := flag_saver.New(log, rabbitmq, db)
 	flagSender, err := flag_sender.New(log, db, cfg.FlagSender.PluginDir)
 	if err != nil {
