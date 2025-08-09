@@ -13,7 +13,6 @@ import (
 
 func TestUpdateStatusForOldFlags(t *testing.T) {
 	testCtx := context.Background()
-
 	storage := PrepareDBToTest(testCtx, t)
 
 	// create team
@@ -36,29 +35,59 @@ func TestUpdateStatusForOldFlags(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	puttedFlag := &models.Flag{
-		Value:             "test",
-		Status:            models.FlagStatusPending,
-		ExploitID:         exploitID,
-		GetFrom:           teamID,
-		MessageFromServer: "",
-		CreatedAt:         time.Now().UTC().Unix(), // make it old
+	testcases := []struct {
+		name   string
+		flag   *models.Flag
+		count  int64
+		status models.FlagStatus
+	}{
+		{
+			name: "old flag",
+			flag: &models.Flag{
+				Value:             "test",
+				Status:            models.FlagStatusPending,
+				ExploitID:         exploitID,
+				GetFrom:           teamID,
+				MessageFromServer: "",
+				CreatedAt:         time.Now().Add(-time.Hour).UTC().Unix(),
+			},
+			count:  1,
+			status: models.FlagStatusOld,
+		},
+		{
+			name: "new flag",
+			flag: &models.Flag{
+				Value:             "test2",
+				Status:            models.FlagStatusPending,
+				ExploitID:         exploitID,
+				GetFrom:           teamID,
+				MessageFromServer: "",
+				CreatedAt:         time.Now().UTC().Unix(),
+			},
+			count:  0,
+			status: models.FlagStatusPending,
+		},
 	}
-	flagID, err := storage.PutFlag(testCtx, puttedFlag)
-	require.NoError(t, err)
 
-	flag, err := storage.GetFlagEnrichByValue(testCtx, puttedFlag.Value)
-	require.NoError(t, err)
-	require.Equal(t, flagID, flag.ID)
+	for _, tc := range testcases {
+		t.Run(tc.name, func(tt *testing.T) {
+			flagID, err := storage.PutFlag(testCtx, tc.flag)
+			require.NoError(t, err)
 
-	time.Sleep(time.Second)
+			flag, err := storage.GetFlagEnrichByValue(testCtx, tc.flag.Value)
+			require.NoError(t, err)
+			require.Equal(t, flagID, flag.ID)
 
-	count, err := storage.UpdateStatusForOldFlags(testCtx, time.Second)
-	require.NoError(t, err)
-	require.Equal(t, int64(1), count)
-	flag, err = storage.GetFlagEnrichByValue(testCtx, puttedFlag.Value)
-	require.NoError(t, err)
-	require.Equal(t, models.FlagStatusOld, flag.Status)
+			time.Sleep(time.Second)
+
+			count, err := storage.UpdateStatusForOldFlags(testCtx, 5*time.Second) // make flags old which be created 5 seconds ago
+			require.NoError(t, err)
+			require.Equal(t, tc.count, count)
+			flag, err = storage.GetFlagEnrichByValue(testCtx, tc.flag.Value)
+			require.NoError(t, err)
+			require.Equal(t, tc.status, flag.Status)
+		})
+	}
 }
 
 func TestUpdateStatusForOldFlagsError(t *testing.T) {
