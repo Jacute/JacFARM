@@ -21,8 +21,8 @@ func (fs *FlagSaver) processFlag(flagBytes []byte) error {
 	_, err := fs.db.PutFlag(context.Background(), &models.Flag{
 		Value:             flag.Value,
 		Status:            models.FlagStatusPending,
-		ExploitID:         flag.Exploit.ID,
-		GetFrom:           flag.GetFrom.ID,
+		ExploitID:         flag.ExploitID,
+		GetFrom:           flag.TeamID,
 		MessageFromServer: "",
 		CreatedAt:         time.Now().UTC().Unix(),
 	})

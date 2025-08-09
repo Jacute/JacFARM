@@ -12,6 +12,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.29
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/stretchr/testify v1.9.0
+	go.uber.org/mock v0.5.2
 )
 
 require (
