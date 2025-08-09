@@ -1,4 +1,16 @@
 services:
+  db:
+    hostname: db
+    image: postgres:17.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
   flag_queue:
     hostname: flag_queue
     image: rabbitmq:4.1.2
@@ -10,4 +22,4 @@ services:
     ports:
       - 5672:5672
     volumes:
-      - ./rabbitmq_volume:/var/lib/rabbitmq
+      - ./volumes/rabbitmq:/var/lib/rabbitmq

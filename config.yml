@@ -1,0 +1,20 @@
+exploit_runner:
+  team_ips:
+    - 10.10.1.2
+    - 10.10.2.2
+    - 10.10.3.2
+  flag_format: '[A-Z0-9]{31}='
+  run_duration: 10s
+  exploit_directory: ./exploits
+  max_concurrent_exploits: 50
+  exploit_max_working_time: 5s
+
+flag_sender:
+  plugin: forcad_http
+  jury_flag_url_or_host: http://10.10.10.10/flags # url for http, host for tcp
+  token: asd123
+  flag_ttl: 5m
+  submit_timeout: 10s
+  submit_period: 5s
+  submit_limit: 50
+  plugin_directory: ./plugins
