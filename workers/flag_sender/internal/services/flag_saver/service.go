@@ -53,11 +53,9 @@ func (fs *FlagSaver) Start() error {
 		case flag, ok := <-flagChan:
 			if !ok {
 				processFlagWg.Wait()
-				log.Info("Flag channel closed")
+				log.Info("flag channel closed")
 				return nil
 			}
-
-			log.Info("Received flag", "body", string(flag.Body))
 
 			processFlagWg.Add(1)
 			go func() {
@@ -68,7 +66,7 @@ func (fs *FlagSaver) Start() error {
 						flag.Ack(false) // if flag already exists, send ack
 						return
 					}
-					log.Error("Failed to process flag", prettylogger.Err(err))
+					log.Error("failed to process flag", prettylogger.Err(err))
 					flag.Nack(false, true) // if error, requeue the message
 					return
 				}

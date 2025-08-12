@@ -5,6 +5,7 @@ import (
 	"flag_sender/internal/models"
 	"flag_sender/internal/rabbitmq"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/bytedance/sonic"
@@ -12,11 +13,13 @@ import (
 
 func (fs *FlagSaver) processFlag(flagBytes []byte) error {
 	const op = "service.flag_saver.processFlag"
+	log := fs.log.With(slog.String("op", op))
 
 	var flag *rabbitmq.Flag
 	if err := sonic.Unmarshal(flagBytes, &flag); err != nil {
 		return fmt.Errorf("%s: %v", op, err)
 	}
+	log.Debug("got flag", slog.Any("flag", flag))
 
 	_, err := fs.db.PutFlag(context.Background(), &models.Flag{
 		Value:             flag.Value,
