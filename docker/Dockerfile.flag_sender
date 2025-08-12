@@ -10,7 +10,7 @@ COPY cmd ./cmd
 COPY internal ./internal
 COPY pkg ./pkg
 
-RUN CGO_ENABLED=1 go build -o /build/app ./cmd/flag_sender/main.go
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o /build/app ./cmd/flag_sender/main.go
 
 COPY plugins ./plugins
 RUN mkdir plugin_binaries
@@ -18,7 +18,7 @@ RUN find ./plugins -type f -name "client.go" -exec sh -c \
     'for f; do \
         dir=$(dirname "$f"); \
         name=$(basename "$dir"); \
-        CGO_ENABLED=1 go build -buildmode=plugin -o "/build/plugin_binaries/${name}.so" "$f"; \
+        CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -buildmode=plugin -o "/build/plugin_binaries/${name}.so" "$f"; \
     done' sh {} +
 
 FROM debian:bookworm-slim
