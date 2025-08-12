@@ -5,8 +5,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/jackc/pgconn"
-	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var ErrTeamAlreadyExists = errors.New("team already exists")
@@ -19,9 +18,8 @@ func (s *Storage) AddTeam(ctx context.Context, team *models.Team) (int64, error)
 		team.Name, team.IP,
 	).Scan(&id)
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			if pgErr.Code == pgerrcode.UniqueViolation {
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			if pgErr.Code == "23505" { // unique_violation
 				return 0, ErrTeamAlreadyExists
 			}
 		}

@@ -57,7 +57,7 @@ services:
     build:
       context: ./workers/exploit_runner
       dockerfile: ../../docker/Dockerfile.exploit_runner
-    restart: no
+    restart: on-failure
     environment:
       - PG_USERNAME=postgres
       - PG_PASSWORD=postgres
@@ -78,3 +78,27 @@ services:
         condition: service_healthy
       config_loader:
         condition: service_completed_successfully
+  flag_sender:
+    build:
+      context: ./workers/flag_sender
+      dockerfile: ../../docker/Dockerfile.flag_sender
+    restart: on-failure
+    environment:
+      - PG_USERNAME=postgres
+      - PG_PASSWORD=postgres
+      - PG_DB_NAME=jacfarm
+      - PG_HOST=db
+      - PG_PORT=5432
+      - RABBITMQ_HOST=flag_queue
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=rmuser
+      - RABBITMQ_PASSWORD=rmpassword
+      - PLUGIN_DIR=/app/plugins
+      - ENV=prod
+    depends_on:
+      db:
+        condition: service_healthy
+      flag_queue:
+        condition: service_healthy
+      config_loader:
+        condition: service_completed_successfully    
