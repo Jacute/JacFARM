@@ -3,7 +3,7 @@ package flag_saver
 import (
 	"context"
 	"flag_sender/internal/models"
-	"flag_sender/internal/rabbitmq"
+	"flag_sender/pkg/rabbitmq_dto"
 	"fmt"
 	"log/slog"
 	"time"
@@ -15,7 +15,7 @@ func (fs *FlagSaver) processFlag(flagBytes []byte) error {
 	const op = "service.flag_saver.processFlag"
 	log := fs.log.With(slog.String("op", op))
 
-	var flag *rabbitmq.Flag
+	var flag *rabbitmq_dto.Flag
 	if err := sonic.Unmarshal(flagBytes, &flag); err != nil {
 		return fmt.Errorf("%s: %v", op, err)
 	}
