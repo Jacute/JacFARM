@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS exploits (
     type VARCHAR(32),
     is_local BOOLEAN NOT NULL,
     executable_path VARCHAR(256),
-    requirements_path VARCHAR(256)
+    requirements_path VARCHAR(256),
+    is_running BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS flags (
