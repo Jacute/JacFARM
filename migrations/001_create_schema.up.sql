@@ -5,19 +5,19 @@ CREATE TABLE IF NOT EXISTS statuses (
 
 INSERT INTO statuses (name) VALUES
   ('SUCCESS'), ('REJECT'), ('PENDING'), ('OLD')
-ON CONFLICT DO NOTHING;  -- чтобы не дублировать при повторном запуске
+ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS teams (
     id SERIAL PRIMARY KEY,
     name VARCHAR(256),
-    ip INET NOT NULL UNIQUE  -- для IP адресов в PostgreSQL лучше использовать тип INET
+    ip INET NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS exploits (
     id UUID PRIMARY KEY,
     name VARCHAR(256) NOT NULL,
     type VARCHAR(32),
-    is_local BOOLEAN NOT NULL,
+    is_running_on_farm BOOLEAN NOT NULL,
     executable_path VARCHAR(256),
     requirements_path VARCHAR(256),
     is_running BOOLEAN NOT NULL DEFAULT TRUE

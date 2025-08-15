@@ -12,5 +12,5 @@ type Flag struct {
 	Value      string         `json:"value"`
 	ExploitID  string         `json:"exploit"`
 	TeamID     int64          `json:"victim_team"`
-	SourceType FlagSourceType `json:"is_local"`
+	SourceType FlagSourceType `json:"source_type"`
 }
