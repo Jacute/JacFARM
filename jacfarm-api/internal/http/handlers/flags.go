@@ -7,14 +7,14 @@ import (
 	fiber "github.com/gofiber/fiber/v3"
 )
 
-func (h *Handlers) GetFlags() func(c fiber.Ctx) error {
+func (h *Handlers) ListFlags() func(c fiber.Ctx) error {
 	return func(c fiber.Ctx) error {
 		flagsFilter, err := dto.MapQueryToGetFlagsFilter(c.Queries())
 		if err != nil {
 			return c.JSON(dto.Error(err.Error()))
 		}
 
-		flags, err := h.service.GetFlags(c.RequestCtx(), flagsFilter)
+		flags, err := h.service.ListFlags(c.RequestCtx(), flagsFilter)
 		if err != nil {
 			return c.JSON(dto.ErrInternal)
 		}

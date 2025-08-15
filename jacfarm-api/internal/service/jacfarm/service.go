@@ -9,7 +9,8 @@ import (
 )
 
 type storage interface {
-	GetFlags(ctx context.Context, filter *dto.GetFlagsFilter) ([]*models.FlagEnrich, error)
+	GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error)
+	GetExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
 }
 
 type queue interface {

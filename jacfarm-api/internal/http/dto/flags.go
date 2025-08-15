@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type GetFlagsFilter struct {
+type ListFlagsFilter struct {
 	Limit     uint64
 	Page      uint64
 	ExploitID string
@@ -22,7 +22,7 @@ type PutFlagRequest struct {
 	Flag string `json:"flag"`
 }
 
-func MapQueryToGetFlagsFilter(queries map[string]string) (*GetFlagsFilter, error) {
+func MapQueryToGetFlagsFilter(queries map[string]string) (*ListFlagsFilter, error) {
 	exploitID := queries["exploit_id"]
 
 	var teamID int
@@ -61,7 +61,7 @@ func MapQueryToGetFlagsFilter(queries map[string]string) (*GetFlagsFilter, error
 		return nil, fmt.Errorf("page should be positive number")
 	}
 
-	return &GetFlagsFilter{
+	return &ListFlagsFilter{
 		ExploitID: exploitID,
 		TeamID:    int64(teamID),
 		Limit:     uint64(limit),

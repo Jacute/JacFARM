@@ -7,8 +7,9 @@ import (
 )
 
 type ServiceInterface interface {
-	GetFlags(ctx context.Context, filter *dto.GetFlagsFilter) ([]*models.FlagEnrich, error)
+	ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error)
 	PutFlag(ctx context.Context, flag string) error
+	ListExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
 }
 
 type Handlers struct {

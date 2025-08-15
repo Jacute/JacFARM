@@ -37,8 +37,12 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
 	})
 
 	flagGroup := apiV1.Group("/flags")
-	flagGroup.Get("/", h.GetFlags())
+	flagGroup.Get("/", h.ListFlags())
 	flagGroup.Post("/", h.PutFlag())
+
+	exploitGroup := apiV1.Group("/exploits")
+	exploitGroup.Get("/", h.ListExploits())
+	exploitGroup.Post("/upload", h.UploadExploit())
 
 	return r
 }

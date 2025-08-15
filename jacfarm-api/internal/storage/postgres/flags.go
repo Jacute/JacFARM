@@ -9,9 +9,9 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *Storage) GetFlags(ctx context.Context, filter *dto.GetFlagsFilter) ([]*models.FlagEnrich, error) {
+func (s *Storage) GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error) {
 	builder := sq.Select("f.id", "f.value", "f.message_from_server", "f.created_at", "s.name",
-		"e.id", "e.name", "e.type", "e.is_local", "e.executable_path", "e.requirements_path",
+		"e.id", "e.name", "e.type", "e.is_running_on_farm", "e.executable_path", "e.requirements_path",
 		"t.id", "t.name", "t.ip",
 	).From("flags f").
 		Join("exploits e ON e.id = f.exploit_id").
@@ -50,7 +50,7 @@ func (s *Storage) GetFlags(ctx context.Context, filter *dto.GetFlagsFilter) ([]*
 		}
 		err := rows.Scan(
 			&flag.ID, &flag.Value, &flag.MessageFromServer, &flag.CreatedAt, &flag.Status,
-			&flag.Exploit.ID, &flag.Exploit.Name, &flag.Exploit.Type, &flag.Exploit.IsLocal, &flag.Exploit.ExecutablePath, &flag.Exploit.RequirementsPath,
+			&flag.Exploit.ID, &flag.Exploit.Name, &flag.Exploit.Type, &flag.Exploit.IsRunningOnFarm, &flag.Exploit.ExecutablePath, &flag.Exploit.RequirementsPath,
 			&flag.GetFrom.ID, &flag.GetFrom.Name, &flag.GetFrom.IP,
 		)
 		if err != nil {

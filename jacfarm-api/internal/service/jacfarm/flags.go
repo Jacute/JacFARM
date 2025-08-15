@@ -10,7 +10,7 @@ import (
 	"github.com/jacute/prettylogger"
 )
 
-func (s *Service) GetFlags(ctx context.Context, filter *dto.GetFlagsFilter) ([]*models.FlagEnrich, error) {
+func (s *Service) ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error) {
 	const op = "service.jacfarm.GetFlags"
 	log := s.log.With(slog.String("op", op))
 
