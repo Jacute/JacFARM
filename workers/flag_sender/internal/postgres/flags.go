@@ -5,8 +5,10 @@ import (
 	"errors"
 	"flag_sender/internal/models"
 	"flag_sender/pkg/plugins"
+	"fmt"
 	"time"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
 )
@@ -17,12 +19,28 @@ var (
 )
 
 func (s *Storage) PutFlag(ctx context.Context, flag *models.Flag) (int64, error) {
+	insertBuilder := sq.Insert("flags").PlaceholderFormat(sq.Dollar)
+	insertMap := map[string]interface{}{
+		"value":               flag.Value,
+		"status_id":           sq.Expr("(SELECT id FROM statuses WHERE name = ?)", flag.Status),
+		"message_from_server": flag.MessageFromServer,
+		"created_at":          flag.CreatedAt,
+	}
+	if flag.ExploitID != nil {
+		insertMap["exploit_id"] = *flag.ExploitID
+	}
+	if flag.GetFrom != nil {
+		insertMap["get_from"] = *flag.GetFrom
+	}
+	insertBuilder = insertBuilder.SetMap(insertMap).Suffix("RETURNING id")
+
+	query, args, err := insertBuilder.ToSql()
+	if err != nil {
+		return 0, fmt.Errorf("error building query: %s", err.Error())
+	}
+
 	var lastInsertedId int64
-	err := s.db.QueryRow(ctx, `
-		INSERT INTO flags (value, status_id, exploit_id, get_from, message_from_server, created_at)
-		VALUES ($1, (SELECT id FROM statuses WHERE name = $2), $3, $4, $5, $6)
-		RETURNING id
-	`, flag.Value, flag.Status, flag.ExploitID, flag.GetFrom, flag.MessageFromServer, flag.CreatedAt).Scan(&lastInsertedId)
+	err = s.db.QueryRow(ctx, query, args...).Scan(&lastInsertedId)
 
 	if err != nil {
 		var pgErr *pgconn.PgError

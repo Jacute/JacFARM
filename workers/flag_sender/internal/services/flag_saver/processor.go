@@ -17,21 +17,28 @@ func (fs *FlagSaver) processFlag(flagBytes []byte) error {
 
 	var flag *rabbitmq_dto.Flag
 	if err := sonic.Unmarshal(flagBytes, &flag); err != nil {
-		return fmt.Errorf("%s: %v", op, err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	log.Debug("got flag", slog.Any("flag", flag))
 
-	_, err := fs.db.PutFlag(context.Background(), &models.Flag{
+	dbFlag := &models.Flag{
 		Value:             flag.Value,
 		Status:            models.FlagStatusPending,
-		ExploitID:         flag.ExploitID,
-		GetFrom:           flag.TeamID,
+		ExploitID:         &flag.ExploitID,
+		GetFrom:           &flag.TeamID,
 		MessageFromServer: "",
 		CreatedAt:         time.Now().UTC(),
-	})
-	if err != nil {
-		return err
 	}
+	if flag.SourceType == rabbitmq_dto.ManualSendingSourceType {
+		dbFlag.ExploitID = nil
+		dbFlag.GetFrom = nil
+	}
+
+	flagID, err := fs.db.PutFlag(context.Background(), dbFlag)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+	log.Info("flag send successfully", slog.Int64("flag_id", flagID))
 
 	return nil
 }
