@@ -38,7 +38,7 @@ func main() {
 	rabbitmq := rabbitmq.New(cfg.Rabbit)
 
 	// init farm main service
-	farm := jacfarm.New(log, db)
+	farm := jacfarm.New(log, db, rabbitmq)
 	h := handlers.New(farm)
 	httpServer := server.New(log, cfg.HTTP, h)
 

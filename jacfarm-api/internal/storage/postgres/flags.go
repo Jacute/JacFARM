@@ -3,33 +3,11 @@ package postgres
 import (
 	"JacFARM/internal/http/dto"
 	"JacFARM/internal/models"
-	"JacFARM/internal/storage"
 	"context"
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/jackc/pgconn"
 )
-
-func (s *Storage) PutFlag(ctx context.Context, flag *models.Flag) (int64, error) {
-	var lastInsertedId int64
-	err := s.db.QueryRow(ctx, `
-		INSERT INTO flags (value, status_id, exploit_id, get_from, message_from_server, created_at)
-		VALUES ($1, (SELECT id FROM statuses WHERE name = $2), $3, $4, $5, $6)
-		RETURNING id
-	`, flag.Value, flag.Status, flag.ExploitID, flag.GetFrom, flag.MessageFromServer, flag.CreatedAt).Scan(&lastInsertedId)
-
-	if err != nil {
-		if pgErr, ok := err.(*pgconn.PgError); ok {
-			if pgErr.Code == "23505" { // unique_violation
-				return 0, storage.ErrFlagAlreadyExists
-			}
-		}
-		return 0, err
-	}
-
-	return lastInsertedId, nil
-}
 
 func (s *Storage) GetFlags(ctx context.Context, filter *dto.GetFlagsFilter) ([]*models.FlagEnrich, error) {
 	builder := sq.Select("f.id", "f.value", "f.message_from_server", "f.created_at", "s.name",

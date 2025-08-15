@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"JacFARM/internal/models"
 	"fmt"
 	"strconv"
 )
@@ -10,6 +11,15 @@ type GetFlagsFilter struct {
 	Page      uint64
 	ExploitID string
 	TeamID    int64
+}
+
+type GetFlagsResponse struct {
+	*Response
+	Flags []*models.FlagEnrich `json:"flags"`
+}
+
+type PutFlagRequest struct {
+	Flag string `json:"flag"`
 }
 
 func MapQueryToGetFlagsFilter(queries map[string]string) (*GetFlagsFilter, error) {

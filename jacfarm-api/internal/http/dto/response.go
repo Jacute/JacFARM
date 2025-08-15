@@ -1,9 +1,14 @@
 package dto
 
 const (
-	statusOK          = "OK"
-	statusError       = "ERROR"
-	internalErrorText = "Internal Error"
+	statusOK    = "OK"
+	statusError = "ERROR"
+)
+
+var (
+	ErrDecodingBody       = Error("error decoding body")
+	ErrInvalidContentType = Error("invalid content-type")
+	ErrInternal           = Error("internal error")
 )
 
 type Response struct {
@@ -17,16 +22,9 @@ func OK() *Response {
 	}
 }
 
-func Error(err error) *Response {
+func Error(err string) *Response {
 	return &Response{
 		Status: statusError,
-		Error:  err.Error(),
-	}
-}
-
-func InternalError() *Response {
-	return &Response{
-		Status: statusError,
-		Error:  internalErrorText,
+		Error:  err,
 	}
 }
