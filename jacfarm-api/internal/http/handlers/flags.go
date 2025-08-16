@@ -39,7 +39,7 @@ func (h *Handlers) PutFlag() func(c fiber.Ctx) error {
 
 		err := h.service.PutFlag(c.RequestCtx(), req.Flag)
 		if err != nil {
-			c.JSON(dto.ErrInternal)
+			return c.JSON(dto.ErrInternal)
 		}
 
 		return c.JSON(dto.OK())

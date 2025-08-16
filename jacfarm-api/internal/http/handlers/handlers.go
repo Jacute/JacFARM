@@ -12,6 +12,7 @@ type ServiceInterface interface {
 
 	ListExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
 	ToggleExploit(ctx context.Context, id string) (bool, error)
+	UploadExploit(ctx context.Context, req *dto.UploadExploitDecodedRequest) (string, error)
 }
 
 type Handlers struct {

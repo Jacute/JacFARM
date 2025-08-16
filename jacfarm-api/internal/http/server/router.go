@@ -15,7 +15,7 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
 		ReadTimeout:     cfg.ReadTimeout,
 		WriteTimeout:    cfg.WriteTimeout,
 		IdleTimeout:     cfg.IdleTimeout,
-		BodyLimit:       2 * 1024 * 1024, // 2 MB
+		BodyLimit:       20 * 1024 * 1024, // 20 MB
 		ReadBufferSize:  4096,
 		WriteBufferSize: 4096,
 		JSONEncoder:     sonic.Marshal,
@@ -42,7 +42,7 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
 
 	exploitGroup := apiV1.Group("/exploits")
 	exploitGroup.Get("/", h.ListExploits())
-	exploitGroup.Post("/upload", h.UploadExploit())
+	exploitGroup.Post("/", h.UploadExploit())
 	exploitGroup.Patch("/toggle/:id", h.ToggleExploit())
 
 	return r
