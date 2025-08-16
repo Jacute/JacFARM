@@ -13,6 +13,7 @@ type storage interface {
 	GetExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
 	ToggleExploit(ctx context.Context, id string) (bool, error)
 	CreateExploit(ctx context.Context, exploit *models.Exploit) error
+	DeleteExploit(ctx context.Context, id string) error
 }
 
 type queue interface {
