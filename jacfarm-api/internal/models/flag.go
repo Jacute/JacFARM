@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type FlagStatus string
 
@@ -25,8 +27,8 @@ type FlagEnrich struct {
 	ID                int64      `json:"id"`
 	Value             string     `json:"value"`
 	Status            FlagStatus `json:"status"`
-	Exploit           *Exploit   `json:"exploit"`
-	GetFrom           *Team      `json:"victim_team"`
+	ExploitName       string     `json:"exploit_name"`
+	VictimIP          string     `json:"victim_team"`
 	MessageFromServer string     `json:"message_from_server"`
 	CreatedAt         time.Time  `json:"created_at"`
 }

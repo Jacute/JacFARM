@@ -1,0 +1,54 @@
+@font-face {
+  font-family: 'NoticiaText';
+  src: url('../../public/fonts/NoticiaText-Regular.ttf') format('truetype');
+}
+
+:root {
+  --primary-color: #FFA600;
+  --secondary-color: #FDC221;
+  --table-color: #FDB671;
+
+  --bs-info-rgb: 255, 166, 0;
+  --bs-secondary-rgb: 253, 194, 33;
+  --bs-primary-rgb: 255, 166, 0; /* bg-primary */
+  --bs-border-color: #000;
+}
+
+.btn-primary {
+  --bs-btn-color: #000;
+  --bs-btn-bg: var(--secondary-color);
+  --bs-btn-border-color: var(--secondary-color);
+  --bs-btn-hover-bg: #E5AD14;
+  --bs-btn-hover-color: #000;
+  --bs-btn-hover-border-color: #E5AD14;
+  --bs-btn-active-bg: #D59D04;
+  --bs-btn-active-color: #000;
+}
+
+.table-primary {
+  --bs-table-bg: var(--table-color);
+}
+
+.badge {
+  --bs-badge-color: #000;
+}
+
+.h-10 {
+  height: 10%;
+}
+
+.h-15 {
+  height: 15%;
+}
+
+.h-90 {
+  height: 90%;
+}
+
+.w-4 {
+  width: 4%;
+}
+
+.nice-header {
+  font-family: 'NoticiaText';
+}

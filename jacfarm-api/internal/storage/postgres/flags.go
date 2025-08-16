@@ -10,12 +10,9 @@ import (
 )
 
 func (s *Storage) GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error) {
-	builder := sq.Select("f.id", "f.value", "f.message_from_server", "f.created_at", "s.name",
-		"e.id", "e.name", "e.type", "e.is_running_on_farm", "e.executable_path", "e.requirements_path",
-		"t.id", "t.name", "t.ip",
-	).From("flags f").
-		Join("exploits e ON e.id = f.exploit_id").
-		Join("teams t ON t.id = f.get_from").
+	builder := sq.Select("f.id", "f.value", "f.message_from_server", "f.created_at", "s.name", "COALESCE(e.name, '')", "COALESCE(t.ip::text, '')").From("flags f").
+		LeftJoin("exploits e ON e.id = f.exploit_id").
+		LeftJoin("teams t ON t.id = f.get_from").
 		Join("statuses s ON s.id = f.status_id").PlaceholderFormat(sq.Dollar)
 
 	// apply filters
@@ -44,14 +41,10 @@ func (s *Storage) GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]
 
 	flags := make([]*models.FlagEnrich, 0)
 	for rows.Next() {
-		flag := &models.FlagEnrich{
-			Exploit: &models.Exploit{},
-			GetFrom: &models.Team{},
-		}
+		flag := &models.FlagEnrich{}
 		err := rows.Scan(
-			&flag.ID, &flag.Value, &flag.MessageFromServer, &flag.CreatedAt, &flag.Status,
-			&flag.Exploit.ID, &flag.Exploit.Name, &flag.Exploit.Type, &flag.Exploit.IsRunningOnFarm, &flag.Exploit.ExecutablePath, &flag.Exploit.RequirementsPath,
-			&flag.GetFrom.ID, &flag.GetFrom.Name, &flag.GetFrom.IP,
+			&flag.ID, &flag.Value, &flag.MessageFromServer, &flag.CreatedAt,
+			&flag.Status, &flag.ExploitName, &flag.VictimIP,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scan query: %w", err)
