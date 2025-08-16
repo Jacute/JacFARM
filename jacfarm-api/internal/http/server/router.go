@@ -43,6 +43,7 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
 	exploitGroup := apiV1.Group("/exploits")
 	exploitGroup.Get("/", h.ListExploits())
 	exploitGroup.Post("/upload", h.UploadExploit())
+	exploitGroup.Patch("/toggle/:id", h.ToggleExploit())
 
 	return r
 }

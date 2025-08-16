@@ -11,6 +11,7 @@ import (
 type storage interface {
 	GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error)
 	GetExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
+	ToggleExploit(ctx context.Context, id string) (bool, error)
 }
 
 type queue interface {
