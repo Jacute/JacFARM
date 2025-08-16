@@ -20,11 +20,11 @@ type HTTPServer struct {
 	router *fiber.App
 }
 
-func New(log *slog.Logger, cfg *config.HTTPConfig, h *handlers.Handlers) *HTTPServer {
+func New(log *slog.Logger, cfg *config.HTTPConfig, apiKey string, h *handlers.Handlers) *HTTPServer {
 	return &HTTPServer{
 		log:    log,
 		cfg:    cfg,
-		router: setupRouter(h, cfg),
+		router: setupRouter(h, cfg, apiKey),
 	}
 }
 

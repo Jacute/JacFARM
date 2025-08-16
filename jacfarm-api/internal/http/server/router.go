@@ -3,6 +3,7 @@ package server
 import (
 	"JacFARM/internal/config"
 	"JacFARM/internal/http/handlers"
+	"JacFARM/internal/http/middlewares"
 
 	"github.com/bytedance/sonic"
 	fiber "github.com/gofiber/fiber/v3"
@@ -10,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/recover"
 )
 
-func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
+func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *fiber.App {
 	r := fiber.New(fiber.Config{
 		ReadTimeout:     cfg.ReadTimeout,
 		WriteTimeout:    cfg.WriteTimeout,
@@ -44,6 +45,9 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
 	exploitGroup.Get("/", h.ListExploits())
 	exploitGroup.Post("/", h.UploadExploit())
 	exploitGroup.Patch("/toggle/:id", h.ToggleExploit())
+
+	serviceGroup := apiV1.Group("/service")
+	serviceGroup.Post("/flags", middlewares.ServiceAuthMiddleware(apiKey), h.PutFlag())
 
 	return r
 }
