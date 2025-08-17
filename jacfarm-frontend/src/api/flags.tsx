@@ -1,10 +1,8 @@
-import { API_URI, STATUS_OK } from "./api";
+import { API_URI, STATUS_OK, PAGE_LIMIT } from "./api";
 import type { GetFlagsResponse } from "./responses";
 
-export const pageLimit = 20;
-
 export const getFlags = async (page: number) => {
-    const res = await fetch(`${API_URI}/api/v1/flags?page=${page}&limit=${pageLimit}`, {credentials: "include"});
+    const res = await fetch(`${API_URI}/api/v1/flags?page=${page}&limit=${PAGE_LIMIT}`, {credentials: "include"});
     const data: GetFlagsResponse = await res.json();
     
     if (data.status != STATUS_OK) {

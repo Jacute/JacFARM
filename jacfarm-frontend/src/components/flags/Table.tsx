@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Flag } from '../../models/models'
-import { getFlags, pageLimit } from '../../api/flags'
+import { getFlags } from '../../api/flags'
+import { PAGE_LIMIT } from '../../api/api'
 
 
 interface props {
@@ -33,7 +34,7 @@ export const FlagTable = (props: props) => {
                 <tbody>
                     {flags.map(flag => (
                         <tr key={flag.id}>
-                            <td className="fw-bold">{(props.page - 1) * pageLimit + flags.indexOf(flag) + 1}</td>
+                            <td className="fw-bold">{(props.page - 1) * PAGE_LIMIT + flags.indexOf(flag) + 1}</td>
                             <td>{flag.value}</td>
                             <td>
                                 <span className={(() => {
