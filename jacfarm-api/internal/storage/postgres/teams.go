@@ -25,3 +25,41 @@ func (s *Storage) AddTeam(ctx context.Context, team *models.Team) (int64, error)
 	}
 	return id, nil
 }
+
+func (s *Storage) GetShortTeams(ctx context.Context) ([]*models.ShortTeam, error) {
+	rows, err := s.db.Query(ctx, "SELECT id, ip FROM teams")
+	if err != nil {
+		return nil, err
+	}
+
+	teams := make([]*models.ShortTeam, 0)
+	for rows.Next() {
+		team := new(models.ShortTeam)
+		err = rows.Scan(&team.ID, &team.IP)
+		if err != nil {
+			return nil, err
+		}
+		teams = append(teams, team)
+	}
+
+	return teams, nil
+}
+
+func (s *Storage) GetTeams(ctx context.Context) ([]*models.Team, error) {
+	rows, err := s.db.Query(ctx, "SELECT id, name, ip FROM teams")
+	if err != nil {
+		return nil, err
+	}
+
+	teams := make([]*models.Team, 0)
+	for rows.Next() {
+		team := new(models.Team)
+		err = rows.Scan(&team.ID, &team.Name, &team.IP)
+		if err != nil {
+			return nil, err
+		}
+		teams = append(teams, team)
+	}
+
+	return teams, nil
+}

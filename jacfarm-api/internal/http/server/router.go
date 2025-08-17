@@ -43,9 +43,14 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *f
 
 	exploitGroup := apiV1.Group("/exploits")
 	exploitGroup.Get("/", h.ListExploits())
+	exploitGroup.Get("/short", h.ListShortExploits())
 	exploitGroup.Post("/", h.UploadExploit())
 	exploitGroup.Delete("/:id", h.DeleteExploit())
 	exploitGroup.Patch("/toggle/:id", h.ToggleExploit())
+
+	teamGroup := apiV1.Group("/teams")
+	teamGroup.Get("/", h.ListTeams())
+	teamGroup.Get("/short", h.ListShortTeams())
 
 	serviceGroup := apiV1.Group("/service")
 	serviceGroup.Post("/flags", middlewares.ServiceAuthMiddleware(apiKey), h.PutFlag())
