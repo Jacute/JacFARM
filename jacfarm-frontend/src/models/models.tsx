@@ -1,7 +1,9 @@
 export interface Flag {
     id: number
     value: string
-    exploit: string
-    team: string
-    created_by: string
+    status: string
+    exploit_name: string
+    victim_team: string
+    message_from_server: string
+    created_at: string
 }
