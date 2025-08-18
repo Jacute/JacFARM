@@ -8,14 +8,18 @@ interface props {
     page: number
     team_id: number
     exploit_id: string
+    setCount: (count: number) => void
 }
 
 export const FlagTable = (props: props) => {
     const [flags, setFlags] = useState<Array<Flag>>([]);
 
     useEffect(() => {
-        getFlags(props.page).then(flags => setFlags(flags));
-    }, []);
+        getFlags(props.page, props.team_id, props.exploit_id).then(({ flags, count }) => {
+            props.setCount(count);
+            setFlags(flags);
+        });
+    }, [props.team_id, props.page, props.exploit_id]);
 
     return (
         <div className="table-responsive shadow rounded-3 m-0 p-0">

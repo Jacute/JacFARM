@@ -30,11 +30,17 @@ body {
 }
 
 .page-link:focus {
-     color: var(--secondary-color);
+    color: var(--secondary-color);
 }
 
 .page-link:active {
-     color: var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.pagination {
+    --bs-pagination-active-bg: var(--primary-color);
+    --bs-pagination-color: var(--primary-color);
+    --bs-pagination-active-border-color: black;
 }
 
 .btn-primary {

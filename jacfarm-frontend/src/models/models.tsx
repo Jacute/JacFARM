@@ -22,3 +22,14 @@ export interface Exploit {
     requirements_path?: string
     type: string
 }
+
+export interface Team {
+    id: number
+    name: string
+    ip: string
+}
+
+export interface TeamShort {
+    id: number
+    ip: string
+}

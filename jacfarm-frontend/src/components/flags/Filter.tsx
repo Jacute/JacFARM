@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react"
+import type { ExploitShort, TeamShort } from "../../models/models"
+import { getShortTeams } from "../../api/teams"
+import { getShortExploits } from "../../api/exploits"
+
 interface props {
     team_id: number
     setTeamId: (team_id: number) => void
@@ -6,6 +11,14 @@ interface props {
 }
 
 export const FlagFilter = (props: props) => {
+    const [teams, setTeams] = useState<TeamShort[]>([]);
+    const [exploits, setExploits] = useState<ExploitShort[]>([]);
+
+    useEffect(() => {
+        getShortTeams().then(teams => setTeams(teams));
+        getShortExploits().then(exploits => setExploits(exploits));
+    }, []);
+
     return (
         <div className="row mb-2">
         <div className="col-3">
@@ -21,9 +34,11 @@ export const FlagFilter = (props: props) => {
             }}
           >
             <option value="">Все</option>
-            <option value="1">team1</option>
-            <option value="2">team2</option>
-            <option value="3">team3</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.ip}
+              </option>
+            ))}
           </select>
         </div>
         <div className="col-3">
@@ -36,9 +51,11 @@ export const FlagFilter = (props: props) => {
             }}
           >
             <option value="">Все</option>
-            <option value="exploit1">exploit1</option>
-            <option value="exploit2">exploit2</option>
-            <option value="exploit3">exploit3</option>
+            {exploits.map((exploit) => (
+              <option key={exploit.id} value={exploit.id}>
+                {exploit.name}
+              </option>
+            ))}
           </select>
         </div>
       </div>
