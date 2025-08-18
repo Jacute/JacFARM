@@ -13,7 +13,7 @@ func (h *Handlers) ListFlags() func(c fiber.Ctx) error {
 			return c.JSON(dto.Error(err.Error()))
 		}
 
-		flags, err := h.service.ListFlags(c.RequestCtx(), flagsFilter)
+		flags, count, err := h.service.ListFlags(c.RequestCtx(), flagsFilter)
 		if err != nil {
 			return c.JSON(dto.ErrInternal)
 		}
@@ -21,6 +21,7 @@ func (h *Handlers) ListFlags() func(c fiber.Ctx) error {
 		return c.JSON(dto.GetFlagsResponse{
 			Response: dto.OK(),
 			Flags:    flags,
+			Count:    count,
 		})
 	}
 }

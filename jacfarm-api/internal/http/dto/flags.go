@@ -16,6 +16,7 @@ type ListFlagsFilter struct {
 type GetFlagsResponse struct {
 	*Response
 	Flags []*models.FlagEnrich `json:"flags"`
+	Count int                  `json:"count"`
 }
 
 type PutFlagRequest struct {

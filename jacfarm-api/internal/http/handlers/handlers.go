@@ -7,7 +7,7 @@ import (
 )
 
 type ServiceInterface interface {
-	ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error)
+	ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
 	PutFlag(ctx context.Context, flag string) error
 
 	ListExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)

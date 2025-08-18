@@ -9,7 +9,7 @@ import (
 )
 
 type storage interface {
-	GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error)
+	GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
 
 	GetExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
 	GetShortExploits(ctx context.Context) ([]*models.ExploitShort, error)

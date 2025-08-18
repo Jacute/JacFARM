@@ -10,18 +10,18 @@ import (
 	"github.com/jacute/prettylogger"
 )
 
-func (s *Service) ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, error) {
+func (s *Service) ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error) {
 	const op = "service.jacfarm.GetFlags"
 	log := s.log.With(slog.String("op", op))
 
-	flags, err := s.db.GetFlags(ctx, filter)
+	flags, count, err := s.db.GetFlags(ctx, filter)
 	if err != nil {
 		log.Error("error getting flags", prettylogger.Err(err))
-		return nil, err
+		return nil, 0, err
 	}
 	log.Info("got flags successfully")
 
-	return flags, nil
+	return flags, count, nil
 }
 
 func (s *Service) PutFlag(ctx context.Context, flag string) error {
