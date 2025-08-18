@@ -12,10 +12,12 @@ const (
 )
 
 type Config struct {
-	Env    string `envconfig:"ENV"`
-	DB     *DBConfig
-	Rabbit *RabbitMQConfig
-	HTTP   *HTTPConfig
+	Env        string `envconfig:"ENV"`
+	ApiKey     string `envconfig:"JACFARM_API_KEY"`
+	ExploitDir string `envconfig:"EXPLOIT_DIR"`
+	DB         *DBConfig
+	Rabbit     *RabbitMQConfig
+	HTTP       *HTTPConfig
 }
 
 type HTTPConfig struct {

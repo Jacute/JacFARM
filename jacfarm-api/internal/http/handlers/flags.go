@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"JacFARM/internal/http/dto"
-	"slices"
 
 	fiber "github.com/gofiber/fiber/v3"
 )
@@ -28,7 +27,7 @@ func (h *Handlers) ListFlags() func(c fiber.Ctx) error {
 
 func (h *Handlers) PutFlag() func(c fiber.Ctx) error {
 	return func(c fiber.Ctx) error {
-		if !slices.Contains(c.GetReqHeaders()["Content-Type"], "application/json") {
+		if c.Get("Content-Type") != "application/json" {
 			return c.JSON(dto.ErrInvalidContentType)
 		}
 
@@ -39,7 +38,7 @@ func (h *Handlers) PutFlag() func(c fiber.Ctx) error {
 
 		err := h.service.PutFlag(c.RequestCtx(), req.Flag)
 		if err != nil {
-			c.JSON(dto.ErrInternal)
+			return c.JSON(dto.ErrInternal)
 		}
 
 		return c.JSON(dto.OK())

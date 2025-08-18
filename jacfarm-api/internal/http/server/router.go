@@ -3,6 +3,7 @@ package server
 import (
 	"JacFARM/internal/config"
 	"JacFARM/internal/http/handlers"
+	"JacFARM/internal/http/middlewares"
 
 	"github.com/bytedance/sonic"
 	fiber "github.com/gofiber/fiber/v3"
@@ -10,12 +11,12 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/recover"
 )
 
-func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
+func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *fiber.App {
 	r := fiber.New(fiber.Config{
 		ReadTimeout:     cfg.ReadTimeout,
 		WriteTimeout:    cfg.WriteTimeout,
 		IdleTimeout:     cfg.IdleTimeout,
-		BodyLimit:       2 * 1024 * 1024, // 2 MB
+		BodyLimit:       20 * 1024 * 1024, // 20 MB
 		ReadBufferSize:  4096,
 		WriteBufferSize: 4096,
 		JSONEncoder:     sonic.Marshal,
@@ -42,7 +43,17 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig) *fiber.App {
 
 	exploitGroup := apiV1.Group("/exploits")
 	exploitGroup.Get("/", h.ListExploits())
-	exploitGroup.Post("/upload", h.UploadExploit())
+	exploitGroup.Get("/short", h.ListShortExploits())
+	exploitGroup.Post("/", h.UploadExploit())
+	exploitGroup.Delete("/:id", h.DeleteExploit())
+	exploitGroup.Patch("/toggle/:id", h.ToggleExploit())
+
+	teamGroup := apiV1.Group("/teams")
+	teamGroup.Get("/", h.ListTeams())
+	teamGroup.Get("/short", h.ListShortTeams())
+
+	serviceGroup := apiV1.Group("/service")
+	serviceGroup.Post("/flags", middlewares.ServiceAuthMiddleware(apiKey), h.PutFlag())
 
 	return r
 }

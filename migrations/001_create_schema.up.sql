@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS flags (
     id SERIAL PRIMARY KEY,
     value VARCHAR(256) NOT NULL UNIQUE,
     status_id INT NOT NULL REFERENCES statuses(id),
-    exploit_id UUID REFERENCES exploits(id),
-    get_from INT REFERENCES teams(id),
+    exploit_id UUID REFERENCES exploits(id) ON DELETE SET NULL,
+    get_from INT REFERENCES teams(id) ON DELETE SET NULL,
     message_from_server TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

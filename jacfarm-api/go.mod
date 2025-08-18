@@ -5,7 +5,9 @@ go 1.24.5
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/bytedance/sonic v1.14.0
+	github.com/gabriel-vasile/mimetype v1.4.9
 	github.com/gofiber/fiber/v3 v3.0.0-beta.5
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgx/v5 v5.5.4
 	github.com/jacute/prettylogger v0.0.7
@@ -20,7 +22,6 @@ require (
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/gofiber/schema v1.6.0 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.13 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
