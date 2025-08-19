@@ -8,6 +8,7 @@ export const flagsPage = "flags"
 export const FlagsPage = () => {
   const [team_id, setTeamId] = useState<number>(0);
   const [exploit_id, setExploitId] = useState<string>("");
+  const [status_id, setStatusId] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [count, setCount] = useState<number>(0);
 
@@ -18,10 +19,12 @@ export const FlagsPage = () => {
             setTeamId={setTeamId}
             exploit_id={exploit_id}
             setExploitId={setExploitId}
+            status_id={status_id}
+            setStatusId={setStatusId}
         />
 
         <div className="row flex-grow-1 overflow-auto">
-            <FlagTable page={page} team_id={team_id} exploit_id={exploit_id} setCount={setCount} />
+            <FlagTable page={page} team_id={team_id} exploit_id={exploit_id} status_id={status_id} setCount={setCount} />
         </div>
 
         <div className="row mt-auto mx-auto">

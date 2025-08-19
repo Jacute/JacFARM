@@ -8,6 +8,11 @@ export interface Flag {
     created_at: string
 }
 
+export interface Status {
+    id: number
+    name: string
+}
+
 export interface ExploitShort {
     id: number
     name: string
