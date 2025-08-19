@@ -16,6 +16,7 @@ func (s *Storage) GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]
 		LeftJoin("exploits e ON e.id = f.exploit_id").
 		LeftJoin("teams t ON t.id = f.get_from").
 		Join("statuses s ON s.id = f.status_id").
+		OrderBy("f.created_at DESC").
 		PlaceholderFormat(sq.Dollar)
 	countBuilder := sq.Select("COUNT(*)").
 		From("flags f").
