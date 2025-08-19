@@ -45,3 +45,17 @@ func (h *Handlers) PutFlag() func(c fiber.Ctx) error {
 		return c.JSON(dto.OK())
 	}
 }
+
+func (h *Handlers) GetStatuses() func(c fiber.Ctx) error {
+	return func(c fiber.Ctx) error {
+		statuses, err := h.service.GetStatuses(c.RequestCtx())
+		if err != nil {
+			return c.JSON(dto.ErrInternal)
+		}
+
+		return c.JSON(dto.GetStatusesResponse{
+			Response: dto.OK(),
+			Statuses: statuses,
+		})
+	}
+}

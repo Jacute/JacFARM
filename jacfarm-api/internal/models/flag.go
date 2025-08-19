@@ -4,15 +4,6 @@ import (
 	"time"
 )
 
-type FlagStatus string
-
-const (
-	FlagStatusPending FlagStatus = "PENDING"
-	FlagStatusOld     FlagStatus = "OLD"
-	FlagStatusSuccess FlagStatus = "SUCCESS"
-	FlagStatusReject  FlagStatus = "REJECT"
-)
-
 type Flag struct {
 	ID                int64      `json:"id"`
 	Value             string     `json:"value"`

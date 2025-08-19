@@ -17,15 +17,6 @@ func (s *Storage) GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]
 		LeftJoin("teams t ON t.id = f.get_from").
 		Join("statuses s ON s.id = f.status_id").
 		PlaceholderFormat(sq.Dollar)
-
-	// apply filters
-	if filter.ExploitID != "" {
-		baseBuilder = baseBuilder.Where(sq.Eq{"e.id": filter.ExploitID})
-	}
-	if filter.TeamID != 0 {
-		baseBuilder = baseBuilder.Where(sq.Eq{"t.id": filter.TeamID})
-	}
-
 	countBuilder := sq.Select("COUNT(*)").
 		From("flags f").
 		LeftJoin("exploits e ON e.id = f.exploit_id").
@@ -33,11 +24,18 @@ func (s *Storage) GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]
 		Join("statuses s ON s.id = f.status_id").
 		PlaceholderFormat(sq.Dollar)
 
+	// apply filters
 	if filter.ExploitID != "" {
+		baseBuilder = baseBuilder.Where(sq.Eq{"e.id": filter.ExploitID})
 		countBuilder = countBuilder.Where(sq.Eq{"e.id": filter.ExploitID})
 	}
 	if filter.TeamID != 0 {
+		baseBuilder = baseBuilder.Where(sq.Eq{"t.id": filter.TeamID})
 		countBuilder = countBuilder.Where(sq.Eq{"t.id": filter.TeamID})
+	}
+	if filter.StatusID != 0 {
+		baseBuilder = baseBuilder.Where(sq.Eq{"f.status_id": filter.StatusID})
+		countBuilder = countBuilder.Where(sq.Eq{"f.status_id": filter.StatusID})
 	}
 
 	countQuery, countArgs, err := countBuilder.ToSql()
