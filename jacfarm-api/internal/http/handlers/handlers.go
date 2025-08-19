@@ -17,6 +17,8 @@ type ServiceInterface interface {
 	DeleteExploit(ctx context.Context, id string) error
 
 	ListShortTeams(ctx context.Context) ([]*models.ShortTeam, error)
+
+	GetStatuses(ctx context.Context) ([]*models.Status, error)
 }
 
 type Handlers struct {

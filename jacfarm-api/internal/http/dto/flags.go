@@ -11,6 +11,7 @@ type ListFlagsFilter struct {
 	Page      uint64
 	ExploitID string
 	TeamID    int64
+	StatusID  int64
 }
 
 type GetFlagsResponse struct {
@@ -23,6 +24,11 @@ type PutFlagRequest struct {
 	Flag string `json:"flag"`
 }
 
+type GetStatusesResponse struct {
+	*Response
+	Statuses []*models.Status `json:"statuses"`
+}
+
 func MapQueryToGetFlagsFilter(queries map[string]string) (*ListFlagsFilter, error) {
 	exploitID := queries["exploit_id"]
 
@@ -33,6 +39,16 @@ func MapQueryToGetFlagsFilter(queries map[string]string) (*ListFlagsFilter, erro
 		teamID, err = strconv.Atoi(teamIDStr)
 		if err != nil {
 			return nil, fmt.Errorf("team_id should be number")
+		}
+	}
+
+	var statusID int
+	statusIDStr, ok := queries["status_id"]
+	if ok && statusIDStr != "" {
+		var err error
+		statusID, err = strconv.Atoi(statusIDStr)
+		if err != nil {
+			return nil, fmt.Errorf("status_id should be number")
 		}
 	}
 
@@ -67,5 +83,6 @@ func MapQueryToGetFlagsFilter(queries map[string]string) (*ListFlagsFilter, erro
 		TeamID:    int64(teamID),
 		Limit:     uint64(limit),
 		Page:      uint64(page),
+		StatusID:  int64(statusID),
 	}, nil
 }

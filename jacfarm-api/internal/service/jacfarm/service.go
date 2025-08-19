@@ -18,6 +18,8 @@ type storage interface {
 	DeleteExploit(ctx context.Context, id string) error
 
 	GetShortTeams(ctx context.Context) ([]*models.ShortTeam, error)
+
+	GetStatuses(ctx context.Context) ([]*models.Status, error)
 }
 
 type queue interface {
