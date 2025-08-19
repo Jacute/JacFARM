@@ -22,3 +22,19 @@ export const getFlagStatuses = async () => {
 
     return data.statuses;
 }
+
+export const sendFlag = async (flag: string) => {
+    const res = await fetch(`${API_URI}/api/v1/flags`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({flag: flag})
+    });
+    const data = await res.json();
+
+    if (data.status != STATUS_OK) {
+        throw Error(data.error);
+    }
+}
