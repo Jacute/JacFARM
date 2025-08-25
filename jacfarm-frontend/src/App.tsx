@@ -1,4 +1,6 @@
+import { ToastContainer } from 'react-toastify';
 import { Menu } from './components/Menu'
+import { ExploitsPage } from './pages/Exploits';
 import { FlagsPage } from './pages/Flags';
 import './styles/index.css'
 import { useState } from 'react'
@@ -12,11 +14,12 @@ function App() {
         <Menu setPage={setPage}/>
         <div className="col-10">
           {page === "flags" && <FlagsPage />}
-          {page === "exploits" && <div>Exploits</div>}
+          {page === "exploits" && <ExploitsPage />}
           {page === "teams" && <div>Teams</div>}
           {page === "config" && <div>Config</div>}
         </div>
       </div>
+      <ToastContainer />
     </div>
   )
 }

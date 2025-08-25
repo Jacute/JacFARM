@@ -1,4 +1,4 @@
-import type { ExploitShort, Flag, Status, TeamShort } from "../models/models";
+import type { Exploit, ExploitShort, Flag, Status, TeamShort } from "../models/models";
 import type { BaseResponse } from "./api";
 
 export interface GetFlagsResponse extends BaseResponse {
@@ -15,7 +15,8 @@ export interface GetExploitsShortResponse extends BaseResponse {
 }
 
 export interface GetExploitsResponse extends BaseResponse {
-    exploits: Array<ExploitShort>
+    exploits: Array<Exploit>
+    count: number
 }
 
 export interface GetShortTeamsResponse extends BaseResponse {

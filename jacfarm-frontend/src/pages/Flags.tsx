@@ -3,6 +3,7 @@ import { FlagTable } from "../components/flags/Table"
 import { FlagFilter } from "../components/flags/Filter"
 import { useState } from "react"
 import { AddModal } from "../components/flags/AddModal"
+import { Modal } from "../components/Modal"
 
 export const flagsPage = "flags"
 
@@ -18,7 +19,7 @@ export const FlagsPage = () => {
         <div className="row h-10 bg-primary border-bottom border-1 border-secondary">
             <div className="col-11"></div>
             <div className="col-1 d-flex align-items-center justify-content-center">
-                <button className='btn btn-white w-50 border border-1' data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <button className='btn btn-white w-50 border border-1' data-bs-toggle="modal" data-bs-target="#modal">
                 ➕
                 </button>
             </div>
@@ -45,7 +46,7 @@ export const FlagsPage = () => {
                 </div>
             </div>
         </div>
-        <AddModal/>
+        <Modal title="Добавить флаг" ModalBody={<AddModal/>}/>
     </>
   )
 }

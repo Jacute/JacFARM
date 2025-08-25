@@ -21,8 +21,8 @@ export interface ExploitShort {
 export interface Exploit {
     id: number
     name: string
-    is_running: string
-    is_running_on_farm: string
+    is_running: boolean
+    is_running_on_farm: boolean
     executable_path: string
     requirements_path?: string
     type: string
