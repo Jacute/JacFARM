@@ -11,7 +11,7 @@ import (
 type storage interface {
 	GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
 
-	GetExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
+	GetExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, int, error)
 	GetShortExploits(ctx context.Context) ([]*models.ExploitShort, error)
 	ToggleExploit(ctx context.Context, id string) (bool, error)
 	CreateExploit(ctx context.Context, exploit *models.Exploit) error

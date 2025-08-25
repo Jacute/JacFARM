@@ -10,7 +10,7 @@ type ServiceInterface interface {
 	ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
 	PutFlag(ctx context.Context, flag string) error
 
-	ListExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, error)
+	ListExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, int, error)
 	ListShortExploits(ctx context.Context) ([]*models.ExploitShort, error)
 	ToggleExploit(ctx context.Context, id string) (bool, error)
 	UploadExploit(ctx context.Context, req *dto.UploadExploitRequest) (string, error)
