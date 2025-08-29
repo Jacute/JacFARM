@@ -10,16 +10,13 @@ interface props {
     exploit_id: string
     status_id: number
     setCount: (count: number) => void
+    flags: Flag[]
+    loadFlags: () => void
 }
 
 export const FlagTable = (props: props) => {
-    const [flags, setFlags] = useState<Array<Flag>>([]);
-
     useEffect(() => {
-        getFlags(props.page, props.team_id, props.exploit_id, props.status_id).then(({ flags, count }) => {
-            props.setCount(count);
-            setFlags(flags);
-        });
+        props.loadFlags()
     }, [props.team_id, props.page, props.exploit_id, props.status_id]);
 
     return (
@@ -37,9 +34,9 @@ export const FlagTable = (props: props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {flags.map(flag => (
+                    {props.flags.map(flag => (
                         <tr key={flag.id}>
-                            <td className="fw-bold">{(props.page - 1) * PAGE_LIMIT + flags.indexOf(flag) + 1}</td>
+                            <td className="fw-bold">{(props.page - 1) * PAGE_LIMIT + props.flags.indexOf(flag) + 1}</td>
                             <td>{flag.value}</td>
                             <td>
                                 <span className={(() => {

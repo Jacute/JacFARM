@@ -2,7 +2,11 @@ import { useState } from "react";
 import { sendFlag } from "../../api/flags";
 import { toast } from "react-toastify";
 
-export const AddModal = () => {
+interface props {
+    loadFlags: () => void
+}
+
+export const AddModal = (props: props) => {
     const [flag, setFlag] = useState<string>("");
 
     const handleSubmit = () => {
@@ -10,7 +14,9 @@ export const AddModal = () => {
             sendFlag(flag);
         } catch (error: any) {
             toast.error(`Error sending flag: ${error.message}`);
+            return;
         }
+        props.loadFlags();
     }
 
     return (
