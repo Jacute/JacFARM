@@ -9,8 +9,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/jackc/pgconn"
-	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5"
 )
 
 var (
@@ -32,7 +31,7 @@ func (s *Storage) PutFlag(ctx context.Context, flag *models.Flag) (int64, error)
 	if flag.GetFrom != nil {
 		insertMap["get_from"] = *flag.GetFrom
 	}
-	insertBuilder = insertBuilder.SetMap(insertMap).Suffix("RETURNING id")
+	insertBuilder = insertBuilder.SetMap(insertMap).Suffix("ON CONFLICT (value) DO NOTHING RETURNING id")
 
 	query, args, err := insertBuilder.ToSql()
 	if err != nil {
@@ -43,11 +42,8 @@ func (s *Storage) PutFlag(ctx context.Context, flag *models.Flag) (int64, error)
 	err = s.db.QueryRow(ctx, query, args...).Scan(&lastInsertedId)
 
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			if pgErr.Code == pgerrcode.UniqueViolation {
-				return 0, ErrFlagAlreadyExists
-			}
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, ErrFlagAlreadyExists
 		}
 		return 0, err
 	}
@@ -57,8 +53,8 @@ func (s *Storage) PutFlag(ctx context.Context, flag *models.Flag) (int64, error)
 
 func (s *Storage) GetFlagValuesByStatus(ctx context.Context, status models.FlagStatus) ([]string, error) {
 	rows, err := s.db.Query(ctx, `SELECT value
-	FROM flags
-	WHERE status_id = (SELECT id FROM statuses WHERE name = $1)`, status)
+		FROM flags
+		WHERE status_id = (SELECT id FROM statuses WHERE name = $1)`, status)
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +75,9 @@ func (s *Storage) GetFlagValuesByStatus(ctx context.Context, status models.FlagS
 
 func (s *Storage) UpdateFlagByResult(ctx context.Context, flag string, result *plugins.FlagResult) error {
 	res, err := s.db.Exec(ctx, `UPDATE flags
-	SET status_id = (SELECT id FROM statuses WHERE name = $1),
-	message_from_server = $2
-	WHERE value = $3`, string(result.Status), result.Msg, flag)
+		SET status_id = (SELECT id FROM statuses WHERE name = $1),
+		message_from_server = $2
+		WHERE value = $3`, string(result.Status), result.Msg, flag)
 	if err != nil {
 		return err
 	}
@@ -96,9 +92,9 @@ func (s *Storage) UpdateStatusForOldFlags(ctx context.Context, flagTTL time.Dura
 	threshold := time.Now().Add(-flagTTL).UTC()
 
 	res, err := s.db.Exec(ctx, `UPDATE flags
-	SET status_id = (SELECT id FROM statuses WHERE name = $1)
-	WHERE status_id = (SELECT id FROM statuses WHERE name = $2) AND
-	created_at <= $3`,
+		SET status_id = (SELECT id FROM statuses WHERE name = $1)
+		WHERE status_id = (SELECT id FROM statuses WHERE name = $2) AND
+		created_at <= $3`,
 		models.FlagStatusOld, models.FlagStatusPending, threshold)
 	if err != nil {
 		return 0, err

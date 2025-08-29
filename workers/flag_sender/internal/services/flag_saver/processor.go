@@ -2,7 +2,9 @@ package flag_saver
 
 import (
 	"context"
+	"errors"
 	"flag_sender/internal/models"
+	"flag_sender/internal/postgres"
 	"flag_sender/pkg/rabbitmq_dto"
 	"fmt"
 	"log/slog"
@@ -36,6 +38,10 @@ func (fs *FlagSaver) processFlag(flagBytes []byte) error {
 
 	flagID, err := fs.db.PutFlag(context.Background(), dbFlag)
 	if err != nil {
+		if errors.Is(err, postgres.ErrFlagAlreadyExists) {
+			log.Info("flag already exists, skipping", slog.Any("flag", flag))
+			return nil // skipping exists flag
+		}
 		return fmt.Errorf("%s: %w", op, err)
 	}
 	log.Info("flag send successfully", slog.Int64("flag_id", flagID))
