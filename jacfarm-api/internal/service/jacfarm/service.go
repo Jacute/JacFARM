@@ -17,7 +17,9 @@ type storage interface {
 	CreateExploit(ctx context.Context, exploit *models.Exploit) error
 	DeleteExploit(ctx context.Context, id string) error
 
+	AddTeam(ctx context.Context, team *models.Team) (int64, error)
 	GetShortTeams(ctx context.Context) ([]*models.ShortTeam, error)
+	GetTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([]*models.Team, int, error)
 
 	GetStatuses(ctx context.Context) ([]*models.Status, error)
 }

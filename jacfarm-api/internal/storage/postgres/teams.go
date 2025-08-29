@@ -1,10 +1,13 @@
 package postgres
 
 import (
+	"JacFARM/internal/http/dto"
 	"JacFARM/internal/models"
 	"JacFARM/internal/storage"
 	"context"
+	"fmt"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgconn"
 )
 
@@ -45,10 +48,36 @@ func (s *Storage) GetShortTeams(ctx context.Context) ([]*models.ShortTeam, error
 	return teams, nil
 }
 
-func (s *Storage) GetTeams(ctx context.Context) ([]*models.Team, error) {
-	rows, err := s.db.Query(ctx, "SELECT id, name, ip FROM teams")
+func (s *Storage) GetTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([]*models.Team, int, error) {
+	builder := sq.Select("id", "name", "ip").From("teams").PlaceholderFormat(sq.Dollar)
+	countBuilder := sq.Select("COUNT(*)").From("teams").PlaceholderFormat(sq.Dollar)
+
+	if filter.Limit > 0 {
+		builder = builder.Limit(filter.Limit)
+		if filter.Page > 0 {
+			builder = builder.Offset(filter.Limit * (filter.Page - 1))
+		}
+	}
+
+	if filter.Query != "" {
+		builder = builder.Where(sq.Or{
+			sq.ILike{"name": "%" + filter.Query + "%"},
+			sq.Expr("ip::text ILIKE ?", "%"+filter.Query+"%"),
+		})
+		countBuilder = countBuilder.Where(sq.Or{
+			sq.ILike{"name": "%" + filter.Query + "%"},
+			sq.Expr("ip::text ILIKE ?", "%"+filter.Query+"%"),
+		})
+	}
+
+	query, args, err := builder.ToSql()
 	if err != nil {
-		return nil, err
+		return nil, 0, fmt.Errorf("failed to build sql query: %w", err)
+	}
+
+	rows, err := s.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, fmt.Errorf("error query: %w", err)
 	}
 
 	teams := make([]*models.Team, 0)
@@ -56,10 +85,24 @@ func (s *Storage) GetTeams(ctx context.Context) ([]*models.Team, error) {
 		team := new(models.Team)
 		err = rows.Scan(&team.ID, &team.Name, &team.IP)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		teams = append(teams, team)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("error in rows: %w", err)
+	}
 
-	return teams, nil
+	query, args, err = countBuilder.ToSql()
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to build sql query: %w", err)
+	}
+
+	var count int
+	err = s.db.QueryRow(ctx, query, args...).Scan(&count)
+	if err != nil {
+		return nil, 0, fmt.Errorf("error query: %w", err)
+	}
+
+	return teams, count, nil
 }

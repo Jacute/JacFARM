@@ -1,7 +1,9 @@
 package jacfarm
 
 import (
+	"JacFARM/internal/http/dto"
 	"JacFARM/internal/models"
+	storage_errors "JacFARM/internal/storage"
 	"context"
 	"log/slog"
 
@@ -19,4 +21,33 @@ func (s *Service) ListShortTeams(ctx context.Context) ([]*models.ShortTeam, erro
 	}
 
 	return teams, nil
+}
+
+func (s *Service) ListTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([]*models.Team, int, error) {
+	const op = "service.jacfarm.ListTeams"
+	log := s.log.With(slog.String("op", op))
+
+	teams, count, err := s.db.GetTeams(ctx, filter)
+	if err != nil {
+		log.Error("error listing teams", prettylogger.Err(err))
+		return nil, 0, err
+	}
+
+	return teams, count, nil
+}
+
+func (s *Service) AddTeam(ctx context.Context, team *models.Team) (int64, error) {
+	const op = "service.jacfarm.AddTeam"
+	log := s.log.With(slog.String("op", op))
+
+	id, err := s.db.AddTeam(ctx, team)
+	if err != nil {
+		if err == storage_errors.ErrTeamAlreadyExists {
+			return 0, err
+		}
+		log.Error("error adding team", prettylogger.Err(err))
+		return 0, err
+	}
+
+	return id, nil
 }
