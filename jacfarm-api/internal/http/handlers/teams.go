@@ -5,7 +5,9 @@ import (
 	"JacFARM/internal/http/validator"
 	"JacFARM/internal/models"
 	"JacFARM/internal/storage"
+	"errors"
 	"net"
+	"strconv"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -74,5 +76,25 @@ func (h *Handlers) AddTeam() func(c fiber.Ctx) error {
 			Response: dto.OK(),
 			ID:       id,
 		})
+	}
+}
+
+func (h *Handlers) DeleteTeam() func(c fiber.Ctx) error {
+	return func(c fiber.Ctx) error {
+		idStr := c.Params("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			return c.JSON(dto.Error("id should be int"))
+		}
+
+		err = h.service.DeleteTeam(c.RequestCtx(), int64(id))
+		if err != nil {
+			if errors.Is(err, storage.ErrTeamNotFound) {
+				return c.JSON(dto.Error(err.Error()))
+			}
+			return c.JSON(dto.ErrInternal)
+		}
+
+		return c.JSON(dto.OK())
 	}
 }

@@ -20,6 +20,8 @@ func (s *Service) ListShortTeams(ctx context.Context) ([]*models.ShortTeam, erro
 		return nil, err
 	}
 
+	log.Info("short teams successfully listed")
+
 	return teams, nil
 }
 
@@ -32,6 +34,8 @@ func (s *Service) ListTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([
 		log.Error("error listing teams", prettylogger.Err(err))
 		return nil, 0, err
 	}
+
+	slog.Info("teams successfully listed", slog.Int("count", count))
 
 	return teams, count, nil
 }
@@ -49,5 +53,25 @@ func (s *Service) AddTeam(ctx context.Context, team *models.Team) (int64, error)
 		return 0, err
 	}
 
+	log.Info("team successfully added", slog.Int64("id", id))
+
 	return id, nil
+}
+
+func (s *Service) DeleteTeam(ctx context.Context, id int64) error {
+	const op = "service.jacfarm.DeleteTeam"
+	log := s.log.With(slog.String("op", op), slog.Int64("id", id))
+
+	err := s.db.DeleteTeam(ctx, id)
+	if err != nil {
+		if err == storage_errors.ErrTeamNotFound {
+			return err
+		}
+		log.Error("error deleting team", prettylogger.Err(err))
+		return err
+	}
+
+	log.Info("team successfully deleted")
+
+	return nil
 }

@@ -19,6 +19,7 @@ type ServiceInterface interface {
 	AddTeam(ctx context.Context, team *models.Team) (int64, error)
 	ListShortTeams(ctx context.Context) ([]*models.ShortTeam, error)
 	ListTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([]*models.Team, int, error)
+	DeleteTeam(ctx context.Context, id int64) error
 
 	GetStatuses(ctx context.Context) ([]*models.Status, error)
 }

@@ -106,3 +106,16 @@ func (s *Storage) GetTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([]
 
 	return teams, count, nil
 }
+
+func (s *Storage) DeleteTeam(ctx context.Context, id int64) error {
+	cmd, err := s.db.Exec(ctx, "DELETE FROM teams WHERE id = $1", id)
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return storage.ErrTeamNotFound
+	}
+
+	return nil
+}

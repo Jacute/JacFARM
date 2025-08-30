@@ -20,6 +20,7 @@ type storage interface {
 	AddTeam(ctx context.Context, team *models.Team) (int64, error)
 	GetShortTeams(ctx context.Context) ([]*models.ShortTeam, error)
 	GetTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([]*models.Team, int, error)
+	DeleteTeam(ctx context.Context, id int64) error
 
 	GetStatuses(ctx context.Context) ([]*models.Status, error)
 }
