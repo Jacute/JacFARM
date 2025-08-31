@@ -53,8 +53,7 @@ func (fs *FlagSender) Start() error {
 	pluginPath := path.Join(fs.cfg.pluginDir, fs.cfg.plugin+".so")
 	sendPlugin, err := plugin.Open(pluginPath)
 	if err != nil {
-		log.Error(
-			"error opening send plugin",
+		log.Error("error opening send plugin",
 			slog.String("plugin_path", pluginPath),
 			prettylogger.Err(err),
 		)
@@ -62,10 +61,7 @@ func (fs *FlagSender) Start() error {
 	}
 	symbol, err := sendPlugin.Lookup("NewClient")
 	if err != nil {
-		log.Error(
-			"error looking up send plugin client",
-			prettylogger.Err(err),
-		)
+		log.Error("error looking up send plugin client", prettylogger.Err(err))
 		return err
 	}
 	clientInit, ok := symbol.(*plugins.NewClientFunc)
@@ -75,22 +71,20 @@ func (fs *FlagSender) Start() error {
 	}
 	client := (*clientInit)(fs.cfg.juryFlagURL, fs.cfg.token)
 
-	ticker := time.NewTicker(fs.cfg.submitPeriod)
 	for {
+		timer := time.NewTimer(fs.cfg.submitPeriod)
 		select {
-		case <-ticker.C:
+		case <-timer.C:
 			sendCtx, cancel := context.WithTimeout(context.Background(), fs.cfg.submitTimeout)
 
-			// every tick load new config from db
+			// reload config
 			err := fs.loadConfig(sendCtx, false)
 			if err != nil {
-				log.Error(
-					"error reloading flag sender config from db",
-					prettylogger.Err(err),
-				)
+				log.Error("error reloading flag sender config from db", prettylogger.Err(err))
 				cancel()
 				continue
 			}
+
 			flagsOld, err := fs.db.UpdateStatusForOldFlags(sendCtx, fs.cfg.flagTTL)
 			if err != nil {
 				log.Error("error setting flags to old", prettylogger.Err(err))
@@ -117,7 +111,6 @@ func (fs *FlagSender) Start() error {
 				cancel()
 				continue
 			}
-
 			cancel()
 
 			for flag, result := range result {
@@ -126,8 +119,9 @@ func (fs *FlagSender) Start() error {
 					log.Error("error updating flag status", slog.String("flag", flag), prettylogger.Err(err))
 				}
 			}
-			ticker.Reset(fs.cfg.submitPeriod)
+
 		case <-fs.shutdownChan:
+			timer.Stop()
 			log.Info("flag sender service shut down")
 			return nil
 		}
