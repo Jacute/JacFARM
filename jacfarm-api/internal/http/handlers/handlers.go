@@ -22,6 +22,9 @@ type ServiceInterface interface {
 	DeleteTeam(ctx context.Context, id int64) error
 
 	GetStatuses(ctx context.Context) ([]*models.Status, error)
+
+	GetConfig(ctx context.Context, filter *dto.GetConfigFilter) ([]*models.Config, int, error)
+	UpdateConfig(ctx context.Context, id int64, value string) error
 }
 
 type Handlers struct {

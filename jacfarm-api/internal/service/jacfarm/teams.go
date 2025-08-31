@@ -53,7 +53,7 @@ func (s *Service) AddTeam(ctx context.Context, team *models.Team) (int64, error)
 		return 0, err
 	}
 
-	log.Info("team successfully added", slog.Int64("id", id))
+	log.Debug("team successfully added", slog.Int64("id", id))
 
 	return id, nil
 }
@@ -71,7 +71,7 @@ func (s *Service) DeleteTeam(ctx context.Context, id int64) error {
 		return err
 	}
 
-	log.Info("team successfully deleted")
+	log.Debug("team successfully deleted")
 
 	return nil
 }

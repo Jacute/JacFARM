@@ -19,7 +19,7 @@ func (s *Service) ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([
 		log.Error("error getting flags", prettylogger.Err(err))
 		return nil, 0, err
 	}
-	log.Info("got flags successfully")
+	log.Debug("got flags successfully")
 
 	return flags, count, nil
 }
@@ -38,7 +38,7 @@ func (s *Service) PutFlag(ctx context.Context, flag string) error {
 		log.Error("error sending flag to queue", prettylogger.Err(err))
 		return err
 	}
-	log.Info("flag successfully send to queue")
+	log.Debug("flag successfully send to queue")
 
 	return nil
 }

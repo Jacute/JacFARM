@@ -23,6 +23,9 @@ type storage interface {
 	DeleteTeam(ctx context.Context, id int64) error
 
 	GetStatuses(ctx context.Context) ([]*models.Status, error)
+
+	UpdateConfigRow(ctx context.Context, id int64, value string) error
+	GetConfig(ctx context.Context, filter *dto.GetConfigFilter) ([]*models.Config, int, error)
 }
 
 type queue interface {

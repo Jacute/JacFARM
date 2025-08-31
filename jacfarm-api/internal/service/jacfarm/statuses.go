@@ -17,7 +17,7 @@ func (s *Service) GetStatuses(ctx context.Context) ([]*models.Status, error) {
 		log.Error("error getting statuses", prettylogger.Err(err))
 		return nil, err
 	}
-	log.Info("got statuses successfully")
+	log.Debug("got statuses successfully")
 
 	return statuses, nil
 }
