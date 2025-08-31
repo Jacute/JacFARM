@@ -17,6 +17,10 @@ type GetConfigFilter struct {
 	Page  uint64 `json:"page"`
 }
 
+type UpdateConfigRequest struct {
+	Value string `json:"value"`
+}
+
 func MapQueryToGetConfigFilter(queries map[string]string) (*GetConfigFilter, error) {
 	var limit int
 	limitStr, ok := queries["limit"]

@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"JacFARM/internal/http/dto"
+	"JacFARM/internal/storage"
+	"errors"
+	"strconv"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -32,16 +35,24 @@ func (h *Handlers) UpdateConfig() func(c fiber.Ctx) error {
 			return c.JSON(dto.ErrInvalidContentType)
 		}
 
-		// TODO: add update config
-		// var req dto.PutConfigRequest
-		// if err := c.Bind().Body(&req); err != nil {
-		// 	return c.JSON(dto.ErrDecodingBody)
-		// }
+		idStr := c.Params("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			return c.JSON(dto.Error("id should be uuid"))
+		}
 
-		// err := h.service.PutConfig(c.RequestCtx(), req.Value)
-		// if err != nil {
-		// 	return c.JSON(dto.ErrInternal)
-		// }
+		var req dto.UpdateConfigRequest
+		if err := c.Bind().Body(&req); err != nil {
+			return c.JSON(dto.ErrDecodingBody)
+		}
+
+		err = h.service.UpdateConfig(c.RequestCtx(), int64(id), req.Value)
+		if err != nil {
+			if errors.Is(err, storage.ErrConfigParamNotFound) {
+				return c.JSON(dto.Error(err.Error()))
+			}
+			return c.JSON(dto.ErrInternal)
+		}
 
 		return c.JSON(dto.OK())
 	}
