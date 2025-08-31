@@ -22,7 +22,7 @@ export const AddModal = (props: props) => {
     return (
         <>
             <div className="modal-body d-flex flex-column">
-                <label htmlFor="flag">Флаг</label>
+                <label htmlFor="flag">Flag</label>
                 <input
                     type="text"
                     id="flag"
@@ -32,8 +32,8 @@ export const AddModal = (props: props) => {
                 />
             </div>
             <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit}>Сохранить</button>
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSubmit}>Save</button>
             </div>
         </>
     )

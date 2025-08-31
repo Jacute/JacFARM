@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import type { Flag } from '../../models/models'
-import { getFlags } from '../../api/flags'
 import { PAGE_LIMIT } from '../../api/api'
 
 

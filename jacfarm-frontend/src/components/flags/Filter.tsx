@@ -28,7 +28,7 @@ export const FlagFilter = (props: props) => {
     return (
         <div className="row mb-2">
         <div className="col-3">
-          <label className="form-label">Команда</label>
+          <label className="form-label">Team</label>
           <select
             className="form-select"
             value={props.team_id}
@@ -39,7 +39,7 @@ export const FlagFilter = (props: props) => {
                 }
             }}
           >
-            <option value="">Все</option>
+            <option value="">All</option>
             {teams.map((team) => (
               <option key={team.id} value={team.id}>
                 {team.ip}
@@ -48,7 +48,7 @@ export const FlagFilter = (props: props) => {
           </select>
         </div>
         <div className="col-3">
-          <label className="form-label">Эксплойт</label>
+          <label className="form-label">Exploit</label>
           <select
             className="form-select"
             value={props.exploit_id}
@@ -56,7 +56,7 @@ export const FlagFilter = (props: props) => {
                 props.setExploitId(e.target.value);
             }}
           >
-            <option value="">Все</option>
+            <option value="">All</option>
             {exploits.map((exploit) => (
               <option key={exploit.id} value={exploit.id}>
                 {exploit.name}
@@ -65,7 +65,7 @@ export const FlagFilter = (props: props) => {
           </select>
         </div>
         <div className="col-3">
-          <label className="form-label">Статус</label>
+          <label className="form-label">Status</label>
           <select
             className="form-select"
             value={props.status_id}
@@ -76,7 +76,7 @@ export const FlagFilter = (props: props) => {
                 }
             }}
           >
-            <option value="">Все</option>
+            <option value="">All</option>
             {statuses.map((status) => (
               <option key={status.id} value={status.id}>
                 {status.name}

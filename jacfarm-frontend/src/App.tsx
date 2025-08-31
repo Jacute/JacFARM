@@ -4,6 +4,7 @@ import { ExploitsPage } from './pages/Exploits';
 import { FlagsPage } from './pages/Flags';
 import './styles/index.css'
 import { useState } from 'react'
+import { TeamsPage } from './pages/Teams';
 
 function App() {
   const [page, setPage] = useState<string>("flags");
@@ -15,7 +16,7 @@ function App() {
         <div className="col-10">
           {page === "flags" && <FlagsPage />}
           {page === "exploits" && <ExploitsPage />}
-          {page === "teams" && <div>Teams</div>}
+          {page === "teams" && <TeamsPage />}
           {page === "config" && <div>Config</div>}
         </div>
       </div>

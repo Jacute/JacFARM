@@ -14,12 +14,12 @@ export interface Status {
 }
 
 export interface ExploitShort {
-    id: number
+    id: string
     name: string
 }
 
 export interface Exploit {
-    id: number
+    id: string
     name: string
     is_running: boolean
     is_running_on_farm: boolean
