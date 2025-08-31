@@ -38,3 +38,9 @@ export interface TeamShort {
     id: number
     ip: string
 }
+
+export interface Config {
+    id: number
+    name: string
+    value: string
+}
