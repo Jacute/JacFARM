@@ -5,7 +5,6 @@ import { getConfig } from "../api/config";
 import type { Config } from "../models/models";
 import { toast } from "react-toastify";
 
-export const configPage = "config";
 
 export const ConfigPage = () => {
     const [page, setPage] = useState<number>(1);

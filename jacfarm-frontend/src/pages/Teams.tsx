@@ -7,7 +7,6 @@ import type { Team } from "../models/models"
 import { getTeams } from "../api/teams"
 import { toast } from "react-toastify"
 
-export const teamsPage = "teams"
 
 export const TeamsPage = () => {
   const [search, setSearch] = useState<string>("")

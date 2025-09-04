@@ -8,7 +8,6 @@ import type { Flag } from "../models/models"
 import { getFlags } from "../api/flags"
 import { toast } from "react-toastify"
 
-export const flagsPage = "flags"
 
 export const FlagsPage = () => {
   const [team_id, setTeamId] = useState<number>(0);

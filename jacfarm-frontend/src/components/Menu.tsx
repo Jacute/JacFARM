@@ -1,10 +1,8 @@
-import { configPage } from "../pages/Config"
-import { exploitsPage } from "../pages/Exploits"
-import { flagsPage } from "../pages/Flags"
-import { teamsPage } from "../pages/Teams"
+import { Page } from '../pages/enum';
+import type { PageType } from '../pages/enum';
 
 interface props {
-    setPage: (page: string) => void
+    setPage: (page: PageType) => void
 }
 
 export const Menu = (props: props) => {
@@ -24,10 +22,11 @@ export const Menu = (props: props) => {
             </div>
 
             <div className="row d-flex mx-auto">
-                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(flagsPage)}>Flags</button>
-                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(exploitsPage)}>Exploits</button>
-                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(teamsPage)}>Teams</button>
-                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(configPage)}>Config</button>
+                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.FLAGS_PAGE)}>Flags</button>
+                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.EXPLOITS_PAGE)}>Exploits</button>
+                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.TEAMS_PAGE)}>Teams</button>
+                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.CONFIG_PAGE)}>Config</button>
+                <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.LOGS_PAGE)}>Logs</button>
             </div>
         </div>
     )
