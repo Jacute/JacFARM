@@ -41,6 +41,7 @@ func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) erro
 		common_config.ConfigExploitDuration:       cfg.ExploitRunner.RunDuration.String(),
 		common_config.ConfigExploitMaxWorkingTime: cfg.ExploitRunner.ExploitMaxWorkingTime.String(),
 		common_config.ConfigMaxConcurrentExploits: strconv.Itoa(cfg.ExploitRunner.MaxConcurrentExploits),
+		common_config.ConfigVenvMaxInstallTime:    cfg.ExploitRunner.VenvMaxInstallTime.String(),
 
 		common_config.ConfigFlagSenderFlagTTL:       cfg.FlagSender.FlagTTL.String(),
 		common_config.ConfigFlagSenderJuryFlagURL:   cfg.FlagSender.JuryFlagURL,

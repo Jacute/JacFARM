@@ -8,6 +8,7 @@ exploit_runner:
   exploit_directory: ./exploits
   max_concurrent_exploits: 50
   exploit_max_working_time: 5s
+  venv_max_install_time: 30s
 
 flag_sender:
   plugin: forcad_http

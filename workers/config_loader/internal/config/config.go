@@ -21,6 +21,7 @@ type ExploitRunnerConfig struct {
 	MaxConcurrentExploits int           `yaml:"max_concurrent_exploits"`
 	ExploitDirectory      string        `yaml:"exploit_directory"`
 	ExploitMaxWorkingTime time.Duration `yaml:"exploit_max_working_time"`
+	VenvMaxInstallTime    time.Duration `yaml:"venv_max_install_time"`
 }
 
 type FlagSenderConfig struct {

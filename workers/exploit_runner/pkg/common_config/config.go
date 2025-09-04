@@ -12,4 +12,5 @@ const (
 	ConfigFlagSenderToken         = "FLAG_SENDER_TOKEN"
 	ConfigFlagSenderSubmitLimit   = "FLAG_SENDER_SUBMIT_LIMIT"
 	ConfigFlagSenderFlagTTL       = "FLAG_SENDER_FLAG_TTL"
+	ConfigVenvMaxInstallTime      = "EXPLOIT_RUNNER_VENV_MAX_INSTALL_TIME"
 )
