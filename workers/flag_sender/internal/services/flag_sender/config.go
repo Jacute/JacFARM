@@ -12,7 +12,6 @@ import (
 
 type config struct {
 	plugin        string
-	pluginDir     string
 	juryFlagURL   string
 	token         string
 	flagTTL       time.Duration

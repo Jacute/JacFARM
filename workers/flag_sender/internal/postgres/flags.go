@@ -51,6 +51,59 @@ func (s *Storage) PutFlag(ctx context.Context, flag *models.Flag) (int64, error)
 	return lastInsertedId, nil
 }
 
+func (s *Storage) PutFlags(ctx context.Context, flags []*models.Flag) ([]int64, error) {
+	insertBuilder := sq.Insert("flags").
+		Columns("value", "status_id", "message_from_server", "created_at", "exploit_id", "get_from").
+		PlaceholderFormat(sq.Dollar).
+		Suffix("ON CONFLICT (value) DO NOTHING RETURNING id")
+
+	for _, flag := range flags {
+		values := []interface{}{
+			flag.Value,
+			sq.Expr("(SELECT id FROM statuses WHERE name = ?)", flag.Status),
+			flag.MessageFromServer,
+			flag.CreatedAt,
+			nil, // exploit_id
+			nil, // get_from
+		}
+
+		if flag.ExploitID != nil {
+			values[4] = *flag.ExploitID
+		}
+		if flag.GetFrom != nil {
+			values[5] = *flag.GetFrom
+		}
+
+		insertBuilder = insertBuilder.Values(values...)
+	}
+
+	query, args, err := insertBuilder.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("error building batch insert query: %w", err)
+	}
+
+	rows, err := s.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("error executing batch insert: %w", err)
+	}
+	defer rows.Close()
+
+	var ids []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ids, nil
+}
+
 func (s *Storage) GetFlagValuesByStatus(ctx context.Context, status models.FlagStatus) ([]string, error) {
 	rows, err := s.db.Query(ctx, `SELECT value
 		FROM flags

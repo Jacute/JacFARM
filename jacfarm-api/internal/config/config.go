@@ -42,10 +42,12 @@ type DBConfig struct {
 }
 
 type RabbitMQConfig struct {
-	Host     string `envconfig:"RABBITMQ_HOST"`
-	Port     int    `envconfig:"RABBITMQ_PORT"`
-	Username string `envconfig:"RABBITMQ_USERNAME"`
-	Password string `envconfig:"RABBITMQ_PASSWORD"`
+	Host           string `envconfig:"RABBITMQ_HOST"`
+	Port           int    `envconfig:"RABBITMQ_PORT"`
+	Username       string `envconfig:"RABBITMQ_USERNAME"`
+	Password       string `envconfig:"RABBITMQ_PASSWORD"`
+	ManagementHost string `envconfig:"RABBITMQ_MANAGEMENT_HOST"`
+	ManagementPort int    `envconfig:"RABBITMQ_MANAGEMENT_PORT"`
 }
 
 func MustParseConfig() *Config {

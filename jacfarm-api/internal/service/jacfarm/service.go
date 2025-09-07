@@ -30,6 +30,7 @@ type storage interface {
 
 type queue interface {
 	PublishFlag(flag *rabbitmq_dto.Flag) error
+	GetFlagsCount() (int, error)
 }
 
 type Service struct {

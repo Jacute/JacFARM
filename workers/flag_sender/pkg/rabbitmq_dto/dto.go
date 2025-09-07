@@ -1,5 +1,7 @@
 package rabbitmq_dto
 
+import "time"
+
 type FlagSourceType string
 
 var (
@@ -13,4 +15,5 @@ type Flag struct {
 	ExploitID  string         `json:"exploit"`
 	TeamID     int64          `json:"victim_team"`
 	SourceType FlagSourceType `json:"source_type"`
+	CreatedAt  time.Time      `json:"created_at"`
 }

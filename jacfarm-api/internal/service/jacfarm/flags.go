@@ -6,6 +6,7 @@ import (
 	"JacFARM/pkg/rabbitmq_dto"
 	"context"
 	"log/slog"
+	"time"
 
 	"github.com/jacute/prettylogger"
 )
@@ -33,6 +34,7 @@ func (s *Service) PutFlag(ctx context.Context, flag string) error {
 		ExploitID:  "",
 		TeamID:     0,
 		SourceType: rabbitmq_dto.ManualSendingSourceType,
+		CreatedAt:  time.Now().UTC(),
 	})
 	if err != nil {
 		log.Error("error sending flag to queue", prettylogger.Err(err))
@@ -41,4 +43,18 @@ func (s *Service) PutFlag(ctx context.Context, flag string) error {
 	log.Debug("flag successfully send to queue")
 
 	return nil
+}
+
+func (s *Service) GetFlagsCount() (int, error) {
+	const op = "service.jacfarm.GetFlagsCount"
+	log := s.log.With(slog.String("op", op))
+
+	count, err := s.que.GetFlagsCount()
+	if err != nil {
+		log.Error("error getting flags count", prettylogger.Err(err))
+		return 0, err
+	}
+	log.Debug("got flags count successfully", slog.Int("count", count))
+
+	return count, nil
 }

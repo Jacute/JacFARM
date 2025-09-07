@@ -20,7 +20,7 @@ services:
       start_period: 10s
   flag_queue:
     hostname: flag_queue
-    image: rabbitmq:4.1.2
+    image: rabbitmq:4.1.2-management
     restart: on-failure
     environment:
       - RABBITMQ_DEFAULT_USER=rmuser
@@ -28,6 +28,7 @@ services:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
     ports:
       - 5672:5672
+      - 127.0.0.1:15672:15672
     volumes:
       - ./volumes/rabbitmq:/var/lib/rabbitmq
     healthcheck:
@@ -117,6 +118,8 @@ services:
       - RABBITMQ_PORT=5672
       - RABBITMQ_USERNAME=rmuser
       - RABBITMQ_PASSWORD=rmpassword
+      - RABBITMQ_MANAGEMENT_HOST=flag_queue
+      - RABBITMQ_MANAGEMENT_PORT=15672
       - HTTP_HOST=0.0.0.0
       - HTTP_PORT=1337
       - HTTP_READ_TIMEOUT=10s

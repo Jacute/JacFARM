@@ -10,9 +10,9 @@ import (
 const flagsQueueName = "flags"
 
 type Rabbit struct {
+	cfg        *config.RabbitMQConfig
 	conn       *amqp.Connection
 	writeCh    *amqp.Channel
-	readCh     *amqp.Channel
 	flagsQueue *amqp.Queue
 }
 
@@ -31,10 +31,6 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 	if err != nil {
 		panic("failed to create rabbitmq channel: " + err.Error())
 	}
-	readCh, err := conn.Channel()
-	if err != nil {
-		panic("failed to create rabbitmq channel: " + err.Error())
-	}
 	q, err := writeCh.QueueDeclare(
 		flagsQueueName, // name
 		true,           // durable
@@ -48,8 +44,8 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 	}
 	return &Rabbit{
 		conn:       conn,
+		cfg:        cfg,
 		writeCh:    writeCh,
-		readCh:     readCh,
 		flagsQueue: &q,
 	}
 }

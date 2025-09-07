@@ -18,6 +18,7 @@ func TestConfig_HappyPath(t *testing.T) {
 
 	ctl := gomock.NewController(t)
 	storage := mocks.NewStorageMock(ctl)
+	queue := mocks.NewQueueMock(ctl)
 	storage.EXPECT().GetConfigParameter(testCtx, common_config.ConfigFlagSenderPlugin).Return("test", nil)
 	storage.EXPECT().GetConfigParameter(testCtx, common_config.ConfigFlagSenderToken).Return("test", nil)
 	storage.EXPECT().GetConfigParameter(testCtx, common_config.ConfigFlagSenderFlagTTL).Return("1m", nil)
@@ -28,12 +29,12 @@ func TestConfig_HappyPath(t *testing.T) {
 
 	fs, err := New(
 		fakeLogger,
-		storage,
 		"test",
+		queue,
+		storage,
 	)
-	require.NotNil(t, fs)
 	require.NoError(t, err)
-	require.Equal(t, "test", fs.cfg.pluginDir)
+	require.NotNil(t, fs)
 }
 
 func TestConfig_Errors(t *testing.T) {
@@ -65,13 +66,15 @@ func TestConfig_Errors(t *testing.T) {
 		},
 	}
 
+	queue := mocks.NewQueueMock(ctl)
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			storage := mocks.NewStorageMock(ctl)
 			fs, err := New(
 				fakeLogger,
-				storage,
 				"test",
+				queue,
+				storage,
 			)
 			require.NotNil(t, fs)
 			require.NoError(t, err)

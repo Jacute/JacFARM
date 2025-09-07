@@ -41,6 +41,7 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *f
 	flagGroup.Get("/", h.ListFlags())
 	flagGroup.Post("/", h.PutFlag())
 	flagGroup.Get("/statuses", h.GetStatuses())
+	flagGroup.Get("/count", h.GetFlagsCount())
 
 	exploitGroup := apiV1.Group("/exploits")
 	exploitGroup.Get("/", h.ListExploits())

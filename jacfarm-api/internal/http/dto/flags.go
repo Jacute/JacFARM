@@ -29,6 +29,11 @@ type GetStatusesResponse struct {
 	Statuses []*models.Status `json:"statuses"`
 }
 
+type GetFlagsCountResponse struct {
+	*Response
+	Count int `json:"count"`
+}
+
 func MapQueryToGetFlagsFilter(queries map[string]string) (*ListFlagsFilter, error) {
 	exploitID := queries["exploit_id"]
 

@@ -59,3 +59,18 @@ func (h *Handlers) GetStatuses() func(c fiber.Ctx) error {
 		})
 	}
 }
+
+func (h *Handlers) GetFlagsCount() func(c fiber.Ctx) error {
+	return func(c fiber.Ctx) error {
+		count, err := h.service.GetFlagsCount()
+		if err != nil {
+			c = c.Status(fiber.StatusInternalServerError)
+			return c.JSON(dto.ErrInternal)
+		}
+
+		return c.JSON(dto.GetFlagsCountResponse{
+			Response: dto.OK(),
+			Count:    count,
+		})
+	}
+}
