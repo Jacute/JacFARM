@@ -2,6 +2,7 @@ import { Page } from '../pages/enum';
 import type { PageType } from '../pages/enum';
 
 interface props {
+    flagsCount: number
     setPage: (page: PageType) => void
 }
 
@@ -27,6 +28,10 @@ export const Menu = (props: props) => {
                 <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.TEAMS_PAGE)}>Teams</button>
                 <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.CONFIG_PAGE)}>Config</button>
                 <button className="btn btn-primary w-90 border border-1 mb-2 mx-auto" onClick={() => props.setPage(Page.LOGS_PAGE)}>Logs</button>
+            </div>
+
+            <div className='row d-flex'>
+                <p className='position-absolute bottom-0 start-0'>Флагов в очереди: {props.flagsCount}</p>
             </div>
         </div>
     )

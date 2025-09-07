@@ -38,3 +38,14 @@ export const sendFlag = async (flag: string) => {
         throw Error(data.error);
     }
 }
+
+export const getFlagsCount = async () => {
+    const res = await fetch(`${API_URI}/api/v1/flags/count`, {credentials: "include"});
+    const data = await res.json();
+
+    if (data.status != STATUS_OK) {
+        throw Error(data.error);
+    }
+
+    return data.count;
+}
