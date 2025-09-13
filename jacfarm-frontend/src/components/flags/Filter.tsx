@@ -57,7 +57,7 @@ export const FlagFilter = (props: props) => {
             }}
           >
             <option value="">All</option>
-            {exploits.map((exploit) => (
+            {exploits?.map((exploit) => (
               <option key={exploit.id} value={exploit.id}>
                 {exploit.name}
               </option>
@@ -86,7 +86,7 @@ export const FlagFilter = (props: props) => {
         </div>
         <div className="col-3 d-flex align-items-end">
           <button className="btn btn-primary border border-1" onClick={props.loadFlags}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M23 4v6h-6"></path>
               <path d="M1 20v-6h6"></path>
               <path d="M2.51 9a9 9 0 0 1 14.85-3.36L23 10"></path>

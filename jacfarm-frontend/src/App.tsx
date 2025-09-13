@@ -44,7 +44,7 @@ function App() {
           {page === Page.LOGS_PAGE && <LogsPage />}
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer limit={3} />
     </div>
   )
 }

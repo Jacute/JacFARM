@@ -31,7 +31,7 @@ export const Menu = (props: props) => {
             </div>
 
             <div className='row d-flex'>
-                <p className='position-absolute bottom-0 start-0'>Флагов в очереди: {props.flagsCount}</p>
+                <p className='position-absolute bottom-0 start-0'>Flags in queue: {props.flagsCount}</p>
             </div>
         </div>
     )
