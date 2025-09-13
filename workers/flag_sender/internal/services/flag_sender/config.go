@@ -3,7 +3,9 @@ package flag_sender
 import (
 	"context"
 	"flag_sender/pkg/common_config"
+	"fmt"
 	"log/slog"
+	"path"
 	"strconv"
 	"time"
 
@@ -138,6 +140,14 @@ func (er *FlagSender) loadConfig(ctx context.Context, updatePlugin bool) error {
 	er.cfg.submitTimeout = submitTimeout
 	er.cfg.submitPeriod = submitPeriod
 	er.cfg.submitLimit = submitLimit
+
+	// load plugin
+	pluginPath := path.Join(er.pluginDir, er.cfg.plugin+".so")
+	plugin, err := loadPlugin(pluginPath, er.cfg.juryFlagURL, er.cfg.token)
+	if err != nil {
+		return fmt.Errorf("error loading plugin: %w", err)
+	}
+	er.pluginClient = plugin
 
 	return nil
 }

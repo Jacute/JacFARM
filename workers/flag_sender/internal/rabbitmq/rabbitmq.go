@@ -29,6 +29,17 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 	if err != nil {
 		panic("failed to create rabbitmq channel: " + err.Error())
 	}
+	_, err = readCh.QueueDeclare(
+		flagsQueueName, // name
+		true,           // durable
+		false,          // delete when unused
+		false,          // exclusive
+		false,          // no-wait
+		nil,            // arguments
+	)
+	if err != nil {
+		panic("failed to declare queue: " + err.Error())
+	}
 	return &Rabbit{
 		conn:   conn,
 		readCh: readCh,

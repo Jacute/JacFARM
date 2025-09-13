@@ -43,7 +43,6 @@ func main() {
 			panic(err)
 		}
 	}()
-	log.Info("flag saver & flag sender services started", slog.String("env", cfg.Env))
 
 	// graceful shutdown
 	sgn := make(chan os.Signal, 1)

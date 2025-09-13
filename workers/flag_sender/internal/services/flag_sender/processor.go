@@ -13,7 +13,7 @@ import (
 )
 
 func (fs *FlagSender) processBatch(ctx context.Context, batch []amqp.Delivery) error {
-	const op = "service.flag_saver.processFlag"
+	const op = "service.flag_sender.processBatch"
 	log := fs.log.With(slog.String("op", op))
 
 	flags := make([]*models.Flag, 0, len(batch))
@@ -39,7 +39,6 @@ func (fs *FlagSender) processBatch(ctx context.Context, batch []amqp.Delivery) e
 		log.Debug("added expired flags", slog.Any("ids", ids))
 	}
 
-	log.Debug("processing batch", slog.Any("flag_count", len(flags)))
 	flagStrings := make([]string, 0, len(flags))
 	for _, flag := range flags {
 		flagStrings = append(flagStrings, flag.Value)
@@ -50,6 +49,7 @@ func (fs *FlagSender) processBatch(ctx context.Context, batch []amqp.Delivery) e
 	if err != nil {
 		return fmt.Errorf("error sending flags: %w", err)
 	}
+	log.Info("flags send successfully", slog.Int("count", len(result)))
 	for flag, flagResult := range result {
 		flagModel := findFlagByValue(flags, flag)
 		if flagModel == nil {
@@ -59,11 +59,13 @@ func (fs *FlagSender) processBatch(ctx context.Context, batch []amqp.Delivery) e
 		flagModel.MessageFromServer = flagResult.Msg
 	}
 
-	ids, err := fs.db.PutFlags(context.Background(), flags)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+	if len(flags) > 0 {
+		ids, err := fs.db.PutFlags(context.Background(), flags)
+		if err != nil {
+			return fmt.Errorf("%s: %w", op, err)
+		}
+		log.Debug("flags added in db", slog.Int("count", len(ids)))
 	}
-	log.Info("flag send successfully", slog.Int("count", len(ids)))
 
 	return nil
 }

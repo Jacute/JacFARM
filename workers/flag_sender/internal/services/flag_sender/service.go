@@ -6,7 +6,6 @@ import (
 	"flag_sender/pkg/plugins"
 	"fmt"
 	"log/slog"
-	"path"
 	"time"
 
 	"github.com/jacute/prettylogger"
@@ -32,30 +31,24 @@ type FlagSender struct {
 	queue        queue
 	db           storage
 	cfg          *config
+	pluginDir    string
 	pluginClient plugins.IClient
 	stopChan     chan struct{}
 }
 
 func New(log *slog.Logger, pluginDir string, q queue, db storage) (*FlagSender, error) {
 	fs := &FlagSender{
-		log:      log,
-		queue:    q,
-		db:       db,
-		stopChan: make(chan struct{}),
-		cfg:      &config{},
+		log:       log,
+		queue:     q,
+		db:        db,
+		pluginDir: pluginDir,
+		stopChan:  make(chan struct{}),
+		cfg:       &config{},
 	}
 	err := fs.loadConfig(context.Background(), true)
 	if err != nil {
 		return nil, fmt.Errorf("error loading flag sender config: %w", err)
 	}
-
-	// load plugin
-	pluginPath := path.Join(pluginDir, fs.cfg.plugin+".so")
-	plugin, err := loadPlugin(pluginPath, fs.cfg.juryFlagURL, fs.cfg.token)
-	if err != nil {
-		return nil, fmt.Errorf("error loading plugin: %w", err)
-	}
-	fs.pluginClient = plugin
 
 	return fs, nil
 }
@@ -78,44 +71,36 @@ func (fs *FlagSender) Start() error {
 		case flag, ok := <-flagChan:
 			if !ok {
 				log.Info("flag channel closed")
-				return nil
+				continue
 			}
 
-			batch = append(batch, flag)
-			if len(batch) >= fs.cfg.submitLimit {
-				sendCtx, cancel := context.WithTimeout(context.Background(), fs.cfg.submitTimeout)
-				last := batch[len(batch)-1]
-				if err := fs.processBatch(sendCtx, batch); err != nil {
-					log.Error("failed to process flag", prettylogger.Err(err))
-					last.Nack(true, true) // if error, requeue the message
-					batch = batch[:0]
-					cancel()
-					continue
-				}
-
-				last.Ack(true)
-				batch = batch[:0]
-				cancel()
+			if len(batch) < fs.cfg.submitLimit {
+				batch = append(batch, flag)
 			}
 		case <-timer.C:
 			sendCtx, cancel := context.WithTimeout(context.Background(), fs.cfg.submitTimeout)
 			err := fs.loadConfig(sendCtx, false)
 			if err != nil {
 				log.Error("error reloading flag sender config from db", prettylogger.Err(err))
-				cancel()
 				continue
 			}
-			if len(batch) > 0 {
-				last := batch[len(batch)-1]
-				if err := fs.processBatch(sendCtx, batch); err != nil {
-					log.Error("failed to process flag", prettylogger.Err(err))
-					last.Nack(true, true) // if error, requeue the message
-					cancel()
-					continue
-				}
 
-				last.Ack(true)
+			if len(batch) > 0 {
+				err := fs.processBatch(sendCtx, batch)
+				if err != nil {
+					log.Error("failed to process flag", prettylogger.Err(err))
+				}
+				for _, msg := range batch {
+					if err != nil {
+						// requeue каждое сообщение отдельно
+						msg.Nack(false, true)
+					} else {
+						msg.Ack(false)
+					}
+				}
 				batch = batch[:0]
+			} else {
+				log.Info("no flags to process")
 			}
 			cancel()
 		case <-fs.stopChan:
