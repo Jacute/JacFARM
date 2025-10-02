@@ -35,7 +35,9 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 		false,          // delete when unused
 		false,          // exclusive
 		false,          // no-wait
-		nil,            // arguments
+		amqp.Table{
+			"x-message-deduplication": true,
+		},
 	)
 	if err != nil {
 		panic("failed to declare queue: " + err.Error())

@@ -10,6 +10,8 @@ services:
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
       - ./migrations/001_create_schema.up.sql:/docker-entrypoint-initdb.d/001_init_tables.sql:ro
+    ports:
+      - 127.0.0.1:5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "jacfarm", "-h", "localhost"]
       interval: 10s
@@ -18,7 +20,9 @@ services:
       start_period: 10s
   flag_queue:
     hostname: flag_queue
-    image: rabbitmq:4.1.2-management
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.flag_queue
     restart: on-failure
     environment:
       - RABBITMQ_DEFAULT_USER=rmuser
@@ -127,8 +131,6 @@ services:
       - ENV=prod
       - JACFARM_API_KEY=${JACFARM_API_KEY}
       - EXPLOIT_DIR=/app/exploits
-    ports:
-      - 1337:1337
     volumes:
       - ./volumes/exploits:/app/exploits
     depends_on:

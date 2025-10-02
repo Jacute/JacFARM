@@ -27,7 +27,7 @@ function App() {
   useEffect(() => {
     loadFlagsCount();
 
-    const interval = setInterval(loadFlagsCount, 1000);
+    const interval = setInterval(loadFlagsCount, 500);
 
     return () => clearInterval(interval); // очистка при размонтировании
   }, [loadFlagsCount]);
