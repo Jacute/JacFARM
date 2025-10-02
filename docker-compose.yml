@@ -9,7 +9,7 @@ services:
       - POSTGRES_DB=jacfarm
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
-      - ./migrations/001_create_schema.up.sql:/docker-entrypoint-initdb.d/001_init_tables.sql:ro
+      - ./migrations/001_create_app_schema.up.sql:/docker-entrypoint-initdb.d/001_init_tables.sql:ro
     ports:
       - 127.0.0.1:5432:5432
     healthcheck:
