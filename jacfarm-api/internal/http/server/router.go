@@ -11,6 +11,12 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/recover"
 )
 
+// @title           JacFARM API Docs
+
+// @host      localhost:15050
+// @BasePath  /jacfarm-api
+
+// @securityDefinitions.basic  BasicAuth
 func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *fiber.App {
 	r := fiber.New(fiber.Config{
 		ReadTimeout:     cfg.ReadTimeout,

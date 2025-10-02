@@ -6,7 +6,7 @@ Exploit farm for attack-defense CTF competition
 
 ### Arch Diagram
 
-![](./docs/img/diagram.png)
+![](./docs/img/diagram.jpg)
 
 ### Server
 

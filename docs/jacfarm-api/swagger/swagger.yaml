@@ -1,0 +1,68 @@
+basePath: /jacfarm-api
+definitions:
+  JacFARM_internal_http_dto.GetConfigResponse:
+    properties:
+      config:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.Config'
+        type: array
+      count:
+        type: integer
+      error:
+        type: string
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.Response:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+    type: object
+  JacFARM_internal_models.Config:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+host: localhost:15050
+info:
+  contact: {}
+  title: JacFARM API Docs
+paths:
+  /api/v1/config:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.GetConfigResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "403":
+          description: Недостаточно прав
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      summary: Возвращает конфигурацию JacFARM
+      tags:
+      - Auth
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

@@ -9,16 +9,25 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
+// GetConfig godoc
+// @Summary Возвращает конфигурацию JacFARM
+// @Produce json
+// @Success 200 {object} dto.GetConfigResponse
+// @Failure 400 {object} dto.Response "Неверный запрос"
+// @Failure 401 {object} dto.Response "Ошибка авторизации"
+// @Failure 500 {object} dto.Response "Внутренняя ошибка"
+// @Router /api/v1/config [get]
+// @Tags Auth
 func (h *Handlers) GetConfig() func(c fiber.Ctx) error {
 	return func(c fiber.Ctx) error {
 		filter, err := dto.MapQueryToGetConfigFilter(c.Queries())
 		if err != nil {
-			return c.JSON(dto.Error(err.Error()))
+			return c.Status(fiber.StatusBadRequest).JSON(dto.Error(err.Error()))
 		}
 
 		config, count, err := h.service.GetConfig(c.RequestCtx(), filter)
 		if err != nil {
-			return c.JSON(dto.ErrInternal)
+			return c.Status(fiber.StatusInternalServerError).JSON(dto.ErrInternal)
 		}
 
 		return c.JSON(dto.GetConfigResponse{
