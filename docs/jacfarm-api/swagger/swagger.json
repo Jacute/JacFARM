@@ -9,13 +9,32 @@
     "paths": {
         "/api/v1/config": {
             "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Auth"
+                    "Config"
                 ],
                 "summary": "Возвращает конфигурацию JacFARM",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Количество конфигураций",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Страница конфигурации",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -35,8 +54,761 @@
                             "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
                         }
                     },
-                    "403": {
-                        "description": "Недостаточно прав",
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/config/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Возвращает конфигурацию JacFARM",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Информация о конфигурации",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.UpdateConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Конфигурация не найдена",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exploits": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exploits"
+                ],
+                "summary": "Возврат полной информации об эксплойтах",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Количество эксплойтов",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Страница эксплойтов",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ListExploitsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exploits"
+                ],
+                "summary": "Загрузка эксплойта",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Имя эксплойта",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Тип эксплойта (e.g. python)",
+                        "name": "type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Файл эксплойта",
+                        "name": "exploit",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Файл requirements (только для python)",
+                        "name": "requirements",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.UploadExploitResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exploits/short": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exploits"
+                ],
+                "summary": "Возврат короткой информации об эксплойтах",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ListShortExploitsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exploits/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exploits"
+                ],
+                "summary": "Удаление эксплойта",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Exploit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exploits/{id}/toggle": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exploits"
+                ],
+                "summary": "Включение/выключение эксплойта",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Exploit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ToggleExploitResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Эксплойт не найден",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/flags": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flags"
+                ],
+                "summary": "Возврат полной информации о флагах",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Количество флагов",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Страница флагов",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Фильтр по статусу",
+                        "name": "status_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Фильтр по эксплойту",
+                        "name": "exploit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Фильтр по команде",
+                        "name": "team_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.GetFlagsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flags"
+                ],
+                "summary": "Ручное добавление флага",
+                "parameters": [
+                    {
+                        "description": "Флаг",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.PutFlagRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/flags/count": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flags"
+                ],
+                "summary": "Возвращает количество флагов в очереди",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.GetFlagsCountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/flags/short": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flags"
+                ],
+                "summary": "Возврат короткой информации о командах",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ListShortTeamsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/flags/statuses": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flags"
+                ],
+                "summary": "Получение статусов флагов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.GetStatusesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/teams": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "Возврат полной информации о командах",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Количество команд",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Страница команд",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Поиск по названию/ip команды",
+                        "name": "query",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ListTeamsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "Добавление команды",
+                "parameters": [
+                    {
+                        "description": "Команда",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.AddTeamRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.AddTeamResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/teams/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "Удаление команды",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Team ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Команда не найдена",
                         "schema": {
                             "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
                         }
@@ -52,6 +824,34 @@
         }
     },
     "definitions": {
+        "JacFARM_internal_http_dto.AddTeamRequest": {
+            "type": "object",
+            "required": [
+                "ip"
+            ],
+            "properties": {
+                "ip": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.AddTeamResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "JacFARM_internal_http_dto.GetConfigResponse": {
             "type": "object",
             "properties": {
@@ -72,10 +872,179 @@
                 }
             }
         },
+        "JacFARM_internal_http_dto.GetFlagsCountResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.GetFlagsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.FlagEnrich"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.GetStatusesResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "statuses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.Status"
+                    }
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.ListExploitsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "exploits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.Exploit"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.ListShortExploitsResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "exploits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.ExploitShort"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.ListShortTeamsResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "teams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.ShortTeam"
+                    }
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.ListTeamsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "teams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.Team"
+                    }
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.PutFlagRequest": {
+            "type": "object",
+            "properties": {
+                "flag": {
+                    "type": "string"
+                }
+            }
+        },
         "JacFARM_internal_http_dto.Response": {
             "type": "object",
             "properties": {
                 "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.ToggleExploitResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "is_running": {
+                    "type": "boolean"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.UpdateConfigRequest": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.UploadExploitResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "status": {
@@ -93,6 +1062,135 @@
                     "type": "string"
                 },
                 "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_models.Exploit": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "is_running": {
+                    "type": "boolean"
+                },
+                "is_running_on_farm": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/JacFARM_internal_models.ExploitType"
+                }
+            }
+        },
+        "JacFARM_internal_models.ExploitShort": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_models.ExploitType": {
+            "type": "string",
+            "enum": [
+                "python",
+                "bash",
+                "binary",
+                "python_zip"
+            ],
+            "x-enum-varnames": [
+                "ExploitTypePython",
+                "ExploitTypeBash",
+                "ExploitTypeBinary",
+                "ExploitTypePythonZip"
+            ]
+        },
+        "JacFARM_internal_models.FlagEnrich": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "exploit_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message_from_server": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/JacFARM_internal_models.FlagStatus"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "victim_team": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_models.FlagStatus": {
+            "type": "string",
+            "enum": [
+                "PENDING",
+                "OLD",
+                "SUCCESS",
+                "REJECT"
+            ],
+            "x-enum-varnames": [
+                "FlagStatusPending",
+                "FlagStatusOld",
+                "FlagStatusSuccess",
+                "FlagStatusReject"
+            ]
+        },
+        "JacFARM_internal_models.ShortTeam": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "ip": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "JacFARM_internal_models.Status": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "$ref": "#/definitions/JacFARM_internal_models.FlagStatus"
+                }
+            }
+        },
+        "JacFARM_internal_models.Team": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "ip": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
                     "type": "string"
                 }
             }

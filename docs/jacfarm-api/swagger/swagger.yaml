@@ -1,5 +1,23 @@
 basePath: /jacfarm-api
 definitions:
+  JacFARM_internal_http_dto.AddTeamRequest:
+    properties:
+      ip:
+        type: string
+      name:
+        type: string
+    required:
+    - ip
+    type: object
+  JacFARM_internal_http_dto.AddTeamResponse:
+    properties:
+      error:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+    type: object
   JacFARM_internal_http_dto.GetConfigResponse:
     properties:
       config:
@@ -13,9 +31,118 @@ definitions:
       status:
         type: string
     type: object
+  JacFARM_internal_http_dto.GetFlagsCountResponse:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.GetFlagsResponse:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      flags:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.FlagEnrich'
+        type: array
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.GetStatusesResponse:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+      statuses:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.Status'
+        type: array
+    type: object
+  JacFARM_internal_http_dto.ListExploitsResponse:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      exploits:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.Exploit'
+        type: array
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.ListShortExploitsResponse:
+    properties:
+      error:
+        type: string
+      exploits:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.ExploitShort'
+        type: array
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.ListShortTeamsResponse:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+      teams:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.ShortTeam'
+        type: array
+    type: object
+  JacFARM_internal_http_dto.ListTeamsResponse:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      status:
+        type: string
+      teams:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.Team'
+        type: array
+    type: object
+  JacFARM_internal_http_dto.PutFlagRequest:
+    properties:
+      flag:
+        type: string
+    type: object
   JacFARM_internal_http_dto.Response:
     properties:
       error:
+        type: string
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.ToggleExploitResponse:
+    properties:
+      error:
+        type: string
+      is_running:
+        type: boolean
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.UpdateConfigRequest:
+    properties:
+      value:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.UploadExploitResponse:
+    properties:
+      error:
+        type: string
+      id:
         type: string
       status:
         type: string
@@ -29,6 +156,94 @@ definitions:
       value:
         type: string
     type: object
+  JacFARM_internal_models.Exploit:
+    properties:
+      id:
+        type: string
+      is_running:
+        type: boolean
+      is_running_on_farm:
+        type: boolean
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/JacFARM_internal_models.ExploitType'
+    type: object
+  JacFARM_internal_models.ExploitShort:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  JacFARM_internal_models.ExploitType:
+    enum:
+    - python
+    - bash
+    - binary
+    - python_zip
+    type: string
+    x-enum-varnames:
+    - ExploitTypePython
+    - ExploitTypeBash
+    - ExploitTypeBinary
+    - ExploitTypePythonZip
+  JacFARM_internal_models.FlagEnrich:
+    properties:
+      created_at:
+        type: string
+      exploit_name:
+        type: string
+      id:
+        type: integer
+      message_from_server:
+        type: string
+      status:
+        $ref: '#/definitions/JacFARM_internal_models.FlagStatus'
+      value:
+        type: string
+      victim_team:
+        type: string
+    type: object
+  JacFARM_internal_models.FlagStatus:
+    enum:
+    - PENDING
+    - OLD
+    - SUCCESS
+    - REJECT
+    type: string
+    x-enum-varnames:
+    - FlagStatusPending
+    - FlagStatusOld
+    - FlagStatusSuccess
+    - FlagStatusReject
+  JacFARM_internal_models.ShortTeam:
+    properties:
+      id:
+        type: integer
+      ip:
+        items:
+          type: integer
+        type: array
+    type: object
+  JacFARM_internal_models.Status:
+    properties:
+      id:
+        type: integer
+      name:
+        $ref: '#/definitions/JacFARM_internal_models.FlagStatus'
+    type: object
+  JacFARM_internal_models.Team:
+    properties:
+      id:
+        type: integer
+      ip:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+    type: object
 host: localhost:15050
 info:
   contact: {}
@@ -36,6 +251,15 @@ info:
 paths:
   /api/v1/config:
     get:
+      parameters:
+      - description: Количество конфигураций
+        in: query
+        name: limit
+        type: integer
+      - description: Страница конфигурации
+        in: query
+        name: page
+        type: integer
       produces:
       - application/json
       responses:
@@ -51,17 +275,493 @@ paths:
           description: Ошибка авторизации
           schema:
             $ref: '#/definitions/JacFARM_internal_http_dto.Response'
-        "403":
-          description: Недостаточно прав
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возвращает конфигурацию JacFARM
+      tags:
+      - Config
+  /api/v1/config/{id}:
+    patch:
+      parameters:
+      - description: Config ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Информация о конфигурации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/JacFARM_internal_http_dto.UpdateConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "404":
+          description: Конфигурация не найдена
           schema:
             $ref: '#/definitions/JacFARM_internal_http_dto.Response'
         "500":
           description: Внутренняя ошибка
           schema:
             $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
       summary: Возвращает конфигурацию JacFARM
       tags:
-      - Auth
+      - Config
+  /api/v1/exploits:
+    get:
+      parameters:
+      - description: Количество эксплойтов
+        in: query
+        name: limit
+        type: integer
+      - description: Страница эксплойтов
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ListExploitsResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат полной информации об эксплойтах
+      tags:
+      - Exploits
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Имя эксплойта
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Тип эксплойта (e.g. python)
+        in: formData
+        name: type
+        required: true
+        type: string
+      - description: Файл эксплойта
+        in: formData
+        name: exploit
+        required: true
+        type: file
+      - description: Файл requirements (только для python)
+        in: formData
+        name: requirements
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.UploadExploitResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Загрузка эксплойта
+      tags:
+      - Exploits
+  /api/v1/exploits/{id}:
+    delete:
+      parameters:
+      - description: Exploit ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Удаление эксплойта
+      tags:
+      - Exploits
+  /api/v1/exploits/{id}/toggle:
+    post:
+      parameters:
+      - description: Exploit ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ToggleExploitResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "404":
+          description: Эксплойт не найден
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Включение/выключение эксплойта
+      tags:
+      - Exploits
+  /api/v1/exploits/short:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ListShortExploitsResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат короткой информации об эксплойтах
+      tags:
+      - Exploits
+  /api/v1/flags:
+    get:
+      parameters:
+      - description: Количество флагов
+        in: query
+        name: limit
+        type: integer
+      - description: Страница флагов
+        in: query
+        name: page
+        type: integer
+      - description: Фильтр по статусу
+        in: query
+        name: status_id
+        type: integer
+      - description: Фильтр по эксплойту
+        in: query
+        name: exploit_id
+        type: integer
+      - description: Фильтр по команде
+        in: query
+        name: team_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.GetFlagsResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат полной информации о флагах
+      tags:
+      - Flags
+    post:
+      parameters:
+      - description: Флаг
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/JacFARM_internal_http_dto.PutFlagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Ручное добавление флага
+      tags:
+      - Flags
+  /api/v1/flags/count:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.GetFlagsCountResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возвращает количество флагов в очереди
+      tags:
+      - Flags
+  /api/v1/flags/short:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ListShortTeamsResponse'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат короткой информации о командах
+      tags:
+      - Flags
+  /api/v1/flags/statuses:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.GetStatusesResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Получение статусов флагов
+      tags:
+      - Flags
+  /api/v1/teams:
+    get:
+      parameters:
+      - description: Количество команд
+        in: query
+        name: limit
+        type: integer
+      - description: Страница команд
+        in: query
+        name: page
+        type: integer
+      - description: Поиск по названию/ip команды
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ListTeamsResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат полной информации о командах
+      tags:
+      - Teams
+    post:
+      parameters:
+      - description: Команда
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/JacFARM_internal_http_dto.AddTeamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.AddTeamResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Добавление команды
+      tags:
+      - Teams
+  /api/v1/teams/{id}:
+    delete:
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "404":
+          description: Команда не найдена
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Удаление команды
+      tags:
+      - Teams
 securityDefinitions:
   BasicAuth:
     type: basic
