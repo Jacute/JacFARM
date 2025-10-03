@@ -1,0 +1,39 @@
+package handlers
+
+import (
+	"JacFARM/internal/http/dto"
+	"JacFARM/internal/models"
+	"context"
+)
+
+type ServiceInterface interface {
+	ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
+	PutFlag(ctx context.Context, flag string) error
+	GetFlagsCount() (int, error)
+
+	ListExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, int, error)
+	ListShortExploits(ctx context.Context) ([]*models.ExploitShort, error)
+	ToggleExploit(ctx context.Context, id string) (bool, error)
+	UploadExploit(ctx context.Context, req *dto.UploadExploitRequest) (string, error)
+	DeleteExploit(ctx context.Context, id string) error
+
+	AddTeam(ctx context.Context, team *models.Team) (int64, error)
+	ListShortTeams(ctx context.Context) ([]*models.ShortTeam, error)
+	ListTeams(ctx context.Context, filter *dto.ListTeamsFilter) ([]*models.Team, int, error)
+	DeleteTeam(ctx context.Context, id int64) error
+
+	GetStatuses(ctx context.Context) ([]*models.Status, error)
+
+	GetConfig(ctx context.Context, filter *dto.GetConfigFilter) ([]*models.Config, int, error)
+	UpdateConfig(ctx context.Context, id int64, value string) error
+}
+
+type Handlers struct {
+	service ServiceInterface
+}
+
+func New(service ServiceInterface) *Handlers {
+	return &Handlers{
+		service: service,
+	}
+}

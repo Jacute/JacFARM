@@ -10,10 +10,8 @@ import (
 const flagsQueueName = "flags"
 
 type Rabbit struct {
-	conn       *amqp.Connection
-	writeCh    *amqp.Channel
-	readCh     *amqp.Channel
-	flagsQueue *amqp.Queue
+	conn   *amqp.Connection
+	readCh *amqp.Channel
 }
 
 func New(cfg *config.RabbitMQConfig) *Rabbit {
@@ -27,35 +25,31 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 	if err != nil {
 		panic("failed to connect to RabbitMQ: " + err.Error())
 	}
-	writeCh, err := conn.Channel()
-	if err != nil {
-		panic("failed to create rabbitmq channel: " + err.Error())
-	}
 	readCh, err := conn.Channel()
 	if err != nil {
 		panic("failed to create rabbitmq channel: " + err.Error())
 	}
-	q, err := writeCh.QueueDeclare(
+	_, err = readCh.QueueDeclare(
 		flagsQueueName, // name
 		true,           // durable
 		false,          // delete when unused
 		false,          // exclusive
 		false,          // no-wait
-		nil,            // arguments
+		amqp.Table{
+			"x-message-deduplication": true,
+		},
 	)
 	if err != nil {
 		panic("failed to declare queue: " + err.Error())
 	}
 	return &Rabbit{
-		conn:       conn,
-		writeCh:    writeCh,
-		readCh:     readCh,
-		flagsQueue: &q,
+		conn:   conn,
+		readCh: readCh,
 	}
 }
 
 func (r *Rabbit) Close() error {
-	if err := r.writeCh.Close(); err != nil {
+	if err := r.readCh.Close(); err != nil {
 		return fmt.Errorf("error closing channel %v", err)
 	}
 	if err := r.conn.Close(); err != nil {

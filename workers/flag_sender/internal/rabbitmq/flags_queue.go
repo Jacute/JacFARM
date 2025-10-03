@@ -6,7 +6,7 @@ import (
 
 func (r *Rabbit) GetFlagChan() (<-chan amqp.Delivery, error) {
 	msgs, err := r.readCh.Consume(
-		r.flagsQueue.Name,
+		flagsQueueName,
 		"",
 		false, // auto-ack
 		false, // exclusive

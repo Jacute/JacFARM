@@ -5,7 +5,6 @@ import (
 	"flag_sender/internal/config"
 	"flag_sender/internal/postgres"
 	"flag_sender/internal/rabbitmq"
-	"flag_sender/internal/services/flag_saver"
 	"flag_sender/internal/services/flag_sender"
 	"log/slog"
 	"os"
@@ -34,31 +33,22 @@ func main() {
 	rabbitmq := rabbitmq.New(cfg.Rabbit)
 
 	// init services
-	flagSender, err := flag_sender.New(log, db, cfg.PluginDir)
+	flagSender, err := flag_sender.New(log, cfg.PluginDir, rabbitmq, db)
 	if err != nil {
 		panic(err)
 	}
-	flagSaver := flag_saver.New(log, rabbitmq, db)
-	go func() {
-		err := flagSaver.Start()
-		if err != nil {
-			panic(err)
-		}
-	}()
 	go func() {
 		err := flagSender.Start()
 		if err != nil {
 			panic(err)
 		}
 	}()
-	log.Info("flag saver & flag sender services started", slog.String("env", cfg.Env))
 
 	// graceful shutdown
 	sgn := make(chan os.Signal, 1)
 	signal.Notify(sgn, os.Interrupt, syscall.SIGTERM)
 	<-sgn
 	log.Info("shutting down service")
-	flagSaver.Stop()
 	flagSender.Stop()
 	db.Stop()
 	if err := rabbitmq.Close(); err != nil {

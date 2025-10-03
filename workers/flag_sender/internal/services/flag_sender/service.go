@@ -6,129 +6,106 @@ import (
 	"flag_sender/pkg/plugins"
 	"fmt"
 	"log/slog"
-	"path"
-	"plugin"
 	"time"
 
 	"github.com/jacute/prettylogger"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-//go:generate mockgen -source=service.go -destination=./mocks/storage_mock.go -package=mocks -mock_names=storage=StorageMock storage
+//go:generate mockgen -source=service.go -destination=./mocks/storage_mock.go -package=mocks -mock_names=storage=StorageMock .
 type storage interface {
+	PutFlags(ctx context.Context, flags []*models.Flag) ([]int64, error)
 	GetConfigParameter(ctx context.Context, key string) (string, error)
 	GetFlagValuesByStatus(ctx context.Context, status models.FlagStatus) ([]string, error)
 	UpdateStatusForOldFlags(ctx context.Context, flagTTL time.Duration) (int64, error)
 	UpdateFlagByResult(ctx context.Context, flag string, result *plugins.FlagResult) error
 }
 
-type FlagSender struct {
-	log          *slog.Logger
-	db           storage
-	cfg          *config
-	shutdownChan chan struct{}
+//go:generate mockgen -source=service.go -destination=./mocks/queue_mock.go -package=mocks -mock_names=queue=QueueMock .
+type queue interface {
+	GetFlagChan() (<-chan amqp.Delivery, error)
 }
 
-func New(log *slog.Logger, db storage, pluginDir string) (*FlagSender, error) {
+type FlagSender struct {
+	log          *slog.Logger
+	queue        queue
+	db           storage
+	cfg          *config
+	pluginDir    string
+	pluginClient plugins.IClient
+	stopChan     chan struct{}
+}
+
+func New(log *slog.Logger, pluginDir string, q queue, db storage) (*FlagSender, error) {
 	fs := &FlagSender{
-		log: log,
-		db:  db,
-		cfg: &config{
-			pluginDir: pluginDir,
-		},
-		shutdownChan: make(chan struct{}),
+		log:       log,
+		queue:     q,
+		db:        db,
+		pluginDir: pluginDir,
+		stopChan:  make(chan struct{}),
+		cfg:       &config{},
 	}
 	err := fs.loadConfig(context.Background(), true)
 	if err != nil {
-		return nil, fmt.Errorf("error loading exploit runner config: %s", err.Error())
+		return nil, fmt.Errorf("error loading flag sender config: %w", err)
 	}
+
 	return fs, nil
 }
 
 func (fs *FlagSender) Start() error {
 	const op = "service.flag_sender.Start"
 	log := fs.log.With(slog.String("op", op))
-	log.Info("starting flag sender service")
+	log.Info("Starting FlagSender service")
 
-	// load plugin
-	pluginPath := path.Join(fs.cfg.pluginDir, fs.cfg.plugin+".so")
-	sendPlugin, err := plugin.Open(pluginPath)
+	flagChan, err := fs.queue.GetFlagChan()
 	if err != nil {
-		log.Error(
-			"error opening send plugin",
-			slog.String("plugin_path", pluginPath),
-			prettylogger.Err(err),
-		)
+		log.Error("Failed to get flag channel", prettylogger.Err(err))
 		return err
 	}
-	symbol, err := sendPlugin.Lookup("NewClient")
-	if err != nil {
-		log.Error(
-			"error looking up send plugin client",
-			prettylogger.Err(err),
-		)
-		return err
-	}
-	clientInit, ok := symbol.(*plugins.NewClientFunc)
-	if !ok {
-		log.Error("plugin client constructor not func(url, token string) Client")
-		return fmt.Errorf("plugin client constructor not func(url, token string) Client")
-	}
-	client := (*clientInit)(fs.cfg.juryFlagURL, fs.cfg.token)
 
-	ticker := time.NewTicker(fs.cfg.submitPeriod)
+	batch := make([]amqp.Delivery, 0, fs.cfg.submitLimit)
 	for {
+		timer := time.NewTimer(fs.cfg.submitPeriod)
 		select {
-		case <-ticker.C:
-			sendCtx, cancel := context.WithTimeout(context.Background(), fs.cfg.submitTimeout)
+		case flag, ok := <-flagChan:
+			if !ok {
+				log.Info("flag channel closed")
+				continue
+			}
 
-			// every tick load new config from db
+			if len(batch) < fs.cfg.submitLimit {
+				batch = append(batch, flag)
+			}
+		case <-timer.C:
+			sendCtx, cancel := context.WithTimeout(context.Background(), fs.cfg.submitTimeout)
 			err := fs.loadConfig(sendCtx, false)
 			if err != nil {
-				log.Error(
-					"error reloading flag sender config from db",
-					prettylogger.Err(err),
-				)
-				cancel()
-				continue
-			}
-			flagsOld, err := fs.db.UpdateStatusForOldFlags(sendCtx, fs.cfg.flagTTL)
-			if err != nil {
-				log.Error("error setting flags to old", prettylogger.Err(err))
-			} else {
-				log.Info("flags set to old", slog.Int64("count", flagsOld))
-			}
-
-			flags, err := fs.db.GetFlagValuesByStatus(sendCtx, models.FlagStatusPending)
-			if err != nil {
-				log.Error("error getting flags from db", prettylogger.Err(err))
-				cancel()
+				log.Error("error reloading flag sender config from db", prettylogger.Err(err))
 				continue
 			}
 
-			if len(flags) == 0 {
-				cancel()
-				continue
-			}
-
-			log.Info("sending flags", slog.Int("count", len(flags)))
-			result, err := client.SendFlags(flags)
-			if err != nil {
-				log.Error("error sending flags", prettylogger.Err(err))
-				cancel()
-				continue
-			}
-
-			cancel()
-
-			for flag, result := range result {
-				err := fs.db.UpdateFlagByResult(context.Background(), flag, result)
+			if len(batch) > 0 {
+				err := fs.processBatch(sendCtx, batch)
 				if err != nil {
-					log.Error("error updating flag status", slog.String("flag", flag), prettylogger.Err(err))
+					log.Error("failed to process flag", prettylogger.Err(err))
 				}
+				for _, msg := range batch {
+					if err != nil {
+						// requeue каждое сообщение отдельно
+						msg.Nack(false, true)
+					} else {
+						msg.Ack(false)
+					}
+				}
+				batch = batch[:0]
+			} else {
+				log.Info("no flags to process")
 			}
-			ticker.Reset(fs.cfg.submitPeriod)
-		case <-fs.shutdownChan:
-			log.Info("flag sender service shut down")
+			cancel()
+		case <-fs.stopChan:
+			log.Info("flag sender stopped")
+			timer.Stop()
 			return nil
 		}
 	}
@@ -138,6 +115,6 @@ func (fs *FlagSender) Stop() {
 	const op = "service.flag_sender.Stop"
 	log := fs.log.With(slog.String("op", op))
 
-	log.Debug("stopping flag sender service")
-	close(fs.shutdownChan)
+	log.Debug("stopping flag saver service")
+	close(fs.stopChan)
 }

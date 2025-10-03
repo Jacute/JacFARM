@@ -2,7 +2,7 @@ package common_config
 
 const (
 	ConfigFlagFormatKey           = "EXPLOIT_RUNNER_FLAG_FORMAT"
-	ConfigExploitDuration         = "EXPLOIT_RUNNER_DURATION"
+	ConfigExploitDuration         = "EXPLOIT_RUNNER_PERIOD"
 	ConfigExploitMaxWorkingTime   = "EXPLOIT_RUNNER_MAX_WORKING_TIME"
 	ConfigMaxConcurrentExploits   = "EXPLOIT_RUNNER_MAX_CONCURRENT_EXPLOITS"
 	ConfigFlagSenderPlugin        = "FLAG_SENDER_PLUGIN"
@@ -12,4 +12,5 @@ const (
 	ConfigFlagSenderToken         = "FLAG_SENDER_TOKEN"
 	ConfigFlagSenderSubmitLimit   = "FLAG_SENDER_SUBMIT_LIMIT"
 	ConfigFlagSenderFlagTTL       = "FLAG_SENDER_FLAG_TTL"
+	ConfigVenvMaxInstallTime      = "EXPLOIT_RUNNER_VENV_MAX_INSTALL_TIME"
 )
