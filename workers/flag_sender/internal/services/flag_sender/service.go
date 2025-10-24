@@ -76,6 +76,8 @@ func (fs *FlagSender) Start() error {
 
 			if len(batch) < fs.cfg.submitLimit {
 				batch = append(batch, flag)
+			} else {
+				flag.Nack(false, true) // batch is full, requeue
 			}
 		case <-timer.C:
 			sendCtx, cancel := context.WithTimeout(context.Background(), fs.cfg.submitTimeout)
