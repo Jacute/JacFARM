@@ -92,7 +92,7 @@ func (fs *FlagSender) Start() error {
 				}
 				for _, msg := range batch {
 					if err != nil {
-						// requeue каждое сообщение отдельно
+						// requeue every msg
 						msg.Nack(false, true)
 					} else {
 						msg.Ack(false)
@@ -115,6 +115,6 @@ func (fs *FlagSender) Stop() {
 	const op = "service.flag_sender.Stop"
 	log := fs.log.With(slog.String("op", op))
 
-	log.Debug("stopping flag saver service")
+	log.Debug("stopping flag sender service")
 	close(fs.stopChan)
 }

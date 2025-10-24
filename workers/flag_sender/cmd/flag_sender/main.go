@@ -6,6 +6,9 @@ import (
 	"flag_sender/internal/postgres"
 	"flag_sender/internal/rabbitmq"
 	"flag_sender/internal/services/flag_sender"
+	postgreslogwriter "flag_sender/pkg/log/postgres_log_writer"
+	postgresslog "flag_sender/pkg/log/postgres_slog"
+	slogmultihandler "flag_sender/pkg/log/slog_multihandler"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -14,21 +17,33 @@ import (
 	"github.com/jacute/prettylogger"
 )
 
+const moduleName = "flag_sender"
+
 func main() {
 	appCtx := context.Background()
 	cfg := config.MustParseConfig()
 
-	var log *slog.Logger
+	// init db
+	db := postgres.New(appCtx, cfg.DB)
+
+	// init logger
+	var options *slog.HandlerOptions
+
+	handlers := make([]slog.Handler, 0, 2)
 	if cfg.Env == "local" {
-		log = slog.New(prettylogger.NewColoredHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+		options = &slog.HandlerOptions{Level: slog.LevelDebug}
+		handlers = append(handlers, prettylogger.NewColoredHandler(os.Stdout, options))
 	} else if cfg.Env == "prod" {
-		log = slog.New(prettylogger.NewJsonHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+		options = &slog.HandlerOptions{Level: slog.LevelInfo}
+		handlers = append(handlers, prettylogger.NewJsonHandler(os.Stdout, options))
 	} else {
 		panic("invalid env parameter. should be prod|local")
 	}
+	postgresHandler := postgresslog.NewHandler(moduleName, postgreslogwriter.New(db.GetPool()), options)
+	handlers = append(handlers, postgresHandler)
+	log := slog.New(slogmultihandler.New(handlers))
 
-	// init db & rabbitmq
-	db := postgres.New(appCtx, cfg.DB)
+	// init rabbitmq
 	log.Info("database connection established")
 	rabbitmq := rabbitmq.New(cfg.Rabbit)
 
