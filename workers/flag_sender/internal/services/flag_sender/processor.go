@@ -45,7 +45,7 @@ func (fs *FlagSender) processBatch(ctx context.Context, batch []amqp.Delivery) e
 	}
 
 	log.Info("sending flags", slog.Int("count", len(flags)))
-	result, err := fs.pluginClient.SendFlags(flagStrings)
+	result, err := fs.pluginClient.SendFlags(ctx, flagStrings)
 	if err != nil {
 		return fmt.Errorf("error sending flags: %w", err)
 	}

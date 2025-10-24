@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag_sender/internal/models"
 	"flag_sender/pkg/plugins"
 	"fmt"
@@ -29,13 +30,13 @@ var NewClient plugins.NewClientFunc = func(url, token string) plugins.IClient {
 	}
 }
 
-func (c *Client) SendFlags(flags []string) (map[string]*plugins.FlagResult, error) {
+func (c *Client) SendFlags(ctx context.Context, flags []string) (map[string]*plugins.FlagResult, error) {
 	data, err := sonic.Marshal(flags)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("PUT", c.url, bytes.NewBuffer(data))
+	req, err := http.NewRequestWithContext(ctx, "PUT", c.url, bytes.NewBuffer(data))
 	if err != nil {
 		return nil, err
 	}

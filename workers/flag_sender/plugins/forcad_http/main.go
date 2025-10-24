@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 
@@ -36,7 +37,7 @@ func main() {
 
 	flags := readFlags()
 
-	flagMap, err := sender.SendFlags(flags)
+	flagMap, err := sender.SendFlags(context.Background(), flags)
 	if err != nil {
 		errWriter.Write([]byte(err.Error()))
 		return
