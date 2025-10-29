@@ -1,4 +1,4 @@
-PKGS := $(shell go list ./... | grep -vE 'mocks|cmd/JacFARM|JacFARM/exploits')
+PKGS := $(shell go list ./... | grep -vE 'mocks|cmd/jacfarm-api|storage/|JacFARM/internal/config|JacFARM/internal/http/server|JacFARM/internal/rabbitmq|JacFARM/internal/http/validator')
 
 coverage:
 	@go test $(PKGS) -coverprofile=coverage.out -coverpkg=$(shell echo $(PKGS) | tr ' ' ',') -timeout 30s
