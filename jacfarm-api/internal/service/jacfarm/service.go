@@ -8,6 +8,7 @@ import (
 	"log/slog"
 )
 
+//go:generate mockgen -source=service.go -destination=./mocks/storage_mock.go -package=mocks -mock_names=storage=StorageMock storage
 type storage interface {
 	GetFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
 
@@ -28,6 +29,7 @@ type storage interface {
 	GetConfig(ctx context.Context, filter *dto.GetConfigFilter) ([]*models.Config, int, error)
 }
 
+//go:generate mockgen -source=service.go -destination=./mocks/queue_mock.go -package=mocks -mock_names=queue=QueueMock queue
 type queue interface {
 	PublishFlag(flag *rabbitmq_dto.Flag) error
 	GetFlagsCount() (int, error)
