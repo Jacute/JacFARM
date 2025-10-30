@@ -1,5 +1,9 @@
 # JacFARM
 
+[![tests](https://github.com/Jacute/JacFARM/actions/workflows/tests.yml/badge.svg)](https://github.com/Jacute/JacFARM/actions/workflows/tests.yml)
+![GitHub Release](https://img.shields.io/github/v/release/Jacute/JacFARM)
+
+
 [![Coverage Status](https://coveralls.io/repos/github/Jacute/JacFARM/badge.svg?branch=tests-jacfarm-api)](https://coveralls.io/github/Jacute/JacFARM)
 [![codecov](https://codecov.io/gh/Jacute/JacFARM/branch/tests-jacfarm-api/graph/badge.svg)](https://app.codecov.io/gh/Jacute/JacFARM)
 
