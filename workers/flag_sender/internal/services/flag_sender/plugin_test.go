@@ -65,6 +65,7 @@ func setupPlugin(t *testing.T, plugin string) string {
 	return pluginBinaryPath
 }
 
+// TODO: fix happy path test
 // func TestPlugin_HappyPath(t *testing.T) {
 // 	pluginPath := setupPlugin(t, TestPlugin2)
 
