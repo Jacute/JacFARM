@@ -34,7 +34,7 @@ export const ConfigTable = ({ page, configs, setConfigs }: Props) => {
 
   return (
     <div className="table-responsive shadow rounded-3 m-0 p-0 position-relative">
-      <table className="table table-hover table-striped table-bordered align-middle text-center mb-0">
+      <table className="table table-fixed table-hover table-striped table-bordered align-middle text-center mb-0">
         <thead className="table-primary">
           <tr>
             <th className="w-10">№</th>
@@ -49,12 +49,14 @@ export const ConfigTable = ({ page, configs, setConfigs }: Props) => {
               <td
                 onDoubleClick={() => handleDoubleClick(cfg.id, "key", cfg.name)}
                 style={{ cursor: "pointer" }}
+                title={cfg.name}
               >
                 {cfg.name}
               </td>
               <td
                 onDoubleClick={() => handleDoubleClick(cfg.id, "value", cfg.value)}
                 style={{ cursor: "pointer" }}
+                title={cfg.value}
               >
                 {editing?.id === cfg.id && editing.field === "value" ? (
                   <input

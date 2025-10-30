@@ -1,7 +1,11 @@
 import { API_URI, STATUS_OK, PAGE_LIMIT } from "./api";
 import type { GetFlagsResponse, GetStatusesResponse } from "./responses";
 
-export const getFlags = async (page: number, team_id: number, exploit_id: string, status_id: number) => {
+export const getFlags = async (page: number, team_id: number | null, exploit_id: string | null, status_id: number | null) => {
+    if (team_id == null) team_id = 0;
+    if (exploit_id == null) exploit_id = "";
+    if (status_id == null) status_id = 0;
+
     const res = await fetch(`${API_URI}/api/v1/flags?page=${page}&limit=${PAGE_LIMIT}&team_id=${team_id}&exploit_id=${exploit_id}&status_id=${status_id}`, {credentials: "include"});
     const data: GetFlagsResponse = await res.json();
     
