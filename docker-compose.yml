@@ -109,6 +109,8 @@ services:
     build:
       context: ./jacfarm-api
       dockerfile: ../docker/Dockerfile.jacfarm-api
+    ports:
+      - 127.0.0.1:1337:1337
     restart: on-failure
     environment:
       - PG_USERNAME=postgres
