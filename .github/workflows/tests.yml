@@ -49,7 +49,7 @@ jobs:
         run: cd workers/config_loader && go test -v -race -covermode=atomic -coverprofile=../config_loader.out ./...
       
       - name: Merge test coverage
-        run: gocovmerge jacfarm-api.out config_loader.go > coverage.out
+        run: gocovmerge jacfarm-api.out config_loader.out > coverage.out
 
       # --- Upload to Codecov (optional) ---
       - name: Upload coverage reports to Codecov
