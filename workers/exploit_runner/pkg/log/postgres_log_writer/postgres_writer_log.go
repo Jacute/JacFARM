@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -21,15 +22,32 @@ func New(db *pgxpool.Pool) *PostgresLogWriter {
 }
 
 func (plg *PostgresLogWriter) WriteLog(ctx context.Context, module, op, level, value, exploitId string, attrs map[string]any, createdAt time.Time) error {
-	cmd, err := plg.db.Exec(ctx, `INSERT INTO audit.logs
-	(module_id, operation, value, attrs, created_at, log_level_id)
-	VALUES (
-	(SELECT id FROM audit.modules WHERE name = $1),
-	$2, $3, $4, $5,
-	(SELECT id FROM audit.log_levels WHERE name = $6)
-	)`,
-		module, op, value, attrs, createdAt, level)
+	builder := sq.Insert("audit.logs").
+		Columns("value", "created_at", "log_level_id")
+	values := []any{value, createdAt, sq.Expr("(SELECT id FROM audit.log_levels WHERE name = ?)", level)}
+	if module != "" {
+		builder = builder.Columns("module_id")
+		values = append(values, sq.Expr("(SELECT id FROM audit.modules WHERE name = ?)", module))
+	}
+	if op != "" {
+		builder = builder.Columns("operation")
+		values = append(values, op)
+	}
+	if exploitId != "" {
+		builder = builder.Columns("exploit_id")
+		values = append(values, exploitId)
+	}
+	if attrs != nil {
+		builder = builder.Columns("attrs")
+		values = append(values, attrs)
+	}
+	builder = builder.Values(values...).PlaceholderFormat(sq.Dollar)
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return ErrWriteLog
+	}
 
+	cmd, err := plg.db.Exec(ctx, query, args...)
 	if err != nil {
 		return ErrWriteLog
 	}
