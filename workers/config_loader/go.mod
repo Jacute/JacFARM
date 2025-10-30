@@ -1,6 +1,6 @@
 module config_loader
 
-go 1.24.5
+go 1.25.3
 
 require (
 	github.com/goccy/go-yaml v1.18.0
