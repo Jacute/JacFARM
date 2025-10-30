@@ -5,6 +5,7 @@ go 1.25.3
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/bytedance/sonic v1.14.0
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/jacute/prettylogger v0.0.7
 	github.com/kelseyhightower/envconfig v1.4.0
