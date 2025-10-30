@@ -3,14 +3,15 @@ import type { ExploitShort, Status, TeamShort } from "../../models/models"
 import { getShortTeams } from "../../api/teams"
 import { getShortExploits } from "../../api/exploits"
 import { getFlagStatuses } from "../../api/flags"
+import { Selector } from "../Selector"
 
 interface props {
-    team_id: number
-    setTeamId: (team_id: number) => void
-    exploit_id: string
-    setExploitId: (exploit_id: string) => void
-    status_id: number
-    setStatusId: (status_id: number) => void
+    team_id: number | null
+    setTeamId: (team_id: number | null) => void
+    exploit_id: string | null
+    setExploitId: (exploit_id: string | null) => void
+    status_id: number | null
+    setStatusId: (status_id: number | null) => void
     loadFlags: () => void
 }
 
@@ -27,63 +28,27 @@ export const FlagFilter = (props: props) => {
 
     return (
         <div className="row mb-2">
-        <div className="col-3">
-          <label className="form-label">Team</label>
-          <select
-            className="form-select"
+          <Selector
+            label="Team"
             value={props.team_id}
-            onChange={(e) => {
-                const value = Number(e.target.value)
-                if (!isNaN(value)) {
-                    props.setTeamId(value)
-                }
-            }}
+            setValue={props.setTeamId}
+            options={teams?.map((team) => ({ label: team.ip, value: team.id }))}
           >
-            <option value="">All</option>
-            {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.ip}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-3">
-          <label className="form-label">Exploit</label>
-          <select
-            className="form-select"
+          </Selector>
+          <Selector
+            label="Exploit"
             value={props.exploit_id}
-            onChange={(e) => {
-                props.setExploitId(e.target.value);
-            }}
+            setValue={props.setExploitId}
+            options={exploits?.map((exploit) => ({ label: exploit.name, value: exploit.id }))}
           >
-            <option value="">All</option>
-            {exploits?.map((exploit) => (
-              <option key={exploit.id} value={exploit.id}>
-                {exploit.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-3">
-          <label className="form-label">Status</label>
-          <select
-            className="form-select"
+          </Selector>
+          <Selector
+            label="Status"
             value={props.status_id}
-            onChange={(e) => {
-                const value = Number(e.target.value)
-                if (!isNaN(value)) {
-                    props.setStatusId(value)
-                }
-            }}
+            setValue={props.setStatusId}
+            options={statuses?.map((status) => ({ label: status.name, value: status.id }))}
           >
-            <option value="">All</option>
-            {statuses.map((status) => (
-              <option key={status.id} value={status.id}>
-                {status.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          </Selector>
         <div className="col-3 d-flex align-items-end">
           <button className="btn btn-primary border border-1" onClick={props.loadFlags}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
