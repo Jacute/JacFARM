@@ -1,5 +1,8 @@
 # JacFARM
 
+[![Coverage Status](https://coveralls.io/repos/github/Jacute/JacFARM/badge.svg?branch=tests-jacfarm-api)](https://coveralls.io/github/Jacute/JacFARM)
+[![codecov](https://codecov.io/gh/Jacute/JacFARM/branch/tests-jacfarm-api/graph/badge.svg)](https://app.codecov.io/gh/Jacute/JacFARM)
+
 Exploit farm for attack-defense CTF competition
 
 ## Components
