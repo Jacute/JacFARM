@@ -66,6 +66,11 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *f
 	configGroup.Get("/", h.GetConfig())
 	configGroup.Patch("/:id", h.UpdateConfig())
 
+	logGroup := apiV1.Group("/logs")
+	logGroup.Get("/", h.ListLogs())
+	logGroup.Get("/levels", h.ListLogLevels())
+	logGroup.Get("/modules", h.ListModules())
+
 	serviceGroup := apiV1.Group("/service")
 	serviceGroup.Post("/flags", middlewares.ServiceAuthMiddleware(apiKey), h.PutFlag())
 

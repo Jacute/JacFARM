@@ -26,6 +26,10 @@ type ServiceInterface interface {
 
 	GetConfig(ctx context.Context, filter *dto.GetConfigFilter) ([]*models.Config, int, error)
 	UpdateConfig(ctx context.Context, id int64, value string) error
+
+	ListLogs(ctx context.Context, filter *dto.ListLogsFilter) ([]*models.Log, int, error)
+	ListModules(ctx context.Context) ([]*models.Module, int, error)
+	ListLogLevel(ctx context.Context) ([]*models.LogLevel, int, error)
 }
 
 type Handlers struct {
