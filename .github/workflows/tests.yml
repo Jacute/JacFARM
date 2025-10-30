@@ -46,12 +46,12 @@ jobs:
         run: cd jacfarm-api && go test -v -race -covermode=atomic -coverprofile=../jacfarm-api.out ./...
       
       - name: Run tests on config_loader
-        run: cd workers/config_loader && go test -v -race -covermode=atomic -coverprofile=../config_loader.out ./...
+        run: cd workers/config_loader && go test -v -race -covermode=atomic -coverprofile=../../config_loader.out ./...
       
       - name: Merge test coverage
         run: gocovmerge jacfarm-api.out config_loader.out > coverage.out
 
-      # --- Upload to Codecov (optional) ---
+      # --- Upload to Codecov ---
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
