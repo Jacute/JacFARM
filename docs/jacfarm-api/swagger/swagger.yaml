@@ -77,6 +77,45 @@ definitions:
       status:
         type: string
     type: object
+  JacFARM_internal_http_dto.ListLogLevelsResponse:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      log_levels:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.LogLevel'
+        type: array
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.ListLogsResponse:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      logs:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.Log'
+        type: array
+      status:
+        type: string
+    type: object
+  JacFARM_internal_http_dto.ListModulesResponse:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      modules:
+        items:
+          $ref: '#/definitions/JacFARM_internal_models.Module'
+        type: array
+      status:
+        type: string
+    type: object
   JacFARM_internal_http_dto.ListShortExploitsResponse:
     properties:
       error:
@@ -217,6 +256,39 @@ definitions:
     - FlagStatusOld
     - FlagStatusSuccess
     - FlagStatusReject
+  JacFARM_internal_models.Log:
+    properties:
+      attrs:
+        type: string
+      created_at:
+        type: string
+      exploit:
+        type: string
+      id:
+        type: integer
+      log_level:
+        type: string
+      module:
+        type: string
+      operation:
+        type: string
+      value:
+        type: string
+    type: object
+  JacFARM_internal_models.LogLevel:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  JacFARM_internal_models.Module:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   JacFARM_internal_models.ShortTeam:
     properties:
       id:
@@ -655,6 +727,105 @@ paths:
       summary: Получение статусов флагов
       tags:
       - Flags
+  /api/v1/logs:
+    get:
+      parameters:
+      - description: Количество логов
+        in: query
+        name: limit
+        type: integer
+      - description: Страница логов
+        in: query
+        name: page
+        type: integer
+      - description: Идентификатор эксплойта
+        in: query
+        name: exploit_id
+        type: integer
+      - description: Идентификатор модуля
+        in: query
+        name: module_id
+        type: integer
+      - description: Идентификатор уровня логирования
+        in: query
+        name: log_level_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ListLogsResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат полной информации о логах
+      tags:
+      - Logs
+  /api/v1/logs/levels:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ListLogLevelsResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат всех уровней логирования
+      tags:
+      - Logs
+  /api/v1/logs/modules:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.ListModulesResponse'
+        "400":
+          description: Неверный запрос
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/JacFARM_internal_http_dto.Response'
+      security:
+      - BasicAuth: []
+      summary: Возврат всех модулей фермы
+      tags:
+      - Logs
   /api/v1/teams:
     get:
       parameters:

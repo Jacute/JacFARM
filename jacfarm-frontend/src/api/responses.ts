@@ -1,4 +1,4 @@
-import type { Config, Exploit, ExploitShort, Flag, Status, Team, TeamShort } from "../models/models";
+import type { Config, Exploit, ExploitShort, Flag, Log, LogLevel, Module, Status, Team, TeamShort } from "../models/models";
 import type { BaseResponse } from "./api";
 
 export interface GetFlagsResponse extends BaseResponse {
@@ -30,5 +30,20 @@ export interface GetTeamsResponse extends BaseResponse {
 
 export interface GetConfigResponse extends BaseResponse {
     config: Config[]
+    count: number
+}
+
+export interface GetLogsResponse extends BaseResponse {
+    logs: Log[]
+    count: number
+}
+
+export interface GetModulesResponse extends BaseResponse {
+    modules: Module[]
+    count: number
+}
+
+export interface GetLogLevelsResponse extends BaseResponse {
+    log_levels: LogLevel[]
     count: number
 }

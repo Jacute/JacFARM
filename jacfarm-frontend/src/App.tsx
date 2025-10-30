@@ -11,6 +11,8 @@ import { ConfigPage } from './pages/Config';
 import { TeamsPage } from './pages/Teams';
 import { getFlagsCount } from './api/flags';
 
+const flagsCountIntervalMS = 1000
+
 function App() {
   const [page, setPage] = useState<PageType>(Page.FLAGS_PAGE);
   const [flagsCount, setFlagsCount] = useState<number>(0);
@@ -27,9 +29,9 @@ function App() {
   useEffect(() => {
     loadFlagsCount();
 
-    const interval = setInterval(loadFlagsCount, 500);
+    const interval = setInterval(loadFlagsCount, flagsCountIntervalMS);
 
-    return () => clearInterval(interval); // очистка при размонтировании
+    return () => clearInterval(interval);
   }, [loadFlagsCount]);
 
   return (
