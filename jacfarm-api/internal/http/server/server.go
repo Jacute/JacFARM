@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"time"
 
 	fiber "github.com/gofiber/fiber/v3"
@@ -26,6 +27,10 @@ func New(log *slog.Logger, cfg *config.HTTPConfig, apiKey string, h *handlers.Ha
 		cfg:    cfg,
 		router: setupRouter(h, cfg, apiKey),
 	}
+}
+
+func (s *HTTPServer) Test(req *http.Request) (*http.Response, error) {
+	return s.router.Test(req)
 }
 
 func (s *HTTPServer) Start() {

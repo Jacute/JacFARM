@@ -6,7 +6,8 @@ import (
 	"context"
 )
 
-type ServiceInterface interface {
+//go:generate mockgen -source=handlers.go -destination=./mocks/service_mock.go -package=mocks -mock_names=storage=ServiceMock Service
+type Service interface {
 	ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
 	PutFlag(ctx context.Context, flag string) error
 	GetFlagsCount() (int, error)
@@ -29,10 +30,10 @@ type ServiceInterface interface {
 }
 
 type Handlers struct {
-	service ServiceInterface
+	service Service
 }
 
-func New(service ServiceInterface) *Handlers {
+func New(service Service) *Handlers {
 	return &Handlers{
 		service: service,
 	}

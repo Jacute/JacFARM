@@ -3,3 +3,4 @@ database.db
 error_writer
 coverage.html
 volumes
+backend.sh
