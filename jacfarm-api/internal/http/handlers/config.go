@@ -9,6 +9,10 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
+var (
+	ErrIdIncorrectType = dto.Error("id should be number")
+)
+
 // GetConfig godoc
 // @Summary Возвращает конфигурацию JacFARM
 // @Param limit query int false "Количество конфигураций"
@@ -63,7 +67,7 @@ func (h *Handlers) UpdateConfig() func(c fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(dto.Error("id should be uuid"))
+			return c.Status(fiber.StatusBadRequest).JSON(ErrIdIncorrectType)
 		}
 
 		var req dto.UpdateConfigRequest
@@ -74,7 +78,7 @@ func (h *Handlers) UpdateConfig() func(c fiber.Ctx) error {
 		err = h.service.UpdateConfig(c.RequestCtx(), int64(id), req.Value)
 		if err != nil {
 			if errors.Is(err, storage.ErrConfigParamNotFound) {
-				return c.Status(fiber.StatusNotFound).JSON(dto.Error(err.Error()))
+				return c.Status(fiber.StatusNotFound).JSON(dto.ErrNotFound)
 			}
 			return c.Status(fiber.StatusInternalServerError).JSON(dto.ErrInternal)
 		}
