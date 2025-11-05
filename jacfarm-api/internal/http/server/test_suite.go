@@ -14,6 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testApiKey = "test"
+
 type testSuite struct {
 	app *HTTPServer
 }
@@ -39,7 +41,7 @@ func newTestSuite(t *testing.T, s handlers.Service) *testSuite {
 	app := New(
 		log,
 		cfg,
-		"test",
+		testApiKey,
 		h,
 	)
 	go app.Start()

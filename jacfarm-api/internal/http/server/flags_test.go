@@ -287,6 +287,49 @@ func TestPutFlag(t *testing.T) {
 	}
 }
 
+func TestPutFlagWithServiceToken(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	testcases := []struct {
+		name        string
+		token       string
+		shouldValid bool
+	}{
+		{
+			name:        "valid token",
+			token:       testApiKey,
+			shouldValid: true,
+		},
+		{
+			name:        "invalid token",
+			token:       "invalid_token",
+			shouldValid: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := newTestSuite(t, mocks.NewMockService(ctrl))
+
+			req := httptest.NewRequestWithContext(
+				t.Context(),
+				"POST",
+				"/api/v1/service/flags",
+				nil,
+			)
+			req.Header.Add("Authorization", tc.token)
+
+			res, err := ts.app.Test(req)
+			require.NoError(t, err)
+
+			if tc.shouldValid {
+				require.NotEqual(t, http.StatusUnauthorized, res.StatusCode)
+			} else {
+				require.Equal(t, http.StatusUnauthorized, res.StatusCode)
+			}
+		})
+	}
+}
+
 func TestGetStatuses(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	testcases := []struct {
