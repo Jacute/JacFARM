@@ -1,3 +1,4 @@
+.PHONY: coverage install-swag swagger
 PKGS := $(shell go list ./... | grep -vE 'mocks|cmd/jacfarm-api')
 
 coverage:

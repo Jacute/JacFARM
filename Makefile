@@ -1,3 +1,5 @@
+.PHONY: help up down clean-db clean-all reset coverage
+
 # Цвета
 GREEN  := \033[0;32m
 PURPLE := \033[0;35m
@@ -39,3 +41,37 @@ clean-all: ## Remove all volumes (db, rabbitmq, exploits)
 	@rm .env
 
 reset: down clean-all up ## Full reset: stop, clean and restart
+
+coverage:
+	@echo "$(GREEN)Running tests$(RESET)"
+	
+	@cd jacfarm-api && \
+	PKGS=$$(go list ./... | grep -vE 'mocks|cmd/jacfarm-api' || true) && \
+	if [ -z "$$PKGS" ]; then echo "No packages found in jacfarm-api"; exit 0; fi && \
+	CSV=$$(echo $$PKGS | tr ' ' ',') && \
+	echo "Running go test for: $$PKGS" && \
+	go test -v -race -coverpkg=$$CSV -covermode=atomic -coverprofile=../jacfarm-api.out $$PKGS
+
+	@cd workers/config_loader && \
+	PKGS=$$(go list ./... | grep -vE 'mocks|cmd/config_loader' || true) && \
+	if [ -z "$$PKGS" ]; then echo "No packages found in config_loader"; exit 0; fi && \
+	CSV=$$(echo $$PKGS | tr ' ' ',') && \
+	echo "Running go test for: $$PKGS" && \
+	go test -v -race -coverpkg=$$CSV -covermode=atomic -coverprofile=../../config_loader.out $$PKGS
+
+	@cd workers/exploit_runner && \
+	PKGS=$$(go list ./... | grep -vE 'mocks|cmd/exploit_runner' || true) && \
+	if [ -z "$$PKGS" ]; then echo "No packages found in exploit_runner"; exit 0; fi && \
+	CSV=$$(echo $$PKGS | tr ' ' ',') && \
+	echo "Running go test for: $$PKGS" && \
+	go test -v -race -coverpkg=$$CSV -covermode=atomic -coverprofile=../../exploit_runner.out $$PKGS
+	
+	@cd workers/flag_sender && \
+	PKGS=$$(go list ./... | grep -vE 'mocks|cmd/flag_sender' || true) && \
+	if [ -z "$$PKGS" ]; then echo "No packages found in flag_sender"; exit 0; fi && \
+	CSV=$$(echo $$PKGS | tr ' ' ',') && \
+	echo "Running go test for: $$PKGS" && \
+	go test -v -race -coverpkg=$$CSV -covermode=atomic -coverprofile=../../flag_sender.out $$PKGS
+	
+	gocovmerge jacfarm-api.out config_loader.out exploit_runner.out flag_sender.out > coverage.out
+	rm exploit_runner.out flag_sender.out jacfarm-api.out config_loader.out

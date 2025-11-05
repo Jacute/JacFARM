@@ -43,19 +43,7 @@ jobs:
         run: go install github.com/wadey/gocovmerge@latest
 
       - name: Run tests on jacfarm-api
-        run: cd jacfarm-api && go test -v -race -coverpkg=./... -covermode=atomic -coverprofile=../jacfarm-api.out ./...
-      
-      - name: Run tests on config_loader
-        run: cd workers/config_loader && go test -v -race -coverpkg=./... -covermode=atomic -coverprofile=../../config_loader.out ./...
-      
-      - name: Run tests on exploit_runner
-        run: cd workers/exploit_runner && go test -v -race -coverpkg=./... -covermode=atomic -coverprofile=../../exploit_runner.out ./...
-
-      - name: Run tests on flag_sender
-        run: cd workers/flag_sender && go test -v -race -coverpkg=./... -covermode=atomic -coverprofile=../../flag_sender.out ./...
-      
-      - name: Merge test coverage
-        run: gocovmerge jacfarm-api.out config_loader.out exploit_runner.out flag_sender.out > coverage.out
+        run: make coverage
 
       # --- Upload to Codecov ---
       - name: Upload coverage reports to Codecov
