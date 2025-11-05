@@ -3,19 +3,27 @@ package server
 import (
 	"JacFARM/internal/config"
 	"JacFARM/internal/http/handlers"
+	"bytes"
 	"log/slog"
+	"mime/multipart"
 	"net/url"
 	"testing"
 	"time"
 
 	"github.com/jacute/prettylogger"
+	"github.com/stretchr/testify/require"
 )
 
-type TestSuite struct {
+type testSuite struct {
 	app *HTTPServer
 }
 
-func NewTestSuite(t *testing.T, s handlers.Service) *TestSuite {
+type formFile struct {
+	Name    string
+	Content []byte
+}
+
+func newTestSuite(t *testing.T, s handlers.Service) *testSuite {
 	h := handlers.New(s)
 	log := slog.New(prettylogger.NewDiscardHandler())
 	cfg := &config.HTTPConfig{
@@ -39,7 +47,7 @@ func NewTestSuite(t *testing.T, s handlers.Service) *TestSuite {
 		app.Stop()
 	})
 
-	return &TestSuite{
+	return &testSuite{
 		app: app,
 	}
 }
@@ -52,4 +60,34 @@ func queryParamsToString(queryParams map[string][]string) string {
 		}
 	}
 	return q.Encode()
+}
+
+func createMultipartBody(
+	t *testing.T,
+	fields map[string]string,
+	fileFields map[string]*formFile, // fileName -> content
+) (body *bytes.Buffer, contentType string) {
+	body = &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	// add simple fields
+	for k, v := range fields {
+		err := writer.WriteField(k, v)
+		require.NoError(t, err)
+	}
+
+	// add file fields
+	for fileField, formfile := range fileFields {
+		fw, err := writer.CreateFormFile(fileField, formfile.Name)
+		require.NoError(t, err)
+
+		_, err = fw.Write(formfile.Content)
+		require.NoError(t, err)
+	}
+
+	// close writer to finalize boundary
+	err := writer.Close()
+	require.NoError(t, err)
+
+	return body, writer.FormDataContentType()
 }

@@ -126,7 +126,7 @@ func TestGetConfig(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		st := NewTestSuite(t, tc.mock())
+		st := newTestSuite(t, tc.mock())
 		req := httptest.NewRequest(
 			"GET",
 			"/api/v1/config?"+queryParamsToString(tc.queryParams),
@@ -257,7 +257,7 @@ func TestUpdateConfig(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		st := NewTestSuite(t, tc.mock())
+		st := newTestSuite(t, tc.mock())
 		req := httptest.NewRequest(
 			"PATCH",
 			"/api/v1/config/"+tc.id,
