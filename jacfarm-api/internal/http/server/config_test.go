@@ -2,7 +2,6 @@ package server
 
 import (
 	"JacFARM/internal/http/dto"
-	"JacFARM/internal/http/handlers"
 	"JacFARM/internal/http/handlers/mocks"
 	"JacFARM/internal/models"
 	"JacFARM/internal/storage"
@@ -210,7 +209,7 @@ func TestUpdateConfig(t *testing.T) {
 				serviceMock := mocks.NewMockService(ctrl)
 				return serviceMock
 			},
-			resModel: handlers.ErrIdIncorrectType,
+			resModel: dto.Error(dto.ErrIdIncorrectType.Error()),
 		},
 		{
 			name: "config not found",

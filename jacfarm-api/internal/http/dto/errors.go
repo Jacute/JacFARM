@@ -13,4 +13,6 @@ var (
 	ErrExploitNotMatchType           = errors.New("'exploit' doesn't match 'type'")
 	ErrTeamIdIncorrectType           = errors.New("team_id should be number")
 	ErrStatusIdIncorrectType         = errors.New("status_id should be number")
+	ErrIdIncorrectType               = errors.New("id should be number")
+	ErrIdShouldBePos                 = errors.New("id should be positive")
 )
