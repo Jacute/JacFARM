@@ -1,14 +1,16 @@
 package dto
 
-import "fmt"
+import "errors"
 
 var (
-	ErrLimitIncorrectType            = fmt.Errorf("limit should be number")
-	ErrPageIncorrectType             = fmt.Errorf("page should be number")
-	ErrLimitNegative                 = fmt.Errorf("limit should be positive number")
-	ErrPageNegative                  = fmt.Errorf("page should be positive number")
-	ErrLongExploitName               = fmt.Errorf("name should be shorter than 100 characters")
-	ErrIncorrectFieldType            = fmt.Errorf("incorrect field 'type'")
-	ErrRequirementsIncorrectMIMEType = fmt.Errorf("'requirements' has incorrect mime type")
-	ErrExploitNotMatchType           = fmt.Errorf("'exploit' doesn't match 'type'")
+	ErrLimitIncorrectType            = errors.New("limit should be number")
+	ErrPageIncorrectType             = errors.New("page should be number")
+	ErrLimitNegative                 = errors.New("limit should be positive number")
+	ErrPageNegative                  = errors.New("page should be positive number")
+	ErrLongExploitName               = errors.New("name should be shorter than 100 characters")
+	ErrIncorrectFieldType            = errors.New("incorrect field 'type'")
+	ErrRequirementsIncorrectMIMEType = errors.New("'requirements' has incorrect mime type")
+	ErrExploitNotMatchType           = errors.New("'exploit' doesn't match 'type'")
+	ErrTeamIdIncorrectType           = errors.New("team_id should be number")
+	ErrStatusIdIncorrectType         = errors.New("status_id should be number")
 )

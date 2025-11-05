@@ -126,32 +126,34 @@ func TestGetConfig(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		st := newTestSuite(t, tc.mock())
-		req := httptest.NewRequest(
-			"GET",
-			"/api/v1/config?"+queryParamsToString(tc.queryParams),
-			nil,
-		)
+		t.Run(tc.name, func(t *testing.T) {
+			st := newTestSuite(t, tc.mock())
+			req := httptest.NewRequest(
+				"GET",
+				"/api/v1/config?"+queryParamsToString(tc.queryParams),
+				nil,
+			)
 
-		res, err := st.app.Test(req)
-		defer res.Body.Close()
-		require.NoError(t, err)
-		require.Equal(t, tc.expectedStatusCode, res.StatusCode)
+			res, err := st.app.Test(req)
+			defer res.Body.Close()
+			require.NoError(t, err)
+			require.Equal(t, tc.expectedStatusCode, res.StatusCode)
 
-		data, err := io.ReadAll(res.Body)
-		require.NoError(t, err)
+			data, err := io.ReadAll(res.Body)
+			require.NoError(t, err)
 
-		if tc.errorModel != nil {
-			resModel := &dto.Response{}
+			if tc.errorModel != nil {
+				resModel := &dto.Response{}
+				err = json.Unmarshal(data, resModel)
+				require.NoError(t, err)
+				require.Equal(t, tc.errorModel, resModel, tc.name)
+				return
+			}
+			resModel := &dto.GetConfigResponse{}
 			err = json.Unmarshal(data, resModel)
 			require.NoError(t, err)
-			require.Equal(t, tc.errorModel, resModel, tc.name)
-			continue
-		}
-		resModel := &dto.GetConfigResponse{}
-		err = json.Unmarshal(data, resModel)
-		require.NoError(t, err)
-		require.Equal(t, tc.resModel, resModel, tc.name)
+			require.Equal(t, tc.resModel, resModel, tc.name)
+		})
 	}
 }
 
@@ -257,28 +259,30 @@ func TestUpdateConfig(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		st := newTestSuite(t, tc.mock())
-		req := httptest.NewRequest(
-			"PATCH",
-			"/api/v1/config/"+tc.id,
-			bytes.NewBuffer(tc.body),
-		)
-		for header, value := range tc.headers {
-			req.Header.Add(header, value)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			st := newTestSuite(t, tc.mock())
+			req := httptest.NewRequest(
+				"PATCH",
+				"/api/v1/config/"+tc.id,
+				bytes.NewBuffer(tc.body),
+			)
+			for header, value := range tc.headers {
+				req.Header.Add(header, value)
+			}
 
-		res, err := st.app.Test(req)
-		defer res.Body.Close()
-		require.NoError(t, err)
+			res, err := st.app.Test(req)
+			defer res.Body.Close()
+			require.NoError(t, err)
 
-		data, err := io.ReadAll(res.Body)
-		require.NoError(t, err)
+			data, err := io.ReadAll(res.Body)
+			require.NoError(t, err)
 
-		resModel := &dto.Response{}
-		err = json.Unmarshal(data, resModel)
-		require.NoError(t, err, tc.name)
-		require.Equal(t, tc.resModel, resModel, tc.name)
+			resModel := &dto.Response{}
+			err = json.Unmarshal(data, resModel)
+			require.NoError(t, err, tc.name)
+			require.Equal(t, tc.resModel, resModel, tc.name)
 
-		require.Equal(t, tc.expectedStatusCode, res.StatusCode)
+			require.Equal(t, tc.expectedStatusCode, res.StatusCode)
+		})
 	}
 }
