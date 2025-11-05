@@ -35,7 +35,7 @@ func TestGetConfig(t *testing.T) {
 				"limit": []string{"10"},
 				"page":  []string{"1"},
 			},
-			expectedStatusCode: 200,
+			expectedStatusCode: http.StatusOK,
 			mock: func() *mocks.MockService {
 				serviceMock := mocks.NewMockService(ctrl)
 				serviceMock.EXPECT().GetConfig(gomock.Any(), gomock.Any()).Return([]*models.Config{{
@@ -62,7 +62,7 @@ func TestGetConfig(t *testing.T) {
 				"limit": []string{"10"},
 				"page":  []string{"1"},
 			},
-			expectedStatusCode: 500,
+			expectedStatusCode: http.StatusInternalServerError,
 			mock: func() *mocks.MockService {
 				serviceMock := mocks.NewMockService(ctrl)
 				serviceMock.EXPECT().GetConfig(gomock.Any(), gomock.Any()).Return(nil, 0, errors.New("internal error"))
@@ -77,7 +77,7 @@ func TestGetConfig(t *testing.T) {
 				"limit": []string{"10"},
 				"page":  []string{"-1"},
 			},
-			expectedStatusCode: 400,
+			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {
 				serviceMock := mocks.NewMockService(ctrl)
 				return serviceMock
@@ -90,7 +90,7 @@ func TestGetConfig(t *testing.T) {
 				"limit": []string{"-10"},
 				"page":  []string{"1"},
 			},
-			expectedStatusCode: 400,
+			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {
 				serviceMock := mocks.NewMockService(ctrl)
 				return serviceMock
@@ -103,7 +103,7 @@ func TestGetConfig(t *testing.T) {
 				"limit": []string{"-das10"},
 				"page":  []string{"1"},
 			},
-			expectedStatusCode: 400,
+			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {
 				serviceMock := mocks.NewMockService(ctrl)
 				return serviceMock
@@ -116,7 +116,7 @@ func TestGetConfig(t *testing.T) {
 				"limit": []string{"10"},
 				"page":  []string{"das"},
 			},
-			expectedStatusCode: 400,
+			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {
 				serviceMock := mocks.NewMockService(ctrl)
 				return serviceMock
