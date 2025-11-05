@@ -20,6 +20,7 @@ import (
 
 func TestGetConfig(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 	testcases := []struct {
 		name               string
 		queryParams        map[string][]string
@@ -158,6 +159,7 @@ func TestGetConfig(t *testing.T) {
 
 func TestUpdateConfig(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 	testcases := []struct {
 		name               string
 		id                 string
