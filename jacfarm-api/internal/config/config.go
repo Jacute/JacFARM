@@ -3,6 +3,7 @@ package config
 import (
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -23,6 +24,7 @@ type Config struct {
 type HTTPConfig struct {
 	Host         string        `envconfig:"HTTP_HOST"`
 	Port         int           `envconfig:"HTTP_PORT"`
+	PprofPort    int           `envconfig:"HTTP_PPROF_PORT"`
 	ReadTimeout  time.Duration `envconfig:"HTTP_READ_TIMEOUT"`
 	WriteTimeout time.Duration `envconfig:"HTTP_WRITE_TIMEOUT"`
 	IdleTimeout  time.Duration `envconfig:"HTTP_IDLE_TIMEOUT"`
@@ -50,7 +52,11 @@ type RabbitMQConfig struct {
 	ManagementPort int    `envconfig:"RABBITMQ_MANAGEMENT_PORT"`
 }
 
+const envFilename = ".env"
+
 func MustParseConfig() *Config {
+	godotenv.Load(envFilename)
+
 	var cfg Config
 	if err := envconfig.Process("", &cfg); err != nil {
 		panic("error loading env: " + err.Error())

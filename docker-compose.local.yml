@@ -10,6 +10,8 @@ services:
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d:ro
+    ports:
+      - 127.0.0.1:5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "jacfarm", "-h", "localhost"]
       interval: 10s
@@ -30,6 +32,7 @@ services:
       - ./volumes/rabbitmq:/var/lib/rabbitmq
     ports:
       - 127.0.0.1:15672:15672
+      - 127.0.0.1:5672:5672
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 10s
@@ -69,7 +72,7 @@ services:
       - RABBITMQ_USERNAME=rmuser
       - RABBITMQ_PASSWORD=rmpassword
       - EXPLOIT_DIR=/app/exploits
-      - ENV=prod
+      - ENV=local
     volumes:
       - ./volumes/exploits:/app/exploits
     depends_on:
@@ -95,7 +98,7 @@ services:
       - RABBITMQ_USERNAME=rmuser
       - RABBITMQ_PASSWORD=rmpassword
       - PLUGIN_DIR=/app/plugins
-      - ENV=prod
+      - ENV=local
     depends_on:
       db:
         condition: service_healthy
@@ -127,8 +130,9 @@ services:
       - HTTP_WRITE_TIMEOUT=10s
       - HTTP_IDLE_TIMEOUT=60s
       - HTTP_CORS_ALLOWED_ORIGINS=http://127.0.0.1:5173,http://localhost:5173
-      - ENV=prod
-      - JACFARM_API_KEY=${JACFARM_API_KEY}
+      - HTTP_PPROF_PORT=6060
+      - ENV=local
+      - JACFARM_API_KEY=TEST_API_KEY
       - EXPLOIT_DIR=/app/exploits
     volumes:
       - ./volumes/exploits:/app/exploits

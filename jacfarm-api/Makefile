@@ -11,3 +11,7 @@ install-swag:
 
 swagger:
 	@swag init -g ./internal/http/server/router.go --parseDependency --parseInternal --generatedTime -o ../docs/jacfarm-api/swagger
+
+wrk-send-flags:
+	@echo "Sending many flags with wrk..."
+	wrk -t2 -c30 -d20s http://localhost:1337 -s flags.lua
