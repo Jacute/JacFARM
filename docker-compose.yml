@@ -71,6 +71,7 @@ services:
       - RABBITMQ_USERNAME=rmuser
       - RABBITMQ_PASSWORD=rmpassword
       - EXPLOIT_DIR=/app/exploits
+      - ENV=prod
     volumes:
       - ./volumes/exploits:/app/exploits
     depends_on:
@@ -96,7 +97,7 @@ services:
       - RABBITMQ_USERNAME=rmuser
       - RABBITMQ_PASSWORD=rmpassword
       - PLUGIN_DIR=/app/plugins
-      - ENV=local
+      - ENV=prod
     depends_on:
       db:
         condition: service_healthy
