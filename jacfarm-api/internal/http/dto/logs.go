@@ -39,7 +39,7 @@ func MapQueryToListLogsFilter(queries map[string]string) (*ListLogsFilter, error
 		var err error
 		limit, err = strconv.Atoi(limitStr)
 		if err != nil {
-			return nil, ErrLimitIncorrect
+			return nil, ErrLimitIncorrectType
 		}
 		if limit < 0 {
 			return nil, ErrLimitNegative
@@ -51,7 +51,7 @@ func MapQueryToListLogsFilter(queries map[string]string) (*ListLogsFilter, error
 		var err error
 		page, err = strconv.Atoi(pageStr)
 		if err != nil {
-			return nil, ErrPageIncorrect
+			return nil, ErrPageIncorrectType
 		}
 		if page < 0 {
 			return nil, ErrPageNegative

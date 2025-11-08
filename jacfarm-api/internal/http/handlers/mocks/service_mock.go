@@ -163,6 +163,54 @@ func (mr *MockServiceMockRecorder) ListFlags(ctx, filter any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFlags", reflect.TypeOf((*MockService)(nil).ListFlags), ctx, filter)
 }
 
+// ListLogLevel mocks base method.
+func (m *MockService) ListLogLevel(ctx context.Context) ([]*models.LogLevel, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLogLevel", ctx)
+	ret0, _ := ret[0].([]*models.LogLevel)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListLogLevel indicates an expected call of ListLogLevel.
+func (mr *MockServiceMockRecorder) ListLogLevel(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLogLevel", reflect.TypeOf((*MockService)(nil).ListLogLevel), ctx)
+}
+
+// ListLogs mocks base method.
+func (m *MockService) ListLogs(ctx context.Context, filter *dto.ListLogsFilter) ([]*models.Log, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLogs", ctx, filter)
+	ret0, _ := ret[0].([]*models.Log)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListLogs indicates an expected call of ListLogs.
+func (mr *MockServiceMockRecorder) ListLogs(ctx, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLogs", reflect.TypeOf((*MockService)(nil).ListLogs), ctx, filter)
+}
+
+// ListModules mocks base method.
+func (m *MockService) ListModules(ctx context.Context) ([]*models.Module, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListModules", ctx)
+	ret0, _ := ret[0].([]*models.Module)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListModules indicates an expected call of ListModules.
+func (mr *MockServiceMockRecorder) ListModules(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListModules", reflect.TypeOf((*MockService)(nil).ListModules), ctx)
+}
+
 // ListShortExploits mocks base method.
 func (m *MockService) ListShortExploits(ctx context.Context) ([]*models.ExploitShort, error) {
 	m.ctrl.T.Helper()

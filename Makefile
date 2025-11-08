@@ -23,7 +23,7 @@ up: ## Start services
 	@echo "JACFARM_API_KEY=$(JACFARM_API_KEY)" > .env
 	@echo "ADMIN_PASS=$(ADMIN_PASS)" >> .env
 	@echo "$(PURPLE)Farm api key$(RESET) - $(JACFARM_API_KEY)"
-	@echo "$(PURPLE)Farm admin creds$(RESET) - admin:$(ADMIN_PASS)"
+	@echo "$(PURPLE)Farm creds$(RESET) - admin:$(ADMIN_PASS)"
 	@sudo docker compose --env-file .env up --build -d
 	@echo "$(GREEN)Services started$(RESET)"
 
