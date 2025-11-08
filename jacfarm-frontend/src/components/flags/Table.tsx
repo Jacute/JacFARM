@@ -5,9 +5,9 @@ import { PAGE_LIMIT } from '../../api/api'
 
 interface props {
     page: number
-    team_id: number
-    exploit_id: string
-    status_id: number
+    team_id: number | null
+    exploit_id: string | null
+    status_id: number | null
     setCount: (count: number) => void
     flags: Flag[]
     loadFlags: () => void
@@ -20,7 +20,7 @@ export const FlagTable = (props: props) => {
 
     return (
         <div className="table-responsive shadow rounded-3 m-0 p-0">
-            <table className="table table-hover table-striped table-bordered align-middle text-center mb-0">
+            <table className="table table-fixed table-hover table-striped table-bordered align-middle text-center mb-0">
                 <thead className="table-primary">
                     <tr>
                         <th className="w-10">№</th>
@@ -36,8 +36,8 @@ export const FlagTable = (props: props) => {
                     {props.flags.map(flag => (
                         <tr key={flag.id}>
                             <td className="fw-bold">{(props.page - 1) * PAGE_LIMIT + props.flags.indexOf(flag) + 1}</td>
-                            <td>{flag.value}</td>
-                            <td>
+                            <td title={flag.value}>{flag.value}</td>
+                            <td title={flag.status}>
                                 <span className={(() => {
                                     switch (flag.status) {
                                     case "SUCCESS":
@@ -51,14 +51,14 @@ export const FlagTable = (props: props) => {
                                     {flag.status}
                                 </span>
                             </td>
-                            <td>
+                            <td title={flag.exploit_name}>
                                 {flag.exploit_name}
                             </td>
-                            <td>
+                            <td title={flag.victim_team}>
                                 {flag.victim_team}
                             </td>
-                            <td>{flag.message_from_server}</td>
-                            <td className="text-muted small">{flag.created_at}</td>
+                            <td title={flag.message_from_server}>{flag.message_from_server}</td>
+                            <td className="text-muted small" title={flag.created_at}>{flag.created_at}</td>
                         </tr>
                     ))}
                 </tbody>

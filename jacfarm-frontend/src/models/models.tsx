@@ -44,3 +44,25 @@ export interface Config {
     name: string
     value: string
 }
+
+export interface Log {
+    id: number
+    module: string
+    operation: string
+    level: string
+    value: string
+    exploit: string
+    attrs: string
+    created_at: string
+    log_level: string
+}
+
+export interface Module {
+    id: number
+    name: string
+}
+
+export interface LogLevel {
+    id: number
+    name: string
+}

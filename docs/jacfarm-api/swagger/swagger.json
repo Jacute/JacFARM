@@ -652,6 +652,164 @@
                 }
             }
         },
+        "/api/v1/logs": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "Возврат полной информации о логах",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Количество логов",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Страница логов",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор эксплойта",
+                        "name": "exploit_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор модуля",
+                        "name": "module_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Идентификатор уровня логирования",
+                        "name": "log_level_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ListLogsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/logs/levels": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "Возврат всех уровней логирования",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ListLogLevelsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/logs/modules": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "Возврат всех модулей фермы",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.ListModulesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка",
+                        "schema": {
+                            "$ref": "#/definitions/JacFARM_internal_http_dto.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/teams": {
             "get": {
                 "security": [
@@ -943,6 +1101,66 @@
                 }
             }
         },
+        "JacFARM_internal_http_dto.ListLogLevelsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "log_levels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.LogLevel"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.ListLogsResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.Log"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_http_dto.ListModulesResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "modules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/JacFARM_internal_models.Module"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "JacFARM_internal_http_dto.ListShortExploitsResponse": {
             "type": "object",
             "properties": {
@@ -1152,6 +1370,57 @@
                 "FlagStatusSuccess",
                 "FlagStatusReject"
             ]
+        },
+        "JacFARM_internal_models.Log": {
+            "type": "object",
+            "properties": {
+                "attrs": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "exploit": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "log_level": {
+                    "type": "string"
+                },
+                "module": {
+                    "type": "string"
+                },
+                "operation": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_models.LogLevel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "JacFARM_internal_models.Module": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
         },
         "JacFARM_internal_models.ShortTeam": {
             "type": "object",

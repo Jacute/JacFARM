@@ -209,6 +209,54 @@ func (mr *StorageMockMockRecorder) GetTeams(ctx, filter any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeams", reflect.TypeOf((*StorageMock)(nil).GetTeams), ctx, filter)
 }
 
+// ListLogLevel mocks base method.
+func (m *StorageMock) ListLogLevel(ctx context.Context) ([]*models.LogLevel, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLogLevel", ctx)
+	ret0, _ := ret[0].([]*models.LogLevel)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListLogLevel indicates an expected call of ListLogLevel.
+func (mr *StorageMockMockRecorder) ListLogLevel(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLogLevel", reflect.TypeOf((*StorageMock)(nil).ListLogLevel), ctx)
+}
+
+// ListLogs mocks base method.
+func (m *StorageMock) ListLogs(ctx context.Context, filter *dto.ListLogsFilter) ([]*models.Log, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLogs", ctx, filter)
+	ret0, _ := ret[0].([]*models.Log)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListLogs indicates an expected call of ListLogs.
+func (mr *StorageMockMockRecorder) ListLogs(ctx, filter any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLogs", reflect.TypeOf((*StorageMock)(nil).ListLogs), ctx, filter)
+}
+
+// ListModules mocks base method.
+func (m *StorageMock) ListModules(ctx context.Context) ([]*models.Module, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListModules", ctx)
+	ret0, _ := ret[0].([]*models.Module)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListModules indicates an expected call of ListModules.
+func (mr *StorageMockMockRecorder) ListModules(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListModules", reflect.TypeOf((*StorageMock)(nil).ListModules), ctx)
+}
+
 // ToggleExploit mocks base method.
 func (m *StorageMock) ToggleExploit(ctx context.Context, id string) (bool, error) {
 	m.ctrl.T.Helper()

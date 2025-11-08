@@ -7,12 +7,13 @@ import { Modal } from "../components/Modal"
 import type { Flag } from "../models/models"
 import { getFlags } from "../api/flags"
 import { toast } from "react-toastify"
+import { Spinner } from "../components/common/Spinner"
 
 
 export const FlagsPage = () => {
-  const [team_id, setTeamId] = useState<number>(0);
-  const [exploit_id, setExploitId] = useState<string>("");
-  const [status_id, setStatusId] = useState<number>(0);
+  const [team_id, setTeamId] = useState<number | null>(null);
+  const [exploit_id, setExploitId] = useState<string | null>(null);
+  const [status_id, setStatusId] = useState<number | null>(null);
   const [page, setPage] = useState<number>(1);
   const [count, setCount] = useState<number>(0);
   const [flags, setFlags] = useState<Array<Flag>>([]);
@@ -54,14 +55,7 @@ export const FlagsPage = () => {
                 />
 
                 <div className="row flex-grow-1 overflow-auto position-relative">
-                    {isLoading && (
-                        <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                             style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', zIndex: 1000 }}>
-                            <div className="spinner-border text-primary" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    )}
+                    {isLoading && <Spinner></Spinner>}
                     
                     <FlagTable 
                         page={page} 
