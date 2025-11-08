@@ -102,18 +102,18 @@ func (mr *MockServiceMockRecorder) GetConfig(ctx, filter any) *gomock.Call {
 }
 
 // GetFlagsCount mocks base method.
-func (m *MockService) GetFlagsCount() (int, error) {
+func (m *MockService) GetFlagsCount(ctx context.Context) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFlagsCount")
+	ret := m.ctrl.Call(m, "GetFlagsCount", ctx)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetFlagsCount indicates an expected call of GetFlagsCount.
-func (mr *MockServiceMockRecorder) GetFlagsCount() *gomock.Call {
+func (mr *MockServiceMockRecorder) GetFlagsCount(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlagsCount", reflect.TypeOf((*MockService)(nil).GetFlagsCount))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlagsCount", reflect.TypeOf((*MockService)(nil).GetFlagsCount), ctx)
 }
 
 // GetStatuses mocks base method.

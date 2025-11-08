@@ -108,7 +108,7 @@ func (h *Handlers) GetStatuses() func(c fiber.Ctx) error {
 // @Security BasicAuth
 func (h *Handlers) GetFlagsCount() func(c fiber.Ctx) error {
 	return func(c fiber.Ctx) error {
-		count, err := h.service.GetFlagsCount()
+		count, err := h.service.GetFlagsCount(c.RequestCtx())
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(dto.ErrInternal)
 		}

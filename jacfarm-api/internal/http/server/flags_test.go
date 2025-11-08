@@ -428,7 +428,7 @@ func TestGetFlagsCount(t *testing.T) {
 			expectedStatusCode: http.StatusOK,
 			mock: func() *mocks.MockService {
 				service := mocks.NewMockService(ctrl)
-				service.EXPECT().GetFlagsCount().Return(
+				service.EXPECT().GetFlagsCount(gomock.Any()).Return(
 					10,
 					nil,
 				)
@@ -444,7 +444,7 @@ func TestGetFlagsCount(t *testing.T) {
 			expectedStatusCode: http.StatusInternalServerError,
 			mock: func() *mocks.MockService {
 				service := mocks.NewMockService(ctrl)
-				service.EXPECT().GetFlagsCount().Return(0, errors.New("internal"))
+				service.EXPECT().GetFlagsCount(gomock.Any()).Return(0, errors.New("internal"))
 				return service
 			},
 			errModel: dto.ErrInternal,
