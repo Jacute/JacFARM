@@ -34,14 +34,8 @@ export const LogsPage = () => {
 
     return (
         <>
-            <div className="row h-10 bg-primary border-bottom border-1 border-secondary">
-                <div className="col-11"></div>
-                <div className="col-1 d-flex align-items-center justify-content-center">
-                    <button className='btn btn-white w-50 border border-1' data-bs-toggle="modal" data-bs-target="#modal">
-                    ➕
-                    </button>
-                </div>
-            </div>
+            <div className="row h-10 bg-primary border-bottom border-1 border-secondary"></div>
+            
             <div className="row h-90">
                 <div className="d-flex flex-column h-100">
                     <LogFilter

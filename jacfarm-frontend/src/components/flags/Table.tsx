@@ -24,12 +24,12 @@ export const FlagTable = (props: props) => {
                 <thead className="table-primary">
                     <tr>
                         <th className="w-10">№</th>
-                        <th>Значение</th>
-                        <th>Статус</th>
-                        <th>Эксплойт</th>
-                        <th>Команда</th>
-                        <th>Ответ от сервера</th>
-                        <th>Дата создания</th>
+                        <th>Value</th>
+                        <th>Status</th>
+                        <th>Exploit</th>
+                        <th>Team</th>
+                        <th>Server answer</th>
+                        <th>Created at</th>
                     </tr>
                 </thead>
                 <tbody>
