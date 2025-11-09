@@ -101,7 +101,7 @@ export const TeamsPage = () => {
         </div>
 
         <Modal
-            title="Добавить команду"
+            title="Add team"
             ModalBody={<AddTeamModal loadTeams={loadTeams} />}
         />
     </>

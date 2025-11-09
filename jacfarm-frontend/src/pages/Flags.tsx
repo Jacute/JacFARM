@@ -75,7 +75,7 @@ export const FlagsPage = () => {
                 </div>
             </div>
         </div>
-        <Modal title="Добавить флаг" ModalBody={<AddModal loadFlags={loadFlags}/>}/>
+        <Modal title="Add flag" ModalBody={<AddModal loadFlags={loadFlags}/>}/>
     </>
   )
 }
