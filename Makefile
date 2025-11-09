@@ -20,12 +20,27 @@ up: ## Start services
 	@echo "$(GREEN)[$(PURPLE)start$(GREEN)]$(RED) Starting services$(RESET)"
 	@mkdir -p volumes/exploits
 	@sudo chown -R 1000:1000 ./volumes/exploits
-	@echo "JACFARM_API_KEY=$(JACFARM_API_KEY)" > .env
-	@echo "ADMIN_PASS=$(ADMIN_PASS)" >> .env
-	@echo "$(PURPLE)Farm api key$(RESET) - $(JACFARM_API_KEY)"
-	@echo "$(PURPLE)Farm creds$(RESET) - admin:$(ADMIN_PASS)"
+	@touch .env
+
+	# JACFARM_API_KEY: если есть — не трогаем, иначе дописываем
+	@if grep -q '^JACFARM_API_KEY=' .env; then \
+		printf "$(PURPLE)Farm api key$(RESET) - %s\n" "$$(grep '^JACFARM_API_KEY=' .env | cut -d'=' -f2-)"; \
+	else \
+		echo "JACFARM_API_KEY=$(JACFARM_API_KEY)" >> .env; \
+		printf "$(PURPLE)Farm api key$(RESET) - %s\n" "$(JACFARM_API_KEY)"; \
+	fi
+
+	# ADMIN_PASS: если есть — не трогаем, иначе дописываем
+	@if grep -q '^ADMIN_PASS=' .env; then \
+		printf "$(PURPLE)Farm creds$(RESET) - admin:%s\n" "$$(grep '^ADMIN_PASS=' .env | cut -d'=' -f2-)"; \
+	else \
+		echo "ADMIN_PASS=$(ADMIN_PASS)" >> .env; \
+		printf "$(PURPLE)Farm creds$(RESET) - admin:%s\n" "$(ADMIN_PASS)"; \
+	fi
+
 	@sudo docker compose --env-file .env up --build -d
 	@echo "$(GREEN)Services started$(RESET)"
+
 
 down: ## Stop services
 	@echo "$(GREEN)[$(PURPLE)stop$(GREEN)]$(RED) Stopping services$(RESET)"
