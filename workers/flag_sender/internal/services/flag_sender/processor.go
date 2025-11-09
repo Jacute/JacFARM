@@ -65,6 +65,8 @@ func (fs *FlagSender) processBatch(ctx context.Context, batch []amqp.Delivery) e
 			return fmt.Errorf("%s: %w", op, err)
 		}
 		log.Debug("flags added in db", slog.Int("count", len(ids)))
+	} else {
+		log.Debug("flags not added")
 	}
 
 	return nil

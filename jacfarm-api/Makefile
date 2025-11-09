@@ -1,4 +1,5 @@
-PKGS := $(shell go list ./... | grep -vE 'mocks|cmd/jacfarm-api|storage/|JacFARM/internal/config|JacFARM/internal/http/server|JacFARM/internal/rabbitmq|JacFARM/internal/http/validator')
+.PHONY: coverage install-swag swagger
+PKGS := $(shell go list ./... | grep -vE 'mocks|cmd/jacfarm-api')
 
 coverage:
 	@go test $(PKGS) -coverprofile=coverage.out -coverpkg=$(shell echo $(PKGS) | tr ' ' ',') -timeout 30s
@@ -10,3 +11,7 @@ install-swag:
 
 swagger:
 	@swag init -g ./internal/http/server/router.go --parseDependency --parseInternal --generatedTime -o ../docs/jacfarm-api/swagger
+
+wrk-send-flags:
+	@echo "Sending many flags with wrk..."
+	wrk -t2 -c30 -d20s http://localhost:1337 -s flags.lua

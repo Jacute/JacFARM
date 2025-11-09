@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"JacFARM/pkg/rabbitmq_dto"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -34,7 +35,7 @@ func (r *Rabbit) PublishFlag(flag *rabbitmq_dto.Flag) error {
 	return nil
 }
 
-func (r *Rabbit) GetFlagsCount() (int, error) {
+func (r *Rabbit) GetFlagsCount(ctx context.Context) (int, error) {
 	values := url.Values{
 		"lengths_age":     []string{"60"},
 		"lengths_incr":    []string{"5"},
@@ -51,7 +52,7 @@ func (r *Rabbit) GetFlagsCount() (int, error) {
 		values.Encode(),
 	)
 
-	req, err := http.NewRequest("GET", getFlagsURL, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", getFlagsURL, nil)
 	if err != nil {
 		return 0, err
 	}

@@ -36,7 +36,7 @@ type storage interface {
 //go:generate mockgen -source=service.go -destination=./mocks/queue_mock.go -package=mocks -mock_names=queue=QueueMock queue
 type queue interface {
 	PublishFlag(flag *rabbitmq_dto.Flag) error
-	GetFlagsCount() (int, error)
+	GetFlagsCount(ctx context.Context) (int, error)
 }
 
 type Service struct {

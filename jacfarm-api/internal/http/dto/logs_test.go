@@ -46,7 +46,7 @@ func TestMapQueryToListLogsFilter(t *testing.T) {
 				"module_id":  "1",
 				"exploit_id": "a207bb9c-3bf3-4b57-b782-a6aba66da239",
 			},
-			expectedErr: ErrPageIncorrect,
+			expectedErr: ErrPageIncorrectType,
 		},
 		{
 			name: "incorrect exploit_id",

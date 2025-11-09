@@ -4,6 +4,8 @@ import (
 	"JacFARM/internal/config"
 	"JacFARM/internal/http/handlers"
 	"JacFARM/internal/http/middlewares"
+	"net/http"
+	"net/http/pprof"
 
 	"github.com/bytedance/sonic"
 	fiber "github.com/gofiber/fiber/v3"
@@ -75,4 +77,20 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *f
 	serviceGroup.Post("/flags", middlewares.ServiceAuthMiddleware(apiKey), h.PutFlag())
 
 	return r
+}
+
+func setupPprofRouter() http.Handler {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	mux.Handle("/debug/pprof/goroutine", pprof.Handler("goroutine"))
+	mux.Handle("/debug/pprof/block", pprof.Handler("block"))
+	mux.Handle("/debug/pprof/heap", pprof.Handler("heap"))
+	mux.Handle("/debug/pprof/threadcreate", pprof.Handler("threadcreate"))
+
+	return mux
 }

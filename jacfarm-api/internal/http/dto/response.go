@@ -9,6 +9,7 @@ var (
 	ErrDecodingBody       = Error("error decoding body")
 	ErrInvalidContentType = Error("invalid content-type")
 	ErrInternal           = Error("internal error")
+	ErrNotFound           = Error("not found")
 )
 
 type Response struct {

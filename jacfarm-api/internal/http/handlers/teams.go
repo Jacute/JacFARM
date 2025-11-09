@@ -18,7 +18,7 @@ import (
 // @Success 200 {object} dto.ListShortTeamsResponse
 // @Failure 401 {object} dto.Response "Ошибка авторизации"
 // @Failure 500 {object} dto.Response "Внутренняя ошибка"
-// @Router /api/v1/flags/short [get]
+// @Router /api/v1/teams/short [get]
 // @Tags Flags
 // @Security BasicAuth
 func (h *Handlers) ListShortTeams() func(c fiber.Ctx) error {
@@ -91,7 +91,7 @@ func (h *Handlers) AddTeam() func(c fiber.Ctx) error {
 		}
 
 		if err := validator.Validate(req); err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(dto.Error(err.Error()))
+			return c.Status(fiber.StatusBadRequest).JSON(dto.Error(validator.GetDetailedError(err).Error()))
 		}
 
 		id, err := h.service.AddTeam(c.RequestCtx(), &models.Team{
@@ -99,8 +99,8 @@ func (h *Handlers) AddTeam() func(c fiber.Ctx) error {
 			IP:   net.ParseIP(req.IP),
 		})
 		if err != nil {
-			if err == storage.ErrTeamAlreadyExists {
-				return c.Status(fiber.StatusBadRequest).JSON(dto.Error("team already exists"))
+			if errors.Is(err, storage.ErrTeamAlreadyExists) {
+				return c.Status(fiber.StatusBadRequest).JSON(dto.Error(err.Error()))
 			}
 			return c.Status(fiber.StatusInternalServerError).JSON(dto.ErrInternal)
 		}
@@ -129,7 +129,10 @@ func (h *Handlers) DeleteTeam() func(c fiber.Ctx) error {
 		idStr := c.Params("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(dto.Error("id should be int"))
+			return c.Status(fiber.StatusBadRequest).JSON(dto.Error(dto.ErrIdIncorrectType.Error()))
+		}
+		if id <= 0 {
+			return c.Status(fiber.StatusBadRequest).JSON(dto.Error(dto.ErrIdShouldBePos.Error()))
 		}
 
 		err = h.service.DeleteTeam(c.RequestCtx(), int64(id))

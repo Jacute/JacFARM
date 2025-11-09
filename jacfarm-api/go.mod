@@ -1,6 +1,6 @@
 module JacFARM
 
-go 1.24.5
+go 1.25.3
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
@@ -12,6 +12,7 @@ require (
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgx/v5 v5.5.4
 	github.com/jacute/prettylogger v0.0.7
+	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/stretchr/testify v1.11.1

@@ -10,8 +10,6 @@ services:
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d:ro
-    ports:
-      - 127.0.0.1:5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "jacfarm", "-h", "localhost"]
       interval: 10s
@@ -71,6 +69,7 @@ services:
       - RABBITMQ_USERNAME=rmuser
       - RABBITMQ_PASSWORD=rmpassword
       - EXPLOIT_DIR=/app/exploits
+      - ENV=prod
     volumes:
       - ./volumes/exploits:/app/exploits
     depends_on:
@@ -96,7 +95,7 @@ services:
       - RABBITMQ_USERNAME=rmuser
       - RABBITMQ_PASSWORD=rmpassword
       - PLUGIN_DIR=/app/plugins
-      - ENV=local
+      - ENV=prod
     depends_on:
       db:
         condition: service_healthy

@@ -311,18 +311,18 @@ func (m *QueueMock) EXPECT() *QueueMockMockRecorder {
 }
 
 // GetFlagsCount mocks base method.
-func (m *QueueMock) GetFlagsCount() (int, error) {
+func (m *QueueMock) GetFlagsCount(ctx context.Context) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFlagsCount")
+	ret := m.ctrl.Call(m, "GetFlagsCount", ctx)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetFlagsCount indicates an expected call of GetFlagsCount.
-func (mr *QueueMockMockRecorder) GetFlagsCount() *gomock.Call {
+func (mr *QueueMockMockRecorder) GetFlagsCount(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlagsCount", reflect.TypeOf((*QueueMock)(nil).GetFlagsCount))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlagsCount", reflect.TypeOf((*QueueMock)(nil).GetFlagsCount), ctx)
 }
 
 // PublishFlag mocks base method.
