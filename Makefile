@@ -22,7 +22,6 @@ up: ## Start services
 	@sudo chown -R 1000:1000 ./volumes/exploits
 	@touch .env
 
-	# JACFARM_API_KEY: если есть — не трогаем, иначе дописываем
 	@if grep -q '^JACFARM_API_KEY=' .env; then \
 		printf "$(PURPLE)Farm api key$(RESET) - %s\n" "$$(grep '^JACFARM_API_KEY=' .env | cut -d'=' -f2-)"; \
 	else \
@@ -30,7 +29,6 @@ up: ## Start services
 		printf "$(PURPLE)Farm api key$(RESET) - %s\n" "$(JACFARM_API_KEY)"; \
 	fi
 
-	# ADMIN_PASS: если есть — не трогаем, иначе дописываем
 	@if grep -q '^ADMIN_PASS=' .env; then \
 		printf "$(PURPLE)Farm creds$(RESET) - admin:%s\n" "$$(grep '^ADMIN_PASS=' .env | cut -d'=' -f2-)"; \
 	else \
