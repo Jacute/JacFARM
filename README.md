@@ -1,5 +1,3 @@
-# JacFARM
-
 <p align="center">
   <picture>
     <img alt="JacFARM Logo" src="https://raw.githubusercontent.com/Jacute/JacFARM/refs/heads/master/docs/img/logo.png" width="300">
