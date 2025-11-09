@@ -23,6 +23,11 @@ RUN find ./plugins -type f -name "client.go" -exec sh -c \
 
 FROM debian:bookworm-slim
 
+RUN apt update
+
+# for bash type exploit
+RUN apt install curl -y
+
 RUN useradd -u 1000 user
 USER user
 

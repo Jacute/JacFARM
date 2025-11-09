@@ -1,19 +1,69 @@
 # JacFARM
 
-[![tests](https://github.com/Jacute/JacFARM/actions/workflows/tests.yml/badge.svg)](https://github.com/Jacute/JacFARM/actions/workflows/tests.yml)
-![GitHub Release](https://img.shields.io/github/v/release/Jacute/JacFARM)
+<p align="center">
+  <picture>
+    <img alt="JacFARM Logo" src="https://raw.githubusercontent.com/Jacute/JacFARM/refs/heads/master/docs/logo.png" width="300">
+  </picture>
+</p>
+<p align="center">
+  <strong>Exploit farm for attack-defense CTF competition</strong>
+</p>
+<p align="center">
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#features">Features</a> •
+  <a href="#components">Components</a>
+</p>
+<p align="center">
+  <a href="https://github.com/Jacute/JacFARM/actions"><img src="https://github.com/Jacute/JacFARM/actions/workflows/tests.yml/badge.svg" alt="CI Status"></a>
+  <a href="https://codecov.io/gh/ollelogdahl/concord"><img alt="Codecov" src="https://codecov.io/gh/Jacute/JacFARM/master/master/graph/badge.svg"></a>
+  <a href="#"><img alt="Coveralls" src="https://coveralls.io/repos/github/Jacute/JacFARM/badge.svg?branch=master"></a>
+  <a href="https://github.com/Jacute/JacFARM/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Jacute/JacFARM"></a>
+</p>
 
+## Quick start
 
-[![Coverage Status](https://coveralls.io/repos/github/Jacute/JacFARM/badge.svg?branch=tests-jacfarm-api)](https://coveralls.io/github/Jacute/JacFARM)
-[![codecov](https://codecov.io/gh/Jacute/JacFARM/branch/tests-jacfarm-api/graph/badge.svg)](https://app.codecov.io/gh/Jacute/JacFARM)
+### Dependencies
 
-Exploit farm for attack-defense CTF competition
+- Docker
+- Docker Compose
+- Make
+
+### Start
+
+```bash
+make up
+```
+
+Credentials for basic auth and the token for sending flags via start_exploit.py will be printed to stdout.
+
+## Features
+
+- Uploading exploits in ui
+- Real-time configuration farm options like number of concurrently running exploits, the size of the flag sending batch, team ip addresses, etc
+- The ability to [change the plugin for sending flags to jury](./docs/flag_sender/flag_sender.md).
+- There are already two sending plugins: [forcad_http](./workers/flag_sender/plugins/forcad_http/client.go) and [saarctf_tcp](./workers/flag_sender/plugins/saarctf_tcp/client.go).
+- Different [exploit types](./docs/exploit_runner/exploit_runner.md):
+  - Python (one file)
+  - Python (zip)
+  - Bash script
+  - Binary
+- View logs of running exploits and sending flags on ui
 
 ## Components
 
-### Arch Diagram
+### Client
 
-![](./docs/img/diagram.jpg)
+- **Frontend** - ui for
+  - viewing flags with any filters
+  - adding exploits of different types via '+' button
+  - deleting or updating exploits by right mouse button
+  - adding teams
+  - updating farm config
+  - viewing logs
+
+![](./docs/img/frontend.png)
+
+- **start_exploit.py** - python cli tool for starting exploits on local machine (TODO)
 
 ### Server
 
@@ -26,24 +76,10 @@ Exploit farm for attack-defense CTF competition
 
 **Plugin** - is a function in a farm that sends flags to the jury system.
 
-⚠️ Farm contains only one plugin for jury [ForcAD](https://github.com/pomo-mondreganto/ForcAD). If you write plugins for other jury systems, you can create a pull request to add them into repository.
+⚠️ Farm contains two plugins for [ForcAD](https://github.com/pomo-mondreganto/ForcAD) and saarCTF jury systems. If you write plugins for other jury systems, you can create a pull request to add them into repository.
 
 [Plugin example for ForcAD](./workers/flag_sender/plugins/forcad_http/client.go)
 
-### Client
+### Arch Diagram
 
-- **start_exploit.py** - python cli tool for starting exploits on local machine (TODO)
-- **Frontend** - ui for
-  - view flags
-  - add exploits of different types (python, binary) via '+' button
-  - delete or update exploits by right button
-  - add teams
-  - update farm config (config can be updated in real-time, except for the flag sending plugin option)
-  - view logs of flag_sender and exploit_runner services
-
-![](./docs/img/frontend.png)
-
-#### Examples of exploits
-- [binary](docs/exploit_runner/exploit_examples/binary/)
-- [python (one file)](docs/exploit_runner/exploit_examples/python_one_file/)
-- [python (zip)](docs/exploit_runner/exploit_examples/python_zip/)
+![](./docs/img/diagram.jpg)
