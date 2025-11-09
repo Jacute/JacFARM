@@ -3,6 +3,19 @@ exploit_runner:
     - 10.10.1.2
     - 10.10.2.2
     - 10.10.3.2
+  team_ip_cidrs:
+    - "10.228.79.0/24"
+    - "10.229.79.0/24"
+  team_ip_ranges:
+    - "10.200.78.2-10.200.78.200"
+    - "10.200.78.221-10.200.78.233"
+  team_ip_from_N: # N - range(n_start, n_end); X = N / block + offset_x, Y = N % block + offset_y
+    n_start: 0
+    n_end: 2000
+    offset_x: 32
+    offset_y: 0
+    block: 200
+    ip_template: "10.{X}.{Y}.2"
   flag_format: '[A-Z0-9]{31}='
   run_duration: 10s
   exploit_directory: ./exploits
