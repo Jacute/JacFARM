@@ -12,6 +12,10 @@ type Storage struct {
 	db *pgxpool.Pool
 }
 
+func (s *Storage) GetPool() *pgxpool.Pool {
+	return s.db
+}
+
 func (s *Storage) Stop() {
 	s.db.Close()
 }

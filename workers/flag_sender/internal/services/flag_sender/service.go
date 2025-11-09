@@ -65,8 +65,8 @@ func (fs *FlagSender) Start() error {
 	}
 
 	batch := make([]amqp.Delivery, 0, fs.cfg.submitLimit)
+	timer := time.NewTimer(fs.cfg.submitPeriod)
 	for {
-		timer := time.NewTimer(fs.cfg.submitPeriod)
 		select {
 		case flag, ok := <-flagChan:
 			if !ok {
@@ -76,6 +76,9 @@ func (fs *FlagSender) Start() error {
 
 			if len(batch) < fs.cfg.submitLimit {
 				batch = append(batch, flag)
+				flag.Ack(false)
+			} else {
+				flag.Nack(false, true) // batch is full, requeue
 			}
 		case <-timer.C:
 			sendCtx, cancel := context.WithTimeout(context.Background(), fs.cfg.submitTimeout)
@@ -90,19 +93,12 @@ func (fs *FlagSender) Start() error {
 				if err != nil {
 					log.Error("failed to process flag", prettylogger.Err(err))
 				}
-				for _, msg := range batch {
-					if err != nil {
-						// requeue каждое сообщение отдельно
-						msg.Nack(false, true)
-					} else {
-						msg.Ack(false)
-					}
-				}
 				batch = batch[:0]
 			} else {
 				log.Info("no flags to process")
 			}
 			cancel()
+			timer = time.NewTimer(fs.cfg.submitPeriod)
 		case <-fs.stopChan:
 			log.Info("flag sender stopped")
 			timer.Stop()
@@ -115,6 +111,6 @@ func (fs *FlagSender) Stop() {
 	const op = "service.flag_sender.Stop"
 	log := fs.log.With(slog.String("op", op))
 
-	log.Debug("stopping flag saver service")
+	log.Debug("stopping flag sender service")
 	close(fs.stopChan)
 }

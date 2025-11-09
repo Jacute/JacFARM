@@ -45,11 +45,11 @@ func (s *Service) PutFlag(ctx context.Context, flag string) error {
 	return nil
 }
 
-func (s *Service) GetFlagsCount() (int, error) {
+func (s *Service) GetFlagsCount(ctx context.Context) (int, error) {
 	const op = "service.jacfarm.GetFlagsCount"
 	log := s.log.With(slog.String("op", op))
 
-	count, err := s.que.GetFlagsCount()
+	count, err := s.que.GetFlagsCount(ctx)
 	if err != nil {
 		log.Error("error getting flags count", prettylogger.Err(err))
 		return 0, err

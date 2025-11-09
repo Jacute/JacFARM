@@ -6,10 +6,11 @@ import (
 	"context"
 )
 
-type ServiceInterface interface {
+//go:generate mockgen -source=handlers.go -destination=./mocks/service_mock.go -package=mocks -mock_names=storage=ServiceMock Service
+type Service interface {
 	ListFlags(ctx context.Context, filter *dto.ListFlagsFilter) ([]*models.FlagEnrich, int, error)
 	PutFlag(ctx context.Context, flag string) error
-	GetFlagsCount() (int, error)
+	GetFlagsCount(ctx context.Context) (int, error)
 
 	ListExploits(ctx context.Context, filter *dto.ListExploitsFilter) ([]*models.Exploit, int, error)
 	ListShortExploits(ctx context.Context) ([]*models.ExploitShort, error)
@@ -26,13 +27,17 @@ type ServiceInterface interface {
 
 	GetConfig(ctx context.Context, filter *dto.GetConfigFilter) ([]*models.Config, int, error)
 	UpdateConfig(ctx context.Context, id int64, value string) error
+
+	ListLogs(ctx context.Context, filter *dto.ListLogsFilter) ([]*models.Log, int, error)
+	ListModules(ctx context.Context) ([]*models.Module, int, error)
+	ListLogLevel(ctx context.Context) ([]*models.LogLevel, int, error)
 }
 
 type Handlers struct {
-	service ServiceInterface
+	service Service
 }
 
-func New(service ServiceInterface) *Handlers {
+func New(service Service) *Handlers {
 	return &Handlers{
 		service: service,
 	}

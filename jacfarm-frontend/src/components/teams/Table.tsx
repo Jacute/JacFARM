@@ -52,7 +52,7 @@ export const TeamTable = ({ page, teams, onStats, setTeams }: Props) => {
 
     return (
     <div className="table-responsive shadow rounded-3 m-0 p-0 position-relative">
-      <table className="table table-hover table-striped table-bordered align-middle text-center mb-0">
+      <table className="table table-fixed table-hover table-striped table-bordered align-middle text-center mb-0">
         <thead className="table-primary">
           <tr>
             <th className="w-10">№</th>
@@ -70,8 +70,8 @@ export const TeamTable = ({ page, teams, onStats, setTeams }: Props) => {
               <td className="fw-bold">
                 {(page - 1) * PAGE_LIMIT + index + 1}
               </td>
-              <td>{team.name}</td>
-              <td>{team.ip}</td>
+              <td title={team.name}>{team.name}</td>
+              <td title={team.ip}>{team.ip}</td>
             </tr>
           ))}
         </tbody>

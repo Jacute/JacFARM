@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	ErrInvalidPath  = errors.New("zip entry has invalid path")
-	ErrTooLargeFile = errors.New("zip entry is too large")
+	ErrInvalidPath          = errors.New("zip entry has invalid path")
+	ErrTooLargeFile         = errors.New("zip entry is too large")
+	ErrTooLargeZipTotalSize = errors.New("zip total size after unzipping is too large")
 )
 
 // SecureUnzip безопасно разархивирует zip-архив в targetDir.
@@ -31,27 +32,23 @@ func SecureUnzip(zipBytes []byte, targetDir string, maxTotalSize, maxFileSize in
 	var totalSize int64
 
 	for _, f := range r.File {
-		// Защита от zip slip
-		if strings.Contains(f.Name, "..") {
-			return ErrInvalidPath
-		}
-
+		// zip slip protect
 		cleanPath := filepath.Clean(f.Name)
 		destPath := filepath.Join(targetDir, cleanPath)
 		if !strings.HasPrefix(destPath, filepath.Clean(targetDir)+string(os.PathSeparator)) {
 			return ErrInvalidPath
 		}
 
-		// Проверка размера
+		// check file size
 		if int64(f.UncompressedSize64) > maxFileSize {
 			return ErrTooLargeFile
 		}
 		totalSize += int64(f.UncompressedSize64)
+		// check total size
 		if totalSize > maxTotalSize {
-			return errors.New("unzip exceeds max allowed total size")
+			return ErrTooLargeZipTotalSize
 		}
 
-		// Создание директорий
 		if f.FileInfo().IsDir() {
 			if err := os.MkdirAll(destPath, f.Mode()); err != nil {
 				return err
@@ -59,12 +56,10 @@ func SecureUnzip(zipBytes []byte, targetDir string, maxTotalSize, maxFileSize in
 			continue
 		}
 
-		// Создаём директорию, если надо
 		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 			return err
 		}
 
-		// Открываем файл внутри архива
 		rc, err := f.Open()
 		if err != nil {
 			return err
@@ -76,7 +71,6 @@ func SecureUnzip(zipBytes []byte, targetDir string, maxTotalSize, maxFileSize in
 			return err
 		}
 
-		// Ограничим запись maxFileSize
 		written, err := io.CopyN(outFile, rc, maxFileSize+1)
 		if err != nil && err != io.EOF {
 			outFile.Close()

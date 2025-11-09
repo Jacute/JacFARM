@@ -2,7 +2,6 @@ package dto
 
 import (
 	"JacFARM/internal/models"
-	"fmt"
 	"strconv"
 )
 
@@ -28,11 +27,11 @@ func MapQueryToGetConfigFilter(queries map[string]string) (*GetConfigFilter, err
 		var err error
 		limit, err = strconv.Atoi(limitStr)
 		if err != nil {
-			return nil, fmt.Errorf("limit should be number")
+			return nil, ErrLimitIncorrectType
 		}
 	}
 	if limit < 0 {
-		return nil, fmt.Errorf("limit should be positive number")
+		return nil, ErrLimitNegative
 	}
 
 	var page int
@@ -41,11 +40,11 @@ func MapQueryToGetConfigFilter(queries map[string]string) (*GetConfigFilter, err
 		var err error
 		page, err = strconv.Atoi(pageStr)
 		if err != nil {
-			return nil, fmt.Errorf("page should be number")
+			return nil, ErrPageIncorrectType
 		}
 	}
 	if page < 0 {
-		return nil, fmt.Errorf("page should be positive number")
+		return nil, ErrPageNegative
 	}
 
 	return &GetConfigFilter{

@@ -17,6 +17,8 @@ func GetDetailedError(err error) error {
 			return fmt.Errorf("field %s should bigger then %s", firstError.Field(), firstError.Param())
 		case "gt":
 			return fmt.Errorf("field %s should greater then %s", firstError.Field(), firstError.Param())
+		case "ip":
+			return fmt.Errorf("field %s should be correct ip address", firstError.Field())
 		default:
 			return fmt.Errorf("field %s is incorrect", firstError.Field())
 		}
