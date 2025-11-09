@@ -30,11 +30,20 @@
 
 ### Start
 
+1. Configure *config.yml* for your competition. A detailed description of the quick configuration is [here](./docs/config.md)
+
+2. Start the farm
 ```bash
 make up
 ```
 
 Credentials for basic auth and the token for sending flags via start_exploit.py will be printed to stdout.
+
+3. After the game ends, turn off the farm and clean the database and queue
+```bash
+make down
+make clean-all
+```
 
 ## Features
 
@@ -48,6 +57,7 @@ Credentials for basic auth and the token for sending flags via start_exploit.py 
   - Bash script
   - Binary
 - View logs of running exploits and sending flags on ui
+- Configuring vulnboxes ip addresses using [various methods](./docs/config.md)
 
 ## Components
 

@@ -16,6 +16,9 @@ type Config struct {
 
 type ExploitRunnerConfig struct {
 	TeamIPs               []string      `yaml:"team_ips"`
+	TeamIPRange           []string      `yaml:"team_ip_ranges"`
+	TeamIPCidr            []string      `yaml:"team_ip_cidrs"`
+	TeamIPFromN           *TeamIPFromN  `yaml:"team_ip_from_N"`
 	FlagFormat            string        `yaml:"flag_format"`
 	RunDuration           time.Duration `yaml:"run_duration"`
 	MaxConcurrentExploits int           `yaml:"max_concurrent_exploits"`
@@ -41,6 +44,15 @@ type DBConfig struct {
 	Host     string `envconfig:"PG_HOST"`
 	Port     int    `envconfig:"PG_PORT"`
 	DBName   string `envconfig:"PG_DB_NAME"`
+}
+
+type TeamIPFromN struct {
+	NStart     int    `yaml:"n_start"`
+	NEnd       int    `yaml:"n_end"`
+	OffsetX    int    `yaml:"offset_x"`
+	OffsetY    int    `yaml:"offset_y"`
+	Block      int    `yaml:"block"`
+	IPTemplate string `yaml:"ip_template"`
 }
 
 const defaultConfigFilepath = "./config.yml"
