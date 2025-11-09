@@ -2,7 +2,7 @@
 
 <p align="center">
   <picture>
-    <img alt="JacFARM Logo" src="https://raw.githubusercontent.com/Jacute/JacFARM/refs/heads/master/docs/logo.png" width="300">
+    <img alt="JacFARM Logo" src="https://raw.githubusercontent.com/Jacute/JacFARM/refs/heads/master/docs/img/logo.png" width="300">
   </picture>
 </p>
 <p align="center">
@@ -15,7 +15,7 @@
 </p>
 <p align="center">
   <a href="https://github.com/Jacute/JacFARM/actions"><img src="https://github.com/Jacute/JacFARM/actions/workflows/tests.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://codecov.io/gh/ollelogdahl/concord"><img alt="Codecov" src="https://codecov.io/gh/Jacute/JacFARM/master/master/graph/badge.svg"></a>
+  <a href="https://codecov.io/gh/Jacute/JacFARM"><img alt="Codecov" src="https://codecov.io/gh/Jacute/JacFARM/branch/master/graph/badge.svg"></a>
   <a href="#"><img alt="Coveralls" src="https://coveralls.io/repos/github/Jacute/JacFARM/badge.svg?branch=master"></a>
   <a href="https://github.com/Jacute/JacFARM/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Jacute/JacFARM"></a>
 </p>
