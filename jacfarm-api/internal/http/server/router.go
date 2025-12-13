@@ -75,6 +75,7 @@ func setupRouter(h *handlers.Handlers, cfg *config.HTTPConfig, apiKey string) *f
 
 	serviceGroup := apiV1.Group("/service")
 	serviceGroup.Post("/flags", middlewares.ServiceAuthMiddleware(apiKey), h.PutFlag())
+	serviceGroup.Get("/teams", middlewares.ServiceAuthMiddleware(apiKey), h.ListTeams())
 
 	return r
 }

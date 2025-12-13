@@ -45,6 +45,27 @@ func (s *Service) PutFlag(ctx context.Context, flag string) error {
 	return nil
 }
 
+func (s *Service) ServicePutFlag(ctx context.Context, req *dto.ServicePutFlagRequest) error {
+	const op = "service.jacfarm.ServicePutFlag"
+	log := s.log.With(slog.String("op", op))
+
+	for _, flag := range req.Flags {
+		err := s.que.PublishFlag(&rabbitmq_dto.Flag{
+			Value:      flag.Flag,
+			TeamID:     flag.TeamID,
+			SourceType: rabbitmq_dto.LocalExploitSourceType,
+			CreatedAt:  time.Now().UTC(),
+		})
+		if err != nil {
+			log.Error("error sending flags to queue", prettylogger.Err(err))
+			return err
+		}
+	}
+	log.Info("flags send successfully", slog.Int("count", len(req.Flags)))
+
+	return nil
+}
+
 func (s *Service) GetFlagsCount(ctx context.Context) (int, error) {
 	const op = "service.jacfarm.GetFlagsCount"
 	log := s.log.With(slog.String("op", op))
