@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"os"
 	"time"
 
 	"github.com/jacute/prettylogger"
@@ -18,6 +19,8 @@ var (
 
 type Args struct {
 	Addr                  string
+	FlagRe                string
+	Token                 string
 	Port                  int
 	ExecutablePath        string
 	Timeout               int
@@ -29,9 +32,11 @@ func ParseArgs() (*Args, error) {
 	var args Args
 
 	flag.IntVar(&args.Timeout, "t", 5, "timeout for http client (in seconds)")
+	flag.StringVar(&args.Token, "a", "", "JacFARM auth token")
 	flag.IntVar(&args.AttackPeriod, "a", 5, "attack period (in seconds)")
 	flag.IntVar(&args.MaxConcurrentExploits, "c", 50, "max concurrent exploits in one time")
 	flag.IntVar(&args.Port, "p", 15050, "jacfarm port")
+	flag.StringVar(&args.FlagRe, "f", "[A-Z0-9]{31}=", "flag regex")
 
 	flag.Parse()
 
@@ -46,6 +51,13 @@ func ParseArgs() (*Args, error) {
 	return &args, nil
 }
 
+func ValidateArgs(args *Args) error {
+	if _, err := os.Stat(args.ExecutablePath); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Run starts the worker
 // Non-block function
 func Run(args *Args, log *slog.Logger) error {
@@ -53,6 +65,7 @@ func Run(args *Args, log *slog.Logger) error {
 
 	client, err := jacfarm_client.New(
 		args.Addr,
+		args.Token,
 		jacfarm_client.WithCustomPort(args.Port),
 		jacfarm_client.WithTimeout(time.Duration(args.Timeout)*time.Second),
 	)
@@ -62,6 +75,8 @@ func Run(args *Args, log *slog.Logger) error {
 	}
 	w, err := worker.New(
 		client, log,
+		args.ExecutablePath,
+		args.FlagRe,
 		worker.WithAttackPeriod(time.Duration(args.AttackPeriod)*time.Second),
 		worker.WithMaxConcurrentExploits(args.MaxConcurrentExploits),
 	)
@@ -70,9 +85,7 @@ func Run(args *Args, log *slog.Logger) error {
 		return fmt.Errorf("%s: error creating worker %e", op, err)
 	}
 
-	go func() {
-		w.Run()
-	}()
+	w.Run()
 
 	return nil
 }

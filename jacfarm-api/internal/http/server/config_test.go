@@ -135,7 +135,9 @@ func TestGetConfig(t *testing.T) {
 			)
 
 			res, err := st.app.Test(req)
-			defer res.Body.Close()
+			defer func() {
+				_ = res.Body.Close()
+			}()
 			require.NoError(t, err)
 			require.Equal(t, tc.expectedStatusCode, res.StatusCode)
 
@@ -272,7 +274,9 @@ func TestUpdateConfig(t *testing.T) {
 			}
 
 			res, err := st.app.Test(req)
-			defer res.Body.Close()
+			defer func() {
+				_ = res.Body.Close()
+			}()
 			require.NoError(t, err)
 
 			data, err := io.ReadAll(res.Body)

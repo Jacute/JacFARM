@@ -17,6 +17,11 @@ func main() {
 		fmt.Printf("usage: %s <jacfarm_host> <exploit>\n-help for more information\n", os.Args[0])
 		os.Exit(1)
 	}
+	err = cli.ValidateArgs(args)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(2)
+	}
 
 	log := slog.New(prettylogger.NewColoredHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelInfo,

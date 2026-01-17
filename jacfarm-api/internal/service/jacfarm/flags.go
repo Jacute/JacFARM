@@ -57,11 +57,10 @@ func (s *Service) ServicePutFlag(ctx context.Context, req *dto.ServicePutFlagReq
 			CreatedAt:  time.Now().UTC(),
 		})
 		if err != nil {
-			log.Error("error sending flags to queue", prettylogger.Err(err))
+			log.Error("error sending flags to queue", slog.Any("flag", flag), prettylogger.Err(err))
 			return err
 		}
 	}
-	log.Info("flags send successfully", slog.Int("count", len(req.Flags)))
 
 	return nil
 }
