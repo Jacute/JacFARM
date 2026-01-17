@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"net"
 	"os"
 	"os/exec"
 	"regexp"
@@ -26,6 +25,7 @@ const (
 	defaultMaxConcurrentExploits = 5
 )
 
+//go:generate mockgen -source=worker.go -destination=./mocks/worker_mock.go -package=mocks -mock_names=storage=WorkerMock Service
 type JacFARMClient interface {
 	GetTeams(ctx context.Context) ([]*jacfarm_client.Team, error)
 	SendFlags(ctx context.Context, flags []*jacfarm_client.ServiceFlag) error
@@ -74,11 +74,12 @@ func New(
 		client:                client,
 		attackPeriod:          defaultAttackPeriod,
 		maxConcurrentExploits: defaultMaxConcurrentExploits,
+		exploitPath:           exploitPath,
 		flagRe:                flagRe,
 
 		log:       log,
 		stopCh:    make(chan struct{}),
-		flagQueue: make(chan []*jacfarm_client.ServiceFlag, 1), // TODO: optimization of buf size
+		flagQueue: make(chan []*jacfarm_client.ServiceFlag, senderSize), // TODO: optimization of buf size
 	}
 
 	if workerOpts.attackPeriod != nil {
@@ -133,10 +134,10 @@ func (w *Worker) attackAll(
 	log := w.log.With(slog.String("op", op), slog.String("exploit_path", w.exploitPath))
 
 	info, err := os.Stat(w.exploitPath)
-	if err == os.ErrNotExist {
-		return fmt.Errorf("exploit %s does not exist", w.exploitPath)
-	}
 	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("exploit %s does not exist", w.exploitPath)
+		}
 		return err
 	}
 	if info.IsDir() {
@@ -153,14 +154,13 @@ func (w *Worker) attackAll(
 	wg.Add(len(teams))
 
 	for _, t := range teams {
-		cmd := exec.CommandContext(ctx, w.exploitPath, string(t.IP))
 		concurrentCh <- struct{}{}
 		go func() {
 			defer func() {
 				wg.Done()
 				<-concurrentCh
 			}()
-			out, err := attack(t.IP, cmd)
+			out, err := attack(ctx, w.exploitPath, t.IP.String())
 			if err != nil {
 				log.Error(
 					"error attacking team",
@@ -186,11 +186,9 @@ func (w *Worker) attackAll(
 	return nil
 }
 
-func attack(ip net.IP, exploitProc *exec.Cmd) (exploitOut []byte, err error) {
-	if err = exploitProc.Start(); err != nil {
-		return nil, err
-	}
-	out, err := exploitProc.Output()
+func attack(ctx context.Context, exploitPath, targetIP string) (exploitOut []byte, err error) {
+	cmd := exec.CommandContext(ctx, exploitPath, targetIP)
+	out, err := cmd.Output()
 	if err != nil {
 		return nil, err
 	}

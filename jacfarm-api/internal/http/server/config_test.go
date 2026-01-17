@@ -32,8 +32,8 @@ func TestGetConfig(t *testing.T) {
 		{
 			name: "ok",
 			queryParams: map[string][]string{
-				"limit": []string{"10"},
-				"page":  []string{"1"},
+				"limit": {"10"},
+				"page":  {"1"},
 			},
 			expectedStatusCode: http.StatusOK,
 			mock: func() *mocks.MockService {
@@ -59,8 +59,8 @@ func TestGetConfig(t *testing.T) {
 		{
 			name: "service error",
 			queryParams: map[string][]string{
-				"limit": []string{"10"},
-				"page":  []string{"1"},
+				"limit": {"10"},
+				"page":  {"1"},
 			},
 			expectedStatusCode: http.StatusInternalServerError,
 			mock: func() *mocks.MockService {
@@ -74,8 +74,8 @@ func TestGetConfig(t *testing.T) {
 		{
 			name: "negative page error",
 			queryParams: map[string][]string{
-				"limit": []string{"10"},
-				"page":  []string{"-1"},
+				"limit": {"10"},
+				"page":  {"-1"},
 			},
 			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {
@@ -87,8 +87,8 @@ func TestGetConfig(t *testing.T) {
 		{
 			name: "negative limit error",
 			queryParams: map[string][]string{
-				"limit": []string{"-10"},
-				"page":  []string{"1"},
+				"limit": {"-10"},
+				"page":  {"1"},
 			},
 			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {
@@ -100,8 +100,8 @@ func TestGetConfig(t *testing.T) {
 		{
 			name: "incorrect type limit error",
 			queryParams: map[string][]string{
-				"limit": []string{"-das10"},
-				"page":  []string{"1"},
+				"limit": {"-das10"},
+				"page":  {"1"},
 			},
 			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {
@@ -113,8 +113,8 @@ func TestGetConfig(t *testing.T) {
 		{
 			name: "incorrect type page error",
 			queryParams: map[string][]string{
-				"limit": []string{"10"},
-				"page":  []string{"das"},
+				"limit": {"10"},
+				"page":  {"das"},
 			},
 			expectedStatusCode: http.StatusBadRequest,
 			mock: func() *mocks.MockService {

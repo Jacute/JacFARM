@@ -14,13 +14,14 @@ import (
 
 var (
 	ErrFlagFormatNotFound = errors.New("flag format not found")
+	ErrAuth               = errors.New("auth error")
 )
 
 const defaultPort = 15050
 const defaultTimeout = 5 * time.Second
 
 type Client struct {
-	addr       string
+	baseURL    string
 	httpClient *http.Client
 	token      string
 }
@@ -54,7 +55,7 @@ func New(host string, token string, opts ...Option) (*Client, error) {
 	}
 
 	c := &Client{
-		addr: fmt.Sprintf("%s:%d", host, port),
+		baseURL: fmt.Sprintf("http://%s:%d/jacfarm-api", host, port),
 		httpClient: &http.Client{
 			Timeout: timeout,
 		},
@@ -66,6 +67,9 @@ func New(host string, token string, opts ...Option) (*Client, error) {
 	defer cancel()
 	_, err := c.GetTeams(ctx)
 	if err != nil {
+		if errors.Is(err, ErrAuth) {
+			return nil, fmt.Errorf("auth error, check token")
+		}
 		return nil, err
 	}
 
@@ -88,7 +92,7 @@ func WithCustomPort(port int) Option {
 }
 
 func (c *Client) GetTeams(ctx context.Context) ([]*Team, error) {
-	url := fmt.Sprintf("http://%s/api/v1/service/teams", c.addr)
+	url := fmt.Sprintf("%s/api/v1/service/teams", c.baseURL)
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -101,6 +105,9 @@ func (c *Client) GetTeams(ctx context.Context) ([]*Team, error) {
 	}
 	defer res.Body.Close()
 
+	if res.StatusCode == 401 {
+		return nil, ErrAuth
+	}
 	if res.StatusCode != 200 {
 		return nil, fmt.Errorf("incorrect status code: %d", res.StatusCode)
 	}
@@ -110,16 +117,16 @@ func (c *Client) GetTeams(ctx context.Context) ([]*Team, error) {
 		return nil, err
 	}
 
-	var teams []*Team
-	if err := json.Unmarshal(data, &teams); err != nil {
+	var resBody *ListTeamsResponse
+	if err := json.Unmarshal(data, &resBody); err != nil {
 		return nil, err
 	}
 
-	return teams, nil
+	return resBody.Teams, nil
 }
 
 func (c *Client) getConfig(ctx context.Context) ([]*Config, error) {
-	url := fmt.Sprintf("http://%s/api/v1/service/config", c.addr)
+	url := fmt.Sprintf("%s/api/v1/service/config", c.baseURL)
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -165,7 +172,7 @@ func (c *Client) GetFlagFormat(ctx context.Context) (string, error) {
 }
 
 func (c *Client) SendFlags(ctx context.Context, flags []*ServiceFlag) error {
-	url := fmt.Sprintf("http://%s/api/v1/service/flags", c.addr)
+	url := fmt.Sprintf("%s/api/v1/service/flags", c.baseURL)
 	req, err := http.NewRequestWithContext(ctx, "PUT", url, nil)
 	if err != nil {
 		return err

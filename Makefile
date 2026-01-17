@@ -5,7 +5,7 @@ GREEN  := \033[0;32m
 PURPLE := \033[0;35m
 RESET  := \033[0m
 RED    := \033[0;31m
-JACFARM_API_KEY := $(shell openssl rand -hex 32)
+JACFARM_API_KEY := $(shell openssl rand -hex 16)
 ADMIN_PASS     := $(shell openssl rand -hex 8)
 
 

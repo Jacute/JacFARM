@@ -14,19 +14,23 @@ func (w *Worker) runSender() {
 	const op = "worker.startSender"
 	log := w.log.With(slog.String("op", op))
 
-	flagBuffer := make([]*jacfarm_client.ServiceFlag, senderSize)
+	flagBuffer := make([]*jacfarm_client.ServiceFlag, 0, senderSize)
 
 	for {
 		select {
 		case <-w.stopCh:
-			for _, flag := range <-w.flagQueue {
-				flagBuffer = append(flagBuffer, flag)
+			for {
+				select {
+				case flags := <-w.flagQueue:
+					flagBuffer = append(flagBuffer, flags...)
+				default:
+					err := w.client.SendFlags(context.Background(), flagBuffer)
+					if err != nil {
+						log.Error("error sending flags", prettylogger.Err(err))
+					}
+					return
+				}
 			}
-			err := w.client.SendFlags(context.Background(), flagBuffer)
-			if err != nil {
-				log.Error("error sending flags", prettylogger.Err(err))
-			}
-			return
 		case flags := <-w.flagQueue:
 			flagBuffer = append(flagBuffer, flags...)
 			if len(flagBuffer) >= senderSize {

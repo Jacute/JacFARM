@@ -33,16 +33,28 @@ func ParseArgs() (*Args, error) {
 
 	flag.IntVar(&args.Timeout, "t", 5, "timeout for http client (in seconds)")
 	flag.StringVar(&args.Token, "a", "", "JacFARM auth token")
-	flag.IntVar(&args.AttackPeriod, "a", 5, "attack period (in seconds)")
+	flag.IntVar(&args.AttackPeriod, "period", 5, "attack period (in seconds)")
 	flag.IntVar(&args.MaxConcurrentExploits, "c", 50, "max concurrent exploits in one time")
 	flag.IntVar(&args.Port, "p", 15050, "jacfarm port")
 	flag.StringVar(&args.FlagRe, "f", "[A-Z0-9]{31}=", "flag regex")
 
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage:\n")
+		fmt.Fprintf(os.Stderr, "  %s [flags] <addr> <executable>\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Example:\n")
+		fmt.Fprintf(os.Stderr, "  %s -a TOKEN -p 15050 localhost ./exploit\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Flags:\n")
+		flag.PrintDefaults()
+	}
 	flag.Parse()
+
+	if args.Token == "" {
+		return nil, flag.ErrHelp
+	}
 
 	rest := flag.Args()
 	if len(rest) < 1 {
-		return nil, ErrUsage
+		return nil, flag.ErrHelp
 	}
 
 	args.Addr = rest[0]
@@ -52,7 +64,7 @@ func ParseArgs() (*Args, error) {
 }
 
 func ValidateArgs(args *Args) error {
-	if _, err := os.Stat(args.ExecutablePath); err != nil {
+	if _, err := os.Stat(args.ExecutablePath); os.IsNotExist(err) {
 		return err
 	}
 	return nil
@@ -71,7 +83,7 @@ func Run(args *Args, log *slog.Logger) error {
 	)
 	if err != nil {
 		log.Error("error creating jacfarm client", prettylogger.Err(err))
-		return fmt.Errorf("%s: error creating jacfarm client %e", op, err)
+		return fmt.Errorf("%s: error creating jacfarm client %w", op, err)
 	}
 	w, err := worker.New(
 		client, log,
