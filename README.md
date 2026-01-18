@@ -13,7 +13,6 @@
 </p>
 <p align="center">
   <a href="https://github.com/Jacute/JacFARM/actions"><img src="https://github.com/Jacute/JacFARM/actions/workflows/tests.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://codecov.io/gh/Jacute/JacFARM"><img alt="Codecov" src="https://codecov.io/gh/Jacute/JacFARM/branch/master/graph/badge.svg"></a>
   <a href='https://badge.coveralls.io/github/Jacute/JacFARM?branch=master'><img src='https://badge.coveralls.io/repos/github/Jacute/JacFARM/badge.svg?branch=master' alt='Coverage Status' /></a>
   <a href="https://github.com/Jacute/JacFARM/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Jacute/JacFARM"></a>
 </p>
@@ -46,6 +45,7 @@ make clean-all
 ## Features
 
 - Uploading exploits in ui
+- Uploading exploits in cli
 - Real-time configuration farm options like number of concurrently running exploits, the size of the flag sending batch, team ip addresses, etc
 - The ability to [change the plugin for sending flags to jury](./docs/flag_sender/flag_sender.md).
 - There are already two sending plugins: [forcad_http](./workers/flag_sender/plugins/forcad_http/client.go) and [saarctf_tcp](./workers/flag_sender/plugins/saarctf_tcp/client.go).
@@ -61,7 +61,7 @@ make clean-all
 
 ### Client
 
-- **Frontend** - ui for
+- **Frontend** (./jacfarm-frontend) - ui for
   - viewing flags with any filters
   - adding exploits of different types via '+' button
   - deleting or updating exploits by right mouse button
@@ -71,14 +71,14 @@ make clean-all
 
 ![](./docs/img/frontend.png)
 
-- **start_exploit.py** - python cli tool for starting exploits on local machine (TODO)
+- **CLI** (./cli) - tool for starting exploits on local machine
 
 ### Server
 
-- **Exploit Runner** - a worker that launches exploits on all teams. [More details](./docs/exploit_runner/exploit_runner.md)
-- **Flag Sender** - a worker that sends flags to jury using *Plugins*. [More details](./docs/flag_sender/flag_sender.md)
-- **JacFARM API** - API for frontend and cli start_exploit.py.
-- **Config Loader** - loads config into db from config.yml on start. Next configuration editing is available through the frontend.
+- **Exploit Runner** (./workers/exploit_runner) - a worker that launches exploits on all teams. [More details](./docs/exploit_runner/exploit_runner.md)
+- **Flag Sender** (./workers/flag_sender) - a worker that sends flags to jury using *Plugins*. [More details](./docs/flag_sender/flag_sender.md)
+- **JacFARM API** (./jacfarm-api) - API for frontend and cli start_exploit.py.
+- **Config Loader** (./workers/config_loader) - loads config into db from config.yml on start. Next configuration editing is available through the frontend.
 
 #### Plugins
 
@@ -90,4 +90,4 @@ make clean-all
 
 ### Arch Diagram
 
-![](./docs/img/diagram.jpg)
+![](./docs/img/diagram.png)

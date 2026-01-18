@@ -271,6 +271,20 @@ func (mr *MockServiceMockRecorder) PutFlag(ctx, flag any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutFlag", reflect.TypeOf((*MockService)(nil).PutFlag), ctx, flag)
 }
 
+// ServicePutFlag mocks base method.
+func (m *MockService) ServicePutFlag(ctx context.Context, req *dto.ServicePutFlagRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ServicePutFlag", ctx, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ServicePutFlag indicates an expected call of ServicePutFlag.
+func (mr *MockServiceMockRecorder) ServicePutFlag(ctx, req any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ServicePutFlag", reflect.TypeOf((*MockService)(nil).ServicePutFlag), ctx, req)
+}
+
 // ToggleExploit mocks base method.
 func (m *MockService) ToggleExploit(ctx context.Context, id string) (bool, error) {
 	m.ctrl.T.Helper()

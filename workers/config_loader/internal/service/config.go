@@ -52,18 +52,20 @@ func (s *Service) LoadConfigIntoDB(ctx context.Context, cfg *config.Config) erro
 		}
 	}
 
-	// add ip from N
-	ips := utils.ExpandIpFromN(
-		cfg.ExploitRunner.TeamIPFromN.NStart,
-		cfg.ExploitRunner.TeamIPFromN.NEnd,
-		cfg.ExploitRunner.TeamIPFromN.OffsetX,
-		cfg.ExploitRunner.TeamIPFromN.OffsetY,
-		cfg.ExploitRunner.TeamIPFromN.Block,
-		cfg.ExploitRunner.TeamIPFromN.IPTemplate,
-	)
-	err = s.addIps(ctx, ips, existTeams)
-	if err != nil {
-		log.Warn("error adding ips", slog.Any("ips", ips), prettylogger.Err(err))
+	if cfg.ExploitRunner.TeamIPFromN != nil {
+		// add ip from N
+		ips := utils.ExpandIpFromN(
+			cfg.ExploitRunner.TeamIPFromN.NStart,
+			cfg.ExploitRunner.TeamIPFromN.NEnd,
+			cfg.ExploitRunner.TeamIPFromN.OffsetX,
+			cfg.ExploitRunner.TeamIPFromN.OffsetY,
+			cfg.ExploitRunner.TeamIPFromN.Block,
+			cfg.ExploitRunner.TeamIPFromN.IPTemplate,
+		)
+		err = s.addIps(ctx, ips, existTeams)
+		if err != nil {
+			log.Warn("error adding ips", slog.Any("ips", ips), prettylogger.Err(err))
+		}
 	}
 
 	if len(existTeams) > 0 {

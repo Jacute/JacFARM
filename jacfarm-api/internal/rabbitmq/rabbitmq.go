@@ -38,7 +38,8 @@ func New(cfg *config.RabbitMQConfig) *Rabbit {
 		false,          // exclusive
 		false,          // no-wait
 		amqp.Table{
-			"x-message-deduplication": true,
+			"x-deduplication-header": "x-deduplication-header",
+			"x-cache-ttl":            int32(300000), // TTL в ms
 		},
 	)
 	if err != nil {
