@@ -173,14 +173,16 @@ func (c *Client) GetFlagFormat(ctx context.Context) (string, error) {
 
 func (c *Client) SendFlags(ctx context.Context, flags []*ServiceFlag) error {
 	url := fmt.Sprintf("%s/api/v1/service/flags", c.baseURL)
-	req, err := http.NewRequestWithContext(ctx, "PUT", url, nil)
+	req, err := http.NewRequestWithContext(ctx, "POST", url, nil)
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Authorization", c.token)
 	req.Header.Set("Content-Type", "application/json")
 
-	data, err := json.Marshal(flags)
+	data, err := json.Marshal(&ServicePutFlagRequest{
+		Flags: flags,
+	})
 	if err != nil {
 		return err
 	}

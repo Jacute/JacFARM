@@ -13,6 +13,7 @@ func (w *Worker) runExecutor() {
 	log := w.log.With(slog.String("op", op))
 
 	timer := time.NewTimer(w.attackPeriod)
+	defer timer.Stop()
 
 	for {
 		select {
