@@ -27,6 +27,9 @@ func (r *Rabbit) PublishFlag(flag *rabbitmq_dto.Flag) error {
 			DeliveryMode: amqp.Persistent,
 			ContentType:  "application/json",
 			Body:         output,
+			Headers: amqp.Table{
+				"x-deduplication-header": flag.Value,
+			},
 		},
 	)
 	if err != nil {
