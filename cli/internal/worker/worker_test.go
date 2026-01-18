@@ -39,12 +39,10 @@ func TestAttack(t *testing.T) {
 }
 
 func TestAttackAll(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 	testcases := []struct {
 		name   string
 		flags  []string
-		worker func() *Worker
+		worker func() (*Worker, *gomock.Controller)
 	}{
 		{
 			name: "ok",
@@ -59,7 +57,8 @@ func TestAttackAll(t *testing.T) {
 				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB=",
 				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC=",
 			},
-			worker: func() *Worker {
+			worker: func() (*Worker, *gomock.Controller) {
+				ctrl := gomock.NewController(t)
 				clientMock := mocks.NewMockJacFARMClient(ctrl)
 				clientMock.EXPECT().GetTeams(gomock.Any()).Return([]*jacfarm_client.Team{
 					{
@@ -72,7 +71,7 @@ func TestAttackAll(t *testing.T) {
 						Name: "aboba2",
 						IP:   net.ParseIP("1.1.1.2"),
 					},
-				}, nil).Times(2)
+				}, nil).Times(1)
 				clientMock.EXPECT().SendFlags(gomock.Any(), mocks.UnorderedSlice([]*jacfarm_client.ServiceFlag{
 					{
 						Flag:   "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
@@ -104,24 +103,25 @@ func TestAttackAll(t *testing.T) {
 					slog.New(prettylogger.NewDiscardHandler()),
 					"testcases/testsploit.sh",
 					"[A-Z0-9]{31}=",
-					WithAttackPeriod(200*time.Millisecond),
+					WithAttackPeriod(1*time.Second),
 				)
 				if err != nil {
 					t.Fatal(err)
 				}
 
-				return w
+				return w, ctrl
 			},
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(tt *testing.T) {
-			w := tc.worker()
+			w, ctrl := tc.worker()
 			w.Run()
-
-			time.Sleep(1 * time.Second)
+			time.Sleep(1500 * time.Millisecond)
 			w.Stop()
+			time.Sleep(1 * time.Second)
+			ctrl.Finish()
 		})
 	}
 }

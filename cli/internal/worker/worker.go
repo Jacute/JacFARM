@@ -208,5 +208,5 @@ func parseFlags(text []byte, re *regexp.Regexp) []string {
 func (w *Worker) Stop() {
 	const op = "worker.Stop"
 	w.log.Info("stopping worker")
-	w.stopCh <- struct{}{}
+	close(w.stopCh)
 }

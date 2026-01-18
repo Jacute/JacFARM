@@ -24,9 +24,11 @@ func (w *Worker) runSender() {
 				case flags := <-w.flagQueue:
 					flagBuffer = append(flagBuffer, flags...)
 				default:
-					err := w.client.SendFlags(context.Background(), flagBuffer)
-					if err != nil {
-						log.Error("error sending flags", prettylogger.Err(err))
+					if len(flagBuffer) > 0 {
+						err := w.client.SendFlags(context.Background(), flagBuffer)
+						if err != nil {
+							log.Error("error sending flags", prettylogger.Err(err))
+						}
 					}
 					return
 				}
