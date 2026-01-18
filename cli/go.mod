@@ -1,4 +1,4 @@
-module cli_exploit_runner
+module jacfarmcli
 
 go 1.25.4
 

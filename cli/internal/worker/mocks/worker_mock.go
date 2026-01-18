@@ -10,8 +10,8 @@
 package mocks
 
 import (
-	jacfarm "cli_exploit_runner/internal/clients/jacfarm"
 	context "context"
+	jacfarm "jacfarmcli/internal/clients/jacfarm"
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"

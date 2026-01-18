@@ -1,10 +1,10 @@
 package worker
 
 import (
-	jacfarm_client "cli_exploit_runner/internal/clients/jacfarm"
 	"context"
 	"errors"
 	"fmt"
+	jacfarm_client "jacfarmcli/internal/clients/jacfarm"
 	"log/slog"
 	"os"
 	"os/exec"

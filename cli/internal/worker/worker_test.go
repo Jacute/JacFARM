@@ -1,9 +1,9 @@
 package worker
 
 import (
-	jacfarm_client "cli_exploit_runner/internal/clients/jacfarm"
-	"cli_exploit_runner/internal/worker/mocks"
 	"context"
+	jacfarm_client "jacfarmcli/internal/clients/jacfarm"
+	"jacfarmcli/internal/worker/mocks"
 	"log/slog"
 	"net"
 	"os"

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cli_exploit_runner/internal/cli"
 	"flag"
 	"fmt"
+	"jacfarmcli/internal/cli"
 	"log/slog"
 	"os"
 	"os/signal"

@@ -2,12 +2,12 @@ package jacfarm_client
 
 import (
 	"bytes"
-	"cli_exploit_runner/pkg/common_config"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"jacfarmcli/pkg/common_config"
 	"net/http"
 	"time"
 )

@@ -1,11 +1,11 @@
 package cli
 
 import (
-	jacfarm_client "cli_exploit_runner/internal/clients/jacfarm"
-	"cli_exploit_runner/internal/worker"
 	"errors"
 	"flag"
 	"fmt"
+	jacfarm_client "jacfarmcli/internal/clients/jacfarm"
+	"jacfarmcli/internal/worker"
 	"log/slog"
 	"os"
 	"time"
